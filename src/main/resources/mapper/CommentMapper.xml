@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lnsf.dao.CommentMapper" >
+  <resultMap id="BaseResultMap" type="com.lnsf.bean.Comment" >
+    <id column="tid" property="tid" jdbcType="INTEGER" />
+    <result column="topic_id" property="topicId" jdbcType="INTEGER" />
+    <result column="com_content" property="comContent" jdbcType="VARCHAR" />
+    <result column="username" property="username" jdbcType="VARCHAR" />
+    <result column="tphoto" property="tphoto" jdbcType="VARCHAR" />
+    <result column="tpower" property="tpower" jdbcType="VARCHAR" />
+    <result column="falgs" property="falgs" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    tid, topic_id, com_content, username, tphoto, tpower, falgs
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.lnsf.bean.CommentExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from comment
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from comment
+    where tid = #{tid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from comment
+    where tid = #{tid,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.lnsf.bean.CommentExample" >
+    delete from comment
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.lnsf.bean.Comment" >
+    insert into comment (tid, topic_id, com_content, 
+      username, tphoto, tpower, 
+      falgs)
+    values (#{tid,jdbcType=INTEGER}, #{topicId,jdbcType=INTEGER}, #{comContent,jdbcType=VARCHAR}, 
+      #{username,jdbcType=VARCHAR}, #{tphoto,jdbcType=VARCHAR}, #{tpower,jdbcType=VARCHAR}, 
+      #{falgs,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.lnsf.bean.Comment" >
+    insert into comment
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="tid != null" >
+        tid,
+      </if>
+      <if test="topicId != null" >
+        topic_id,
+      </if>
+      <if test="comContent != null" >
+        com_content,
+      </if>
+      <if test="username != null" >
+        username,
+      </if>
+      <if test="tphoto != null" >
+        tphoto,
+      </if>
+      <if test="tpower != null" >
+        tpower,
+      </if>
+      <if test="falgs != null" >
+        falgs,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="tid != null" >
+        #{tid,jdbcType=INTEGER},
+      </if>
+      <if test="topicId != null" >
+        #{topicId,jdbcType=INTEGER},
+      </if>
+      <if test="comContent != null" >
+        #{comContent,jdbcType=VARCHAR},
+      </if>
+      <if test="username != null" >
+        #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="tphoto != null" >
+        #{tphoto,jdbcType=VARCHAR},
+      </if>
+      <if test="tpower != null" >
+        #{tpower,jdbcType=VARCHAR},
+      </if>
+      <if test="falgs != null" >
+        #{falgs,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.lnsf.bean.CommentExample" resultType="java.lang.Integer" >
+    select count(*) from comment
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update comment
+    <set >
+      <if test="record.tid != null" >
+        tid = #{record.tid,jdbcType=INTEGER},
+      </if>
+      <if test="record.topicId != null" >
+        topic_id = #{record.topicId,jdbcType=INTEGER},
+      </if>
+      <if test="record.comContent != null" >
+        com_content = #{record.comContent,jdbcType=VARCHAR},
+      </if>
+      <if test="record.username != null" >
+        username = #{record.username,jdbcType=VARCHAR},
+      </if>
+      <if test="record.tphoto != null" >
+        tphoto = #{record.tphoto,jdbcType=VARCHAR},
+      </if>
+      <if test="record.tpower != null" >
+        tpower = #{record.tpower,jdbcType=VARCHAR},
+      </if>
+      <if test="record.falgs != null" >
+        falgs = #{record.falgs,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update comment
+    set tid = #{record.tid,jdbcType=INTEGER},
+      topic_id = #{record.topicId,jdbcType=INTEGER},
+      com_content = #{record.comContent,jdbcType=VARCHAR},
+      username = #{record.username,jdbcType=VARCHAR},
+      tphoto = #{record.tphoto,jdbcType=VARCHAR},
+      tpower = #{record.tpower,jdbcType=VARCHAR},
+      falgs = #{record.falgs,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.lnsf.bean.Comment" >
+    update comment
+    <set >
+      <if test="topicId != null" >
+        topic_id = #{topicId,jdbcType=INTEGER},
+      </if>
+      <if test="comContent != null" >
+        com_content = #{comContent,jdbcType=VARCHAR},
+      </if>
+      <if test="username != null" >
+        username = #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="tphoto != null" >
+        tphoto = #{tphoto,jdbcType=VARCHAR},
+      </if>
+      <if test="tpower != null" >
+        tpower = #{tpower,jdbcType=VARCHAR},
+      </if>
+      <if test="falgs != null" >
+        falgs = #{falgs,jdbcType=INTEGER},
+      </if>
+    </set>
+    where tid = #{tid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.lnsf.bean.Comment" >
+    update comment
+    set topic_id = #{topicId,jdbcType=INTEGER},
+      com_content = #{comContent,jdbcType=VARCHAR},
+      username = #{username,jdbcType=VARCHAR},
+      tphoto = #{tphoto,jdbcType=VARCHAR},
+      tpower = #{tpower,jdbcType=VARCHAR},
+      falgs = #{falgs,jdbcType=INTEGER}
+    where tid = #{tid,jdbcType=INTEGER}
+  </update>
+</mapper>
