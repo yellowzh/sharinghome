@@ -8,7 +8,8 @@ body { height: 100%; background: #fff url(../images/backgroud.png) 50% 50% no-re
 .form-item button { width: 360px; height: 50px; border: 0; border-radius: 25px; font-size: 18px; color: #1f6f4a; outline: none; cursor: pointer; background-color: #fff; }
 #username { background: url(../images/pepo.png) 20px 14px no-repeat; }
 #password { background: url(../images/password.png) 23px 11px no-repeat; }
-.tip { display: none; position: absolute; left: 20px; top: 52px; font-size: 14px; color: #f50; }
+.tip1 { display: none; position: absolute; left: 20px; top: 52px; font-size: 14px; color: #f50; }
+.tip2 { display: none; position: absolute; left: 20px; top: 52px; font-size: 14px; color: #f50; }
 .reg-bar { width: 360px; margin: 20px auto 0; font-size: 14px; overflow: hidden;}
 .reg-bar a { color: #fff; text-decoration: none; }
 .reg-bar a:hover { text-decoration: underline; }

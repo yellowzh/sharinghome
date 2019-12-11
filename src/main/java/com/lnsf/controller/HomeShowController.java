@@ -20,7 +20,7 @@ public class HomeShowController {
     private HomeShowService homeShowService;
     /*查看所有房源*/
     /*value：方法标注*/
-    @ApiOperation(value = "查看所有房源", notes = "记录",httpMethod = "GET")
+    @ApiOperation(value = "查看所有房源", notes = "记录",httpMethod = "POST")
     @RequestMapping("/getAllHomeShow")
     public List<Homeshow> getAllHomeShow(){
         return homeShowService.getAllHomeShow();

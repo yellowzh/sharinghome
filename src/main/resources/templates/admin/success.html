@@ -1,21 +1,24 @@
+
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="css/bootstrap.min.css">
-<link rel="stylesheet" type="text/css" href="css/style.css">
+<link rel="stylesheet" href="../css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="../css/style.css">
 <link href='https://fonts.googleapis.com/css?family=Merienda' rel='stylesheet'>
-<link href="css/aos.css" rel="stylesheet">
+<link href="../css/aos.css" rel="stylesheet">
+
 <title>小智民宿</title>
-<link rel="icon" href="images/logo.png">
+<link rel="icon" href="../images/logo.png">
 </head>
+
 <body data-spy="scroll" data-target=".navbar" data-offset="50">
 <div id="Welcome">
 	<!--Start navigation Bar-->
 	<nav class="navbar navbar-expand-lg navbar fixed-top navbar-light bg-light">
 		<a class="navbar-brand" href="#Welcome">
-			<img src="images/logo.jpeg" width="50" height="50" class="d-inline-block" alt=""> 小智民宿
+			<img src="../images/logo.jpeg" width="50" height="50" class="d-inline-block" alt=""> 小智民宿
 		</a>
 		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
 			<span class="navbar-toggler-icon"></span>
@@ -32,16 +35,16 @@
 					<a class="nav-link" href="#Restaurant">最新动态</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="about.html">关于我们</a>
+					<a class="nav-link" href="/api/indexToAbout">关于我们</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="about.html#Reservation">联系我们</a>
+					<a class="nav-link" href="../about.html#Reservation">联系我们</a>
 				</li>
 				<li class="nav-item">
-					<a href="/api/indexToLogin"  class="nav-link">登录</a>
+					<a href="/api/indexToRegister" class="nav-link">欢迎</a>
 				</li>
 				<li class="nav-item">
-					<a href="/api/indexToRegister" class="nav-link">注册</a>
+					<a href="/api/indexToLogin"  class="nav-link" th:text="${name}"></a>
 				</li>
 			</ul>
 		</div>
@@ -56,21 +59,21 @@
 		</ol>
 		<div class="carousel-inner">
 			<div class="carousel-item active">
-				<img class="d-block img-fluid w-100 img-slider" src="images/slider1.jpg" alt="First slide">
+				<img class="d-block img-fluid w-100 img-slider" src="../images/slider1.jpg" alt="First slide">
 				<div class="carousel-caption">
 					<h2>神游假期从奇妙屋开始!</h2>
 					<p>小智民宿服务区</p>
 				</div>
 			</div>
 			<div class="carousel-item">
-				<img class="d-block w-100 img-fluid img-slider" src="images/slider2.jpg" alt="Second slide">
+				<img class="d-block w-100 img-fluid img-slider" src="../images/slider2.jpg" alt="Second slide">
 				<div class="carousel-caption">
 					<h2>优质民宿，周末出逃，让心情放假!</h2>
 					<p>小智民宿服务区</p>
 				</div>
 			</div>
 			<div class="carousel-item">
-				<img class="d-block w-100 img-fluid img-slider" src="images/slider3.jpg" alt="Third slide">
+				<img class="d-block w-100 img-fluid img-slider" src="../images/slider3.jpg" alt="Third slide">
 				<div class="carousel-caption">
 					<h2>品味繁华中的质朴温情!</h2>
 					<p>小智民宿服务区</p>
@@ -99,7 +102,7 @@
 	<div class="row bg-light">
 		<div class="col-md-4" data-aos="slide-up">
 			<div class="card view zoom">
-				<img class="card-img-top img-fluid " src="images/meat-menu.jpg">
+				<img class="card-img-top img-fluid " src="../images/meat-menu.jpg">
 				<div class="card-body">
 					<h5 class="card-title">~ 原野风光 ~</h5>
 					<ul class="list-group list-group-flush">
@@ -114,7 +117,7 @@
 		</div>
 		<div class="col-md-4" data-aos="slide-up">
 			<div class="card">
-				<img class="card-img-top img-fluid " src="images/fish-menu.jpg">
+				<img class="card-img-top img-fluid " src="../images/fish-menu.jpg">
 				<div class="card-body">
 					<h5 class="card-title">~ 客家民风 ~</h5>
 					<ul class="list-group list-group-flush">
@@ -129,7 +132,7 @@
 		</div>
 		<div class="col-md-4" data-aos="slide-up">
 			<div class="card">
-				<img class="card-img-top img-fluid" src="images/menu-vegetarian.jpg">
+				<img class="card-img-top img-fluid" src="../images/menu-vegetarian.jpg">
 				<div class="card-body">
 					<h5 class="card-title">~ 质朴温情 ~</h5>
 					<ul class="list-group list-group-flush">
@@ -158,13 +161,13 @@
 			<p>寂寂的清晨有微微的清风，微微的清风有丝丝的凉意，丝丝的凉意里有我轻轻的问候！愿我的问候能消除你酷暑的炎热，带给你一天的好心情！</p>
 		</div>
 		<div class="col-md-6" data-aos="fade-up">
-			<img class="img-fluid" src="images/location.jpg">
+			<img class="img-fluid" src="../images/location.jpg">
 		</div>
 	</div>
 	<div class="row bg-light"><br></div>
 	<div class="row bg-light">
 		<div class="col-md-6 order-md-1 order-2" data-aos="fade-up">
-			<img class="img-fluid " src="images/cuisine.jpg">
+			<img class="img-fluid " src="../images/cuisine.jpg">
 		</div>
 		<div class="col-md-6 order-md-12 order-1">
 			<h3>品味繁华中的质朴温情!</h3>
@@ -192,14 +195,14 @@
 	</div>
 </div>
 
-<script src="js/jquery-3.3.1.min.js"></script>
-<script src="js/popper.min.js"></script>
-<script src="js/bootstrap.min.js"></script>
-<script defer src="js/all.js"></script>
-<script type="text/javascript" src="js/map.js"></script>
-<script type="text/javascript" src="js/smooth-scroll.js"></script>
-<script src="js/aos.js"></script>
-<script type="text/javascript" src="js/image-effect.js"></script>
+<script src="../js/jquery-3.3.1.min.js"></script>
+<script src="../js/popper.min.js"></script>
+<script src="../js/bootstrap.min.js"></script>
+<script defer src="../js/all.js"></script>
+<script type="text/javascript" src="../js/map.js"></script>
+<script type="text/javascript" src="../js/smooth-scroll.js"></script>
+<script src="../js/aos.js"></script>
+<script type="text/javascript" src="../js/image-effect.js"></script>
 </body>
 </html>
 

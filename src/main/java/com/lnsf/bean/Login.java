@@ -9,6 +9,8 @@ public class Login {
 
     private String password;
 
+    private Integer power;
+
     private Date logintime;
 
     private Date loginouttime;
@@ -37,6 +39,14 @@ public class Login {
 
     public void setPassword(String password) {
         this.password = password == null ? null : password.trim();
+    }
+
+    public Integer getPower() {
+        return power;
+    }
+
+    public void setPower(Integer power) {
+        this.power = power;
     }
 
     public Date getLogintime() {
