@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -10,23 +10,27 @@
     <div class="dowebok">
         <div class="logo"></div>
         <!--form start-->
+        <!-- 点击按钮，传递显示数据 -->
+        <!--<button id="btn" onclick="func('数据更新成功')">btn</button>-->
+        <!-- 显示的时间弹窗的div -->
+        <!--<div id="date"></div>-->
+
         <div class="form-item">
             <input id="username" ng-model="login.username" name="username" type="text" autocomplete="off" placeholder="用户名">
-            <p class="tip1">请输入合法的用户名</p>
         </div>
         <div class="form-item">
             <input id="password" ng-model="login.password" type="password" autocomplete="off" placeholder="登录密码">
-            <p class="tip2">密码不正确</p>
         </div>
         <div class="form-item"><button id="submit" ng-click="logins()" >登 录</button></div>
         <div class="reg-bar">
-            <a class="reg" href="javascript:">立即注册</a>
+            <a class="reg" href="/api/indexToRegister">立即注册</a>
             <a class="forget" href="javascript:">忘记密码</a>
         </div>
         <!--from end-->
     </div>
 
     <script src="../js/jquery.min.js"></script>
+    <script src="../js/my/show.js"></script><!--自编弹出显示-->
     <script src="../js/angular.min.js"></script>
     <script>
         var app=angular.module('myApp',[]); //定义了一个叫myApp的模块
@@ -36,17 +40,33 @@
                 $http.post('/api/login',$scope.login).success(
                     function(response){
                         if (response=="该用户名不存在"){
-                            $('.tip1').show();
-                        }else if (response=="密码错误") {
-                            $('.tip2').show();
-                        }else {
-                            window.location.href="/api/success";
+                            func(response,"#FFF");/*调用show.js*/
+                        }else if (response=="账户被锁定") {
+                            func(response,"#FFF");
+                        }else if (response=="账户被冻结") {
+                            func(response,"#FFF");
+                        }else if (parseInt(response)>=11) {
+                            var num = 15-parseInt(response);
+                            func("密码错误:还剩"+num+"次机会","#FFF");
+                        }else if (response=="1") {
+                            func('登录成功',"#FFF");
+                            window.location.href="/api/admin";/*系统管理员*/
+                        }else{
+                            func('登录成功',"#FFF");
+                            window.location.href="/api/users";/*商家&旅客*/
                         }
-
                     }
                 );
             }
         });
+    </script>
+    <!--自动消失的弹出提示信息-->
+    <script th:inline="javascript">
+        var results = [[${msg}]];
+        if (results!=null) {
+            //alert(results)
+            func(results,"#999999");
+        }
     </script>
 </body>
 </html>

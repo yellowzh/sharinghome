@@ -1,9 +1,9 @@
 package com.lnsf.dao;
 
-import java.util.List;
-
 import com.lnsf.bean.Comment;
 import com.lnsf.bean.CommentExample;
+import java.util.List;
+
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 @Mapper
@@ -12,7 +12,7 @@ public interface CommentMapper {
 
     int deleteByExample(CommentExample example);
 
-    int deleteByPrimaryKey(Integer tid);
+    int deleteByPrimaryKey(Integer commentId);
 
     int insert(Comment record);
 
@@ -20,7 +20,7 @@ public interface CommentMapper {
 
     List<Comment> selectByExample(CommentExample example);
 
-    Comment selectByPrimaryKey(Integer tid);
+    Comment selectByPrimaryKey(Integer commentId);
 
     int updateByExampleSelective(@Param("record") Comment record, @Param("example") CommentExample example);
 

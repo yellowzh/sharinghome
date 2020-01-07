@@ -10,6 +10,8 @@ body { height: 100%; background: #fff url(../images/backgroud.png) 50% 50% no-re
 #password { background: url(../images/password.png) 23px 11px no-repeat; }
 .tip1 { display: none; position: absolute; left: 20px; top: 52px; font-size: 14px; color: #f50; }
 .tip2 { display: none; position: absolute; left: 20px; top: 52px; font-size: 14px; color: #f50; }
+.tip3 { display: none; position: absolute; left: 20px; top: 52px; font-size: 14px; color: #f50; }
+.tip4 { display: none; position: absolute; left: 20px; top: 52px; font-size: 14px; color: #f50; }
 .reg-bar { width: 360px; margin: 20px auto 0; font-size: 14px; overflow: hidden;}
 .reg-bar a { color: #fff; text-decoration: none; }
 .reg-bar a:hover { text-decoration: underline; }

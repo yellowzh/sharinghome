@@ -1,73 +1,115 @@
 package com.lnsf.bean;
 
+import java.util.Date;
+
 public class Comment {
-    private Integer tid;
+    private Integer commentId;
 
-    private Integer topicId;
+    private Integer orderId;
 
-    private String comContent;
+    private Integer userId;
 
-    private String username;
+    private String commentType;
 
-    private String tphoto;
+    private String commentContent;
 
-    private String tpower;
+    private String commentPhoto;
 
-    private Integer falgs;
+    private String commentPower;
 
-    public Integer getTid() {
-        return tid;
+    private Integer replyId;
+
+    private String commentFalgs;
+
+    private Date createTime;
+
+    private String commentBackup;
+
+    public Integer getCommentId() {
+        return commentId;
     }
 
-    public void setTid(Integer tid) {
-        this.tid = tid;
+    public void setCommentId(Integer commentId) {
+        this.commentId = commentId;
     }
 
-    public Integer getTopicId() {
-        return topicId;
+    public Integer getOrderId() {
+        return orderId;
     }
 
-    public void setTopicId(Integer topicId) {
-        this.topicId = topicId;
+    public void setOrderId(Integer orderId) {
+        this.orderId = orderId;
     }
 
-    public String getComContent() {
-        return comContent;
+    public Integer getUserId() {
+        return userId;
     }
 
-    public void setComContent(String comContent) {
-        this.comContent = comContent == null ? null : comContent.trim();
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
 
-    public String getUsername() {
-        return username;
+    public String getCommentType() {
+        return commentType;
     }
 
-    public void setUsername(String username) {
-        this.username = username == null ? null : username.trim();
+    public void setCommentType(String commentType) {
+        this.commentType = commentType == null ? null : commentType.trim();
     }
 
-    public String getTphoto() {
-        return tphoto;
+    public String getCommentContent() {
+        return commentContent;
     }
 
-    public void setTphoto(String tphoto) {
-        this.tphoto = tphoto == null ? null : tphoto.trim();
+    public void setCommentContent(String commentContent) {
+        this.commentContent = commentContent == null ? null : commentContent.trim();
     }
 
-    public String getTpower() {
-        return tpower;
+    public String getCommentPhoto() {
+        return commentPhoto;
     }
 
-    public void setTpower(String tpower) {
-        this.tpower = tpower == null ? null : tpower.trim();
+    public void setCommentPhoto(String commentPhoto) {
+        this.commentPhoto = commentPhoto == null ? null : commentPhoto.trim();
     }
 
-    public Integer getFalgs() {
-        return falgs;
+    public String getCommentPower() {
+        return commentPower;
     }
 
-    public void setFalgs(Integer falgs) {
-        this.falgs = falgs;
+    public void setCommentPower(String commentPower) {
+        this.commentPower = commentPower == null ? null : commentPower.trim();
+    }
+
+    public Integer getReplyId() {
+        return replyId;
+    }
+
+    public void setReplyId(Integer replyId) {
+        this.replyId = replyId;
+    }
+
+    public String getCommentFalgs() {
+        return commentFalgs;
+    }
+
+    public void setCommentFalgs(String commentFalgs) {
+        this.commentFalgs = commentFalgs == null ? null : commentFalgs.trim();
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public String getCommentBackup() {
+        return commentBackup;
+    }
+
+    public void setCommentBackup(String commentBackup) {
+        this.commentBackup = commentBackup == null ? null : commentBackup.trim();
     }
 }

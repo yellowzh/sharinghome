@@ -7,11 +7,11 @@
 <link rel="stylesheet" type="text/css" href="../css/style.css">
 <link href='https://fonts.googleapis.com/css?family=Merienda' rel='stylesheet'>
 <link href="../css/aos.css" rel="stylesheet">
-
+	<link rel="stylesheet" href="../css/pintuer.css">
+	<script src="../js/jquery.js"></script>
 <title>小智民宿</title>
 <link rel="icon" href="../images/logo.png">
 </head>
-
 <body data-spy="scroll" data-target=".navbar" data-offset="50">
 <div id="Welcome">
 	<!--Start navigation Bar-->
@@ -23,7 +23,7 @@
 			<span class="navbar-toggler-icon"></span>
 		</button>
 		<div class="collapse navbar-collapse" id="navbarText">
-			<ul class="navbar-nav ml-auto">
+			<ul class="navbar-nav ml-auto" >
 				<li class="nav-item">
 					<a class="nav-link" href="#Welcome">首页</a>
 				</li>
@@ -34,16 +34,24 @@
 					<a class="nav-link" href="#Restaurant">最新动态</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="/api/indexToAbout">关于我们</a>
+					<a class="nav-link" href="test">关于我们</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="../about.html#Reservation">联系我们</a>
+					<a class="nav-link" href="about.html#Reservation">联系我们</a>
 				</li>
-				<li class="nav-item">
-					<a href="/api/indexToRegister" class="nav-link">欢迎</a>
-				</li>
-				<li class="nav-item">
-					<a href="/api/indexToLogin"  class="nav-link" th:text="${name}"></a>
+				<li class="nav-item" style="width: 150px">
+					<ul class="nav nav-pills">
+						<li role="presentation" class="dropdown">
+							<a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true"  aria-expanded="false" style="text-decoration: none; width: 160px" >
+								<img src="../images/y.jpg" class="radius-circle rotate-hover" height="15" alt="" />
+								<span th:text="${name}" style="width: 150px"></span>
+							</a>
+							<ul class="dropdown-menu" style="display:none; min-width: 80px; left: 10px;">
+								<li><a style="text-decoration: none;" href="#">个人中心</a></li>
+								<li><a href="/api/loginOut" style="color: #ff5500;text-decoration: none;">退出</a></li>
+							</ul>
+						</li>
+					</ul>
 				</li>
 			</ul>
 		</div>
@@ -178,12 +186,12 @@
 		</div>
 	</div>
 	<!--End of Restaurant-->
-
+	
 
 
 	<div class="row footer bg-light">
 		<div class="col">
-
+			
 		</div>
 		<div class="col">
 			<p class="text-center">yellowz &zcy; 2019.11.24.<a target="_blank" href="#">huangrunzhi</a></p>
@@ -193,7 +201,6 @@
 		</div>
 	</div>
 </div>
-
 <script src="../js/jquery-3.3.1.min.js"></script>
 <script src="../js/popper.min.js"></script>
 <script src="../js/bootstrap.min.js"></script>
