@@ -38,8 +38,14 @@ public class ShiroConfig {
         Map<String,String> filterMap = new LinkedHashMap<String,String>();
 
         /*使用统配符的方式对一个目录下的所以资源进行拦截*/
-        filterMap.put("/user/*","authc");
-        filterMap.put("/admin/*","authc");
+        filterMap.put("/api/test","anon");
+        filterMap.put("/api/login","anon");
+        filterMap.put("/api/indexToRegister","anon");
+        filterMap.put("/api/stu-exist","anon");//注册用户时判断用户名是否以及存在
+        filterMap.put("/api/addUser","anon");//提交注册用户
+        filterMap.put("/api/select/*","anon");
+        filterMap.put("/api/loginOutS","logout");
+        filterMap.put("/api/*","authc");
         /*让某些资源无需拦截*/
         /*filterMap.put("/login","anon");*/
         //修改页面跳转登录页面

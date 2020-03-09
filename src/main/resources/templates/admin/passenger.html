@@ -116,7 +116,8 @@
            </td>
           <td th:text="${user.getUsername()}"></td>
           <td th:text="${user.getRealName()}"></td>
-          <td width="10%"><img src="../images/11.jpg" alt="" width="70" height="50" /></td>
+            <td width="10%" th:if="${user.getUserBackup2()!=null}"><img th:src="${user.getUserBackup2()}" alt="" width="70" height="50" /></td>
+            <td width="10%" th:if="${user.getUserBackup2()==null}"><img src="../images/11.jpg" alt="" width="70" height="50" /></td>
           <td th:text="${user.getUserTel()}"></td>
           <td th:text="${user.getUserEmil()}"></td>
           <td th:text="${user.getUserBackup1()}"></td>

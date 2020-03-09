@@ -1,0 +1,121 @@
+<!--<!DOCTYPE html>-->
+<!--<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">-->
+<!--<head>-->
+<!--<meta charset="UTF-8">-->
+<!--<title>上传文件</title>-->
+<!--</head>-->
+<!--<script src="../js/jquery.min.js"></script>-->
+<!--<meta name="referrer" content="never">-->
+<!--<body>&lt;!&ndash;-->
+<!--<form method="POST" enctype="multipart/form-data" action="/upload">-->
+<!--<p>-->
+<!--文件：<input type="file" name="file">-->
+<!--</p>-->
+<!--<p>-->
+<!--<input type="submit" value="上传">-->
+<!--</p>-->
+<!--</form>-->
+<!--<br>-->
+<!--<div th:if="${{filename}}!=null">-->
+<!--<img th:src="${{filename}}" alt="图片" style="width: 50px;height: 50px;">-->
+<!--</div>-->
+<!--<div th:if="${{filename}}==null">-->
+<!--<img src="../uploads/mp20200131.jpg" style="width: 50px;height: 50px;">-->
+<!--</div>&ndash;&gt;-->
+
+<!--</body>-->
+<!--</html>-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>上传文件</title>
+	<link rel="stylesheet" href="../css/style.css" type="text/css" />
+</head>
+<body>
+<script type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="../js/cropbox.js"></script>
+<div class="container">
+
+	<div class="imageBox">
+		<div class="thumbBox"></div>
+		<div class="spinner" style="display: none">Loading...</div>
+	</div>
+	<div class="action">
+
+		<!-- <input type="file" id="file" style=" width: 200px">-->
+		<div class="new-contentarea tc"> <a href="javascript:void(0)" class="upload-img">
+			<label for="upload-file">上传图像</label>
+		</a>
+			<input type="file" class="" name="upload-file" id="upload-file" />
+		</div>
+		<input type="button" id="btnCrop"  class="Btnsty_peyton" value="裁切">
+		<input type="button" id="btnZoomIn" class="Btnsty_peyton" value="+"  >
+		<input type="button" id="btnZoomOut" class="Btnsty_peyton" value="-" >
+
+	</div>
+	<div class="cropped"></div>
+	</form>
+</div>
+<div th:if="${{filename}}!=null">
+	<img th:src="${{filename}}" alt="图片" style="width: 100px;height: 100px;">
+</div>
+<div th:if="${{filename}}==null">
+	<img src="../uploads/mp20200131.jpg" style="width: 100px;height: 100px;">
+</div>
+<script type="text/javascript">
+   $(window).load(function() {
+      var options =
+            {
+               thumbBox: '.thumbBox',
+               spinner: '.spinner',
+               imgSrc: '../images/avatar.png'
+            }
+      var cropper = $('.imageBox').cropbox(options);
+      $('#upload-file').on('change', function(){
+         var reader = new FileReader();
+         reader.onload = function(e) {
+            options.imgSrc = e.target.result;
+            cropper = $('.imageBox').cropbox(options);
+         }
+         reader.readAsDataURL(this.files[0]);
+         /*this.files = [];*/
+      })
+      $('#btnCrop').on('click', function(){
+         var img = cropper.getDataURL();
+         $('.cropped').html('');
+         $('.cropped').append('<img src="'+img+'" align="absmiddle" style="width:64px;margin-top:4px;border-radius:64px;box-shadow:0px 0px 12px #7E7E7E;" ><p>64px*64px</p>');
+         $('.cropped').append('<img src="'+img+'" align="absmiddle" style="width:128px;margin-top:4px;border-radius:128px;box-shadow:0px 0px 12px #7E7E7E;"><p>128px*128px</p>');
+         $('.cropped').append('<img src="'+img+'" align="absmiddle" style="width:180px;margin-top:4px;border-radius:180px;box-shadow:0px 0px 12px #7E7E7E;"><p>180px*180px</p>');
+		 $.ajax({
+			  type:"post",
+			  //发送请求的地址1
+			  url : "upload2",
+			  data : img,
+			 processData: false,
+			  //服务器返回的数据类型
+			 /* dataType : "json",*/
+			  success : function(data) {
+				  if(data==false){
+					  span.html("裁剪上传").css({color:"green",fontSize:"12px"});
+					  return true;
+				  }else{
+					  span.html("裁剪失败").css({color:"#ec4e4e",fontSize:"12px"});
+					  return false;
+				  }
+			  }
+		  })
+
+      })
+      $('#btnZoomIn').on('click', function(){
+         cropper.zoomIn();
+      })
+      $('#btnZoomOut').on('click', function(){
+         cropper.zoomOut();
+      })
+   });
+</script>
+</body>
+</html>
+

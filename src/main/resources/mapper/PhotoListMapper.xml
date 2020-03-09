@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lnsf.dao.PhotoListMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.lnsf.entity.PhotoListEntity">
+        <id column="photo_id" property="photoId" />
+        <result column="create_user" property="createUser" />
+        <result column="create_time" property="createTime" />
+        <result column="delete_tag" property="deleteTag" />
+        <result column="photo_name" property="photoName" />
+        <result column="photo_path" property="photoPath" />
+        <result column="size" property="size" />
+        <result column="content_type" property="contentType" />
+        <result column="backerup1" property="backerup1" />
+        <result column="backerup2" property="backerup2" />
+        <result column="housesId" property="housesId" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="BaseColumnList">
+        create_user,
+        create_time,
+        delete_tag,
+        photo_id, photo_name, photo_path, size, content_type, backerup1, backerup2, housesId
+    </sql>
+
+
+    <select id="page" resultType="com.lnsf.entity.PhotoListEntity">
+        select * from photo_list t where t.delete_tag=0
+
+        <if test="dto.photoName !=null and dto.photoName != ''">
+            and t.photo_name like CONCAT('%',#{dto.photoName},'%')
+        </if>
+        <if test="dto.photoPath !=null and dto.photoPath != ''">
+            and t.photo_path like CONCAT('%',#{dto.photoPath},'%')
+        </if>
+        <if test="dto.size !=null">
+            and t.size = #{dto.size}
+        </if>
+        <if test="dto.contentType !=null and dto.contentType != ''">
+            and t.content_type like CONCAT('%',#{dto.contentType},'%')
+        </if>
+        <if test="dto.backerup1 !=null and dto.backerup1 != ''">
+            and t.backerup1 like CONCAT('%',#{dto.backerup1},'%')
+        </if>
+        <if test="dto.backerup2 !=null and dto.backerup2 != ''">
+            and t.backerup2 like CONCAT('%',#{dto.backerup2},'%')
+        </if>
+        <if test="dto.housesId !=null">
+            and t.housesId = #{dto.housesId}
+        </if>
+    </select>
+</mapper>

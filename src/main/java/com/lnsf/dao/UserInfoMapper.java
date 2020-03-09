@@ -1,33 +1,18 @@
 package com.lnsf.dao;
 
-import com.lnsf.bean.UserInfo;
-import com.lnsf.bean.UserInfoExample;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.util.List;
 
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
+import com.lnsf.dto.UserInfoDTO;
+import com.lnsf.entity.UserInfoEntity;
+import org.mapstruct.Mapper;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
 @Mapper
-public interface UserInfoMapper {
-    int countByExample(UserInfoExample example);
+public interface UserInfoMapper extends BaseMapper<UserInfoEntity> {
 
-    int deleteByExample(UserInfoExample example);
-
-    int deleteByPrimaryKey(Integer userId);
-
-    int insert(UserInfo record);
-
-    int insertSelective(UserInfo record);
-
-    List<UserInfo> selectByExample(UserInfoExample example);
-
-    UserInfo selectByPrimaryKey(Integer userId);
-
-    int updateByExampleSelective(@Param("record") UserInfo record, @Param("example") UserInfoExample example);
-
-    int updateByExample(@Param("record") UserInfo record, @Param("example") UserInfoExample example);
-
-    int updateByPrimaryKeySelective(UserInfo record);
-
-    int updateByPrimaryKey(UserInfo record);
+    List<UserInfoEntity> page(@Param("dto") UserInfoDTO dto, IPage<UserInfoEntity> page);
 
 }

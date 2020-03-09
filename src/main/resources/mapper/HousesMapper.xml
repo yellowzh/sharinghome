@@ -1,306 +1,64 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.lnsf.dao.HousesMapper" >
-  <resultMap id="BaseResultMap" type="com.lnsf.bean.Houses" >
-    <id column="houses_id" property="housesId" jdbcType="INTEGER" />
-    <result column="business_id" property="businessId" jdbcType="INTEGER" />
-    <result column="houses_photo" property="housesPhoto" jdbcType="VARCHAR" />
-    <result column="houses_title" property="housesTitle" jdbcType="VARCHAR" />
-    <result column="houses_count" property="housesCount" jdbcType="INTEGER" />
-    <result column="houses_focus" property="housesFocus" jdbcType="INTEGER" />
-    <result column="houses_view" property="housesView" jdbcType="INTEGER" />
-    <result column="houses_prices" property="housesPrices" jdbcType="INTEGER" />
-    <result column="houses_address" property="housesAddress" jdbcType="VARCHAR" />
-    <result column="houses_falgs" property="housesFalgs" jdbcType="VARCHAR" />
-    <result column="houses_backup" property="housesBackup" jdbcType="VARCHAR" />
-  </resultMap>
-  <sql id="Example_Where_Clause" >
-    <where >
-      <foreach collection="oredCriteria" item="criteria" separator="or" >
-        <if test="criteria.valid" >
-          <trim prefix="(" suffix=")" prefixOverrides="and" >
-            <foreach collection="criteria.criteria" item="criterion" >
-              <choose >
-                <when test="criterion.noValue" >
-                  and ${criterion.condition}
-                </when>
-                <when test="criterion.singleValue" >
-                  and ${criterion.condition} #{criterion.value}
-                </when>
-                <when test="criterion.betweenValue" >
-                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
-                </when>
-                <when test="criterion.listValue" >
-                  and ${criterion.condition}
-                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
-                    #{listItem}
-                  </foreach>
-                </when>
-              </choose>
-            </foreach>
-          </trim>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lnsf.dao.HousesMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.lnsf.entity.HousesEntity">
+        <id column="houses_id" property="housesId" />
+        <result column="business_id" property="businessId" />
+        <result column="houses_photo" property="housesPhoto" />
+        <result column="houses_title" property="housesTitle" />
+        <result column="houses_describe" property="housesDescribe" />
+        <result column="houses_count" property="housesCount" />
+        <result column="houses_focus" property="housesFocus" />
+        <result column="houses_view" property="housesView" />
+        <result column="houses_prices" property="housesPrices" />
+        <result column="houses_address" property="housesAddress" />
+        <result column="houses_falgs" property="housesFalgs" />
+        <result column="houses_backup" property="housesBackup" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="BaseColumnList">
+        houses_id, business_id, houses_photo, houses_title, houses_describe, houses_count, houses_focus, houses_view, houses_prices, houses_address, houses_falgs, houses_backup
+    </sql>
+
+
+    <select id="page" resultType="com.lnsf.entity.HousesEntity">
+        select * from houses t where t.delete_tag=0
+
+        <if test="dto.businessId !=null">
+            and t.business_id = #{dto.businessId}
         </if>
-      </foreach>
-    </where>
-  </sql>
-  <sql id="Update_By_Example_Where_Clause" >
-    <where >
-      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
-        <if test="criteria.valid" >
-          <trim prefix="(" suffix=")" prefixOverrides="and" >
-            <foreach collection="criteria.criteria" item="criterion" >
-              <choose >
-                <when test="criterion.noValue" >
-                  and ${criterion.condition}
-                </when>
-                <when test="criterion.singleValue" >
-                  and ${criterion.condition} #{criterion.value}
-                </when>
-                <when test="criterion.betweenValue" >
-                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
-                </when>
-                <when test="criterion.listValue" >
-                  and ${criterion.condition}
-                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
-                    #{listItem}
-                  </foreach>
-                </when>
-              </choose>
-            </foreach>
-          </trim>
+        <if test="dto.housesPhoto !=null and dto.housesPhoto != ''">
+            and t.houses_photo like CONCAT('%',#{dto.housesPhoto},'%')
         </if>
-      </foreach>
-    </where>
-  </sql>
-  <sql id="Base_Column_List" >
-    houses_id, business_id, houses_photo, houses_title, houses_count, houses_focus, houses_view, 
-    houses_prices, houses_address, houses_falgs, houses_backup
-  </sql>
-  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.lnsf.bean.HousesExample" >
-    select
-    <if test="distinct" >
-      distinct
-    </if>
-    <include refid="Base_Column_List" />
-    from houses
-    <if test="_parameter != null" >
-      <include refid="Example_Where_Clause" />
-    </if>
-    <if test="orderByClause != null" >
-      order by ${orderByClause}
-    </if>
-  </select>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
-    select 
-    <include refid="Base_Column_List" />
-    from houses
-    where houses_id = #{housesId,jdbcType=INTEGER}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
-    delete from houses
-    where houses_id = #{housesId,jdbcType=INTEGER}
-  </delete>
-  <delete id="deleteByExample" parameterType="com.lnsf.bean.HousesExample" >
-    delete from houses
-    <if test="_parameter != null" >
-      <include refid="Example_Where_Clause" />
-    </if>
-  </delete>
-  <insert id="insert" parameterType="com.lnsf.bean.Houses" >
-    insert into houses (houses_id, business_id, houses_photo, 
-      houses_title, houses_count, houses_focus, 
-      houses_view, houses_prices, houses_address, 
-      houses_falgs, houses_backup)
-    values (#{housesId,jdbcType=INTEGER}, #{businessId,jdbcType=INTEGER}, #{housesPhoto,jdbcType=VARCHAR}, 
-      #{housesTitle,jdbcType=VARCHAR}, #{housesCount,jdbcType=INTEGER}, #{housesFocus,jdbcType=INTEGER}, 
-      #{housesView,jdbcType=INTEGER}, #{housesPrices,jdbcType=INTEGER}, #{housesAddress,jdbcType=VARCHAR}, 
-      #{housesFalgs,jdbcType=VARCHAR}, #{housesBackup,jdbcType=VARCHAR})
-  </insert>
-  <insert id="insertSelective" parameterType="com.lnsf.bean.Houses" >
-    insert into houses
-    <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="housesId != null" >
-        houses_id,
-      </if>
-      <if test="businessId != null" >
-        business_id,
-      </if>
-      <if test="housesPhoto != null" >
-        houses_photo,
-      </if>
-      <if test="housesTitle != null" >
-        houses_title,
-      </if>
-      <if test="housesCount != null" >
-        houses_count,
-      </if>
-      <if test="housesFocus != null" >
-        houses_focus,
-      </if>
-      <if test="housesView != null" >
-        houses_view,
-      </if>
-      <if test="housesPrices != null" >
-        houses_prices,
-      </if>
-      <if test="housesAddress != null" >
-        houses_address,
-      </if>
-      <if test="housesFalgs != null" >
-        houses_falgs,
-      </if>
-      <if test="housesBackup != null" >
-        houses_backup,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="housesId != null" >
-        #{housesId,jdbcType=INTEGER},
-      </if>
-      <if test="businessId != null" >
-        #{businessId,jdbcType=INTEGER},
-      </if>
-      <if test="housesPhoto != null" >
-        #{housesPhoto,jdbcType=VARCHAR},
-      </if>
-      <if test="housesTitle != null" >
-        #{housesTitle,jdbcType=VARCHAR},
-      </if>
-      <if test="housesCount != null" >
-        #{housesCount,jdbcType=INTEGER},
-      </if>
-      <if test="housesFocus != null" >
-        #{housesFocus,jdbcType=INTEGER},
-      </if>
-      <if test="housesView != null" >
-        #{housesView,jdbcType=INTEGER},
-      </if>
-      <if test="housesPrices != null" >
-        #{housesPrices,jdbcType=INTEGER},
-      </if>
-      <if test="housesAddress != null" >
-        #{housesAddress,jdbcType=VARCHAR},
-      </if>
-      <if test="housesFalgs != null" >
-        #{housesFalgs,jdbcType=VARCHAR},
-      </if>
-      <if test="housesBackup != null" >
-        #{housesBackup,jdbcType=VARCHAR},
-      </if>
-    </trim>
-  </insert>
-  <select id="countByExample" parameterType="com.lnsf.bean.HousesExample" resultType="java.lang.Integer" >
-    select count(*) from houses
-    <if test="_parameter != null" >
-      <include refid="Example_Where_Clause" />
-    </if>
-  </select>
-  <update id="updateByExampleSelective" parameterType="map" >
-    update houses
-    <set >
-      <if test="record.housesId != null" >
-        houses_id = #{record.housesId,jdbcType=INTEGER},
-      </if>
-      <if test="record.businessId != null" >
-        business_id = #{record.businessId,jdbcType=INTEGER},
-      </if>
-      <if test="record.housesPhoto != null" >
-        houses_photo = #{record.housesPhoto,jdbcType=VARCHAR},
-      </if>
-      <if test="record.housesTitle != null" >
-        houses_title = #{record.housesTitle,jdbcType=VARCHAR},
-      </if>
-      <if test="record.housesCount != null" >
-        houses_count = #{record.housesCount,jdbcType=INTEGER},
-      </if>
-      <if test="record.housesFocus != null" >
-        houses_focus = #{record.housesFocus,jdbcType=INTEGER},
-      </if>
-      <if test="record.housesView != null" >
-        houses_view = #{record.housesView,jdbcType=INTEGER},
-      </if>
-      <if test="record.housesPrices != null" >
-        houses_prices = #{record.housesPrices,jdbcType=INTEGER},
-      </if>
-      <if test="record.housesAddress != null" >
-        houses_address = #{record.housesAddress,jdbcType=VARCHAR},
-      </if>
-      <if test="record.housesFalgs != null" >
-        houses_falgs = #{record.housesFalgs,jdbcType=VARCHAR},
-      </if>
-      <if test="record.housesBackup != null" >
-        houses_backup = #{record.housesBackup,jdbcType=VARCHAR},
-      </if>
-    </set>
-    <if test="_parameter != null" >
-      <include refid="Update_By_Example_Where_Clause" />
-    </if>
-  </update>
-  <update id="updateByExample" parameterType="map" >
-    update houses
-    set houses_id = #{record.housesId,jdbcType=INTEGER},
-      business_id = #{record.businessId,jdbcType=INTEGER},
-      houses_photo = #{record.housesPhoto,jdbcType=VARCHAR},
-      houses_title = #{record.housesTitle,jdbcType=VARCHAR},
-      houses_count = #{record.housesCount,jdbcType=INTEGER},
-      houses_focus = #{record.housesFocus,jdbcType=INTEGER},
-      houses_view = #{record.housesView,jdbcType=INTEGER},
-      houses_prices = #{record.housesPrices,jdbcType=INTEGER},
-      houses_address = #{record.housesAddress,jdbcType=VARCHAR},
-      houses_falgs = #{record.housesFalgs,jdbcType=VARCHAR},
-      houses_backup = #{record.housesBackup,jdbcType=VARCHAR}
-    <if test="_parameter != null" >
-      <include refid="Update_By_Example_Where_Clause" />
-    </if>
-  </update>
-  <update id="updateByPrimaryKeySelective" parameterType="com.lnsf.bean.Houses" >
-    update houses
-    <set >
-      <if test="businessId != null" >
-        business_id = #{businessId,jdbcType=INTEGER},
-      </if>
-      <if test="housesPhoto != null" >
-        houses_photo = #{housesPhoto,jdbcType=VARCHAR},
-      </if>
-      <if test="housesTitle != null" >
-        houses_title = #{housesTitle,jdbcType=VARCHAR},
-      </if>
-      <if test="housesCount != null" >
-        houses_count = #{housesCount,jdbcType=INTEGER},
-      </if>
-      <if test="housesFocus != null" >
-        houses_focus = #{housesFocus,jdbcType=INTEGER},
-      </if>
-      <if test="housesView != null" >
-        houses_view = #{housesView,jdbcType=INTEGER},
-      </if>
-      <if test="housesPrices != null" >
-        houses_prices = #{housesPrices,jdbcType=INTEGER},
-      </if>
-      <if test="housesAddress != null" >
-        houses_address = #{housesAddress,jdbcType=VARCHAR},
-      </if>
-      <if test="housesFalgs != null" >
-        houses_falgs = #{housesFalgs,jdbcType=VARCHAR},
-      </if>
-      <if test="housesBackup != null" >
-        houses_backup = #{housesBackup,jdbcType=VARCHAR},
-      </if>
-    </set>
-    where houses_id = #{housesId,jdbcType=INTEGER}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.lnsf.bean.Houses" >
-    update houses
-    set business_id = #{businessId,jdbcType=INTEGER},
-      houses_photo = #{housesPhoto,jdbcType=VARCHAR},
-      houses_title = #{housesTitle,jdbcType=VARCHAR},
-      houses_count = #{housesCount,jdbcType=INTEGER},
-      houses_focus = #{housesFocus,jdbcType=INTEGER},
-      houses_view = #{housesView,jdbcType=INTEGER},
-      houses_prices = #{housesPrices,jdbcType=INTEGER},
-      houses_address = #{housesAddress,jdbcType=VARCHAR},
-      houses_falgs = #{housesFalgs,jdbcType=VARCHAR},
-      houses_backup = #{housesBackup,jdbcType=VARCHAR}
-    where houses_id = #{housesId,jdbcType=INTEGER}
-  </update>
+        <if test="dto.housesTitle !=null and dto.housesTitle != ''">
+            and t.houses_title like CONCAT('%',#{dto.housesTitle},'%')
+        </if>
+        <if test="dto.housesDescribe !=null and dto.housesDescribe != ''">
+            and t.houses_describe like CONCAT('%',#{dto.housesDescribe},'%')
+        </if>
+        <if test="dto.housesCount !=null">
+            and t.houses_count = #{dto.housesCount}
+        </if>
+        <if test="dto.housesFocus !=null">
+            and t.houses_focus = #{dto.housesFocus}
+        </if>
+        <if test="dto.housesView !=null">
+            and t.houses_view = #{dto.housesView}
+        </if>
+        <if test="dto.housesPrices !=null">
+            and t.houses_prices = #{dto.housesPrices}
+        </if>
+        <if test="dto.housesAddress !=null and dto.housesAddress != ''">
+            and t.houses_address like CONCAT('%',#{dto.housesAddress},'%')
+        </if>
+        <if test="dto.housesFalgs !=null and dto.housesFalgs != ''">
+            and t.houses_falgs like CONCAT('%',#{dto.housesFalgs},'%')
+        </if>
+        <if test="dto.housesBackup !=null and dto.housesBackup != ''">
+            and t.houses_backup like CONCAT('%',#{dto.housesBackup},'%')
+        </if>
+    </select>
 </mapper>

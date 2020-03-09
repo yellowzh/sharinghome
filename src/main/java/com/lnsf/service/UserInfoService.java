@@ -1,24 +1,29 @@
 package com.lnsf.service;
 
-import com.lnsf.bean.UserInfo;
+import com.lnsf.entity.UserInfoEntity;
 
 import java.util.List;
 
 public interface UserInfoService {
     /*商家管理*/
-    List<UserInfo> findAllUser(UserInfo userInfo);
+    List<UserInfoEntity> findAllUser(UserInfoEntity userInfo);
     /*商家模糊查询*/
-    List<UserInfo> getBusinessLikeName(UserInfo userInfo);
+    List<UserInfoEntity> getBusinessLikeName(UserInfoEntity userInfo);
     /*验证用户名的唯一性*/
-    boolean stuIsExist(UserInfo userInfo);
+    boolean stuIsExist(UserInfoEntity userInfo);
     /*添加用户*/
-    boolean addUser(UserInfo userInfo);
+    boolean addUser(UserInfoEntity userInfo);
     /*删除用户*/
     boolean deleteUser(int uid);
     /*根据用户id查询用户*/
-    UserInfo getUserById(int userId);
+    UserInfoEntity getUserById(int userId);
     /*更新用户*/
-    int updateUser(UserInfo userInfo);
-
+    int updateUser(UserInfoEntity userInfo);
+    /*根据用户名查询用户*/
+    UserInfoEntity findUser(UserInfoEntity userInfo);
+    /*修改用户*/
+    int updataUserInfo(UserInfoEntity userInfo);
+    /*记录登录日志*/
+    void insertSysLog(UserInfoEntity userInfoEntity,String method,String req);
 
 }

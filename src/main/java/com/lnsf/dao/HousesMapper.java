@@ -1,32 +1,22 @@
 package com.lnsf.dao;
 
-import com.lnsf.bean.Houses;
-import com.lnsf.bean.HousesExample;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.lnsf.dto.HousesDTO;
+import com.lnsf.entity.HousesEntity;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import org.mapstruct.Mapper;
+import org.springframework.data.repository.query.Param;
+
 import java.util.List;
 
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-@Mapper
-public interface HousesMapper {
-    int countByExample(HousesExample example);
+/**
+ *  Mapper 接口
+ *
+ * @author 黄润志
+ * @since 2020-03-05 19:15
+ */
+public interface HousesMapper extends BaseMapper<HousesEntity> {
 
-    int deleteByExample(HousesExample example);
+    List<HousesEntity> page(@Param("dto") HousesDTO dto, IPage<HousesEntity> page);
 
-    int deleteByPrimaryKey(Integer housesId);
-
-    int insert(Houses record);
-
-    int insertSelective(Houses record);
-
-    List<Houses> selectByExample(HousesExample example);
-
-    Houses selectByPrimaryKey(Integer housesId);
-
-    int updateByExampleSelective(@Param("record") Houses record, @Param("example") HousesExample example);
-
-    int updateByExample(@Param("record") Houses record, @Param("example") HousesExample example);
-
-    int updateByPrimaryKeySelective(Houses record);
-
-    int updateByPrimaryKey(Houses record);
 }

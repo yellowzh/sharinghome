@@ -1,338 +1,64 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.lnsf.dao.UserInfoMapper" >
-  <resultMap id="BaseResultMap" type="com.lnsf.bean.UserInfo" >
-    <id column="user_id" property="userId" jdbcType="INTEGER" />
-    <result column="username" property="username" jdbcType="VARCHAR" />
-    <result column="real_name" property="realName" jdbcType="VARCHAR" />
-    <result column="user_tel" property="userTel" jdbcType="VARCHAR" />
-    <result column="user_emil" property="userEmil" jdbcType="VARCHAR" />
-    <result column="password" property="password" jdbcType="VARCHAR" />
-    <result column="user_power" property="userPower" jdbcType="VARCHAR" />
-    <result column="user_status" property="userStatus" jdbcType="VARCHAR" />
-    <result column="user_logintime" property="userLogintime" jdbcType="DATE" />
-    <result column="user_loginouttime" property="userLoginouttime" jdbcType="DATE" />
-    <result column="user_num" property="userNum" jdbcType="INTEGER" />
-    <result column="user_backup1" property="userBackup1" jdbcType="VARCHAR" />
-    <result column="user_backup2" property="userBackup2" jdbcType="VARCHAR" />
+
+  <resultMap id="BaseResultMap" type="com.lnsf.entity.UserInfoEntity">
+    <id column="user_id" property="userId" />
+    <result column="username" property="username" />
+    <result column="real_name" property="realName" />
+    <result column="user_tel" property="userTel" />
+    <result column="user_emil" property="userEmil" />
+    <result column="password" property="password" />
+    <result column="user_power" property="userPower" />
+    <result column="user_status" property="userStatus" />
+    <result column="user_logintime" property="userLogintime" />
+    <result column="user_loginouttime" property="userLoginouttime" />
+    <result column="user_num" property="userNum" />
+    <result column="user_backup1" property="userBackup1" />
+    <result column="user_backup2" property="userBackup2" />
   </resultMap>
-  <sql id="Example_Where_Clause" >
-    <where >
-      <foreach collection="oredCriteria" item="criteria" separator="or" >
-        <if test="criteria.valid" >
-          <trim prefix="(" suffix=")" prefixOverrides="and" >
-            <foreach collection="criteria.criteria" item="criterion" >
-              <choose >
-                <when test="criterion.noValue" >
-                  and ${criterion.condition}
-                </when>
-                <when test="criterion.singleValue" >
-                  and ${criterion.condition} #{criterion.value}
-                </when>
-                <when test="criterion.betweenValue" >
-                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
-                </when>
-                <when test="criterion.listValue" >
-                  and ${criterion.condition}
-                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
-                    #{listItem}
-                  </foreach>
-                </when>
-              </choose>
-            </foreach>
-          </trim>
-        </if>
-      </foreach>
-    </where>
-  </sql>
-  <sql id="Update_By_Example_Where_Clause" >
-    <where >
-      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
-        <if test="criteria.valid" >
-          <trim prefix="(" suffix=")" prefixOverrides="and" >
-            <foreach collection="criteria.criteria" item="criterion" >
-              <choose >
-                <when test="criterion.noValue" >
-                  and ${criterion.condition}
-                </when>
-                <when test="criterion.singleValue" >
-                  and ${criterion.condition} #{criterion.value}
-                </when>
-                <when test="criterion.betweenValue" >
-                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
-                </when>
-                <when test="criterion.listValue" >
-                  and ${criterion.condition}
-                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
-                    #{listItem}
-                  </foreach>
-                </when>
-              </choose>
-            </foreach>
-          </trim>
-        </if>
-      </foreach>
-    </where>
-  </sql>
-  <sql id="Base_Column_List" >
-    user_id, username, real_name, user_tel, user_emil, password, user_power, user_status, 
-    user_logintime, user_loginouttime, user_num, user_backup1, user_backup2
-  </sql>
-  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.lnsf.bean.UserInfoExample" >
-    select
-    <if test="distinct" >
-      distinct
+  <sql id="BaseColumnList">
+        user_id, username, real_name, user_tel, user_emil, password, user_power, user_status, user_logintime, user_loginouttime, user_num, user_backup1, user_backup2
+    </sql>
+
+  <select id="page" resultType="com.lnsf.entity.UserInfoEntity">
+    select * from user_info t where t.delete_tag=0
+
+    <if test="dto.username !=null and dto.username != ''">
+      and t.username like CONCAT('%',#{dto.username},'%')
     </if>
-    <include refid="Base_Column_List" />
-    from user_info
-    <if test="_parameter != null" >
-      <include refid="Example_Where_Clause" />
+    <if test="dto.realName !=null and dto.realName != ''">
+      and t.real_name like CONCAT('%',#{dto.realName},'%')
     </if>
-    <if test="orderByClause != null" >
-      order by ${orderByClause}
+    <if test="dto.userTel !=null and dto.userTel != ''">
+      and t.user_tel like CONCAT('%',#{dto.userTel},'%')
+    </if>
+    <if test="dto.userEmil !=null and dto.userEmil != ''">
+      and t.user_emil like CONCAT('%',#{dto.userEmil},'%')
+    </if>
+    <if test="dto.password !=null and dto.password != ''">
+      and t.password like CONCAT('%',#{dto.password},'%')
+    </if>
+    <if test="dto.userPower !=null and dto.userPower != ''">
+      and t.user_power like CONCAT('%',#{dto.userPower},'%')
+    </if>
+    <if test="dto.userStatus !=null and dto.userStatus != ''">
+      and t.user_status like CONCAT('%',#{dto.userStatus},'%')
+    </if>
+    <if test="dto.userLogintime !=null">
+      and t.user_logintime = #{dto.userLogintime}
+    </if>
+    <if test="dto.userLoginouttime !=null">
+      and t.user_loginouttime = #{dto.userLoginouttime}
+    </if>
+    <if test="dto.userNum !=null">
+      and t.user_num = #{dto.userNum}
+    </if>
+    <if test="dto.userBackup1 !=null and dto.userBackup1 != ''">
+      and t.user_backup1 like CONCAT('%',#{dto.userBackup1},'%')
+    </if>
+    <if test="dto.userBackup2 !=null and dto.userBackup2 != ''">
+      and t.user_backup2 like CONCAT('%',#{dto.userBackup2},'%')
     </if>
   </select>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
-    select 
-    <include refid="Base_Column_List" />
-    from user_info
-    where user_id = #{userId,jdbcType=INTEGER}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
-    delete from user_info
-    where user_id = #{userId,jdbcType=INTEGER}
-  </delete>
-  <delete id="deleteByExample" parameterType="com.lnsf.bean.UserInfoExample" >
-    delete from user_info
-    <if test="_parameter != null" >
-      <include refid="Example_Where_Clause" />
-    </if>
-  </delete>
-  <insert id="insert" parameterType="com.lnsf.bean.UserInfo" >
-    insert into user_info (user_id, username, real_name, 
-      user_tel, user_emil, password, 
-      user_power, user_status, user_logintime, 
-      user_loginouttime, user_num, user_backup1, 
-      user_backup2)
-    values (#{userId,jdbcType=INTEGER}, #{username,jdbcType=VARCHAR}, #{realName,jdbcType=VARCHAR}, 
-      #{userTel,jdbcType=VARCHAR}, #{userEmil,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
-      #{userPower,jdbcType=VARCHAR}, #{userStatus,jdbcType=VARCHAR}, #{userLogintime,jdbcType=DATE}, 
-      #{userLoginouttime,jdbcType=DATE}, #{userNum,jdbcType=INTEGER}, #{userBackup1,jdbcType=VARCHAR}, 
-      #{userBackup2,jdbcType=VARCHAR})
-  </insert>
-  <insert id="insertSelective" parameterType="com.lnsf.bean.UserInfo" >
-    insert into user_info
-    <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="userId != null" >
-        user_id,
-      </if>
-      <if test="username != null" >
-        username,
-      </if>
-      <if test="realName != null" >
-        real_name,
-      </if>
-      <if test="userTel != null" >
-        user_tel,
-      </if>
-      <if test="userEmil != null" >
-        user_emil,
-      </if>
-      <if test="password != null" >
-        password,
-      </if>
-      <if test="userPower != null" >
-        user_power,
-      </if>
-      <if test="userStatus != null" >
-        user_status,
-      </if>
-      <if test="userLogintime != null" >
-        user_logintime,
-      </if>
-      <if test="userLoginouttime != null" >
-        user_loginouttime,
-      </if>
-      <if test="userNum != null" >
-        user_num,
-      </if>
-      <if test="userBackup1 != null" >
-        user_backup1,
-      </if>
-      <if test="userBackup2 != null" >
-        user_backup2,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="userId != null" >
-        #{userId,jdbcType=INTEGER},
-      </if>
-      <if test="username != null" >
-        #{username,jdbcType=VARCHAR},
-      </if>
-      <if test="realName != null" >
-        #{realName,jdbcType=VARCHAR},
-      </if>
-      <if test="userTel != null" >
-        #{userTel,jdbcType=VARCHAR},
-      </if>
-      <if test="userEmil != null" >
-        #{userEmil,jdbcType=VARCHAR},
-      </if>
-      <if test="password != null" >
-        #{password,jdbcType=VARCHAR},
-      </if>
-      <if test="userPower != null" >
-        #{userPower,jdbcType=VARCHAR},
-      </if>
-      <if test="userStatus != null" >
-        #{userStatus,jdbcType=VARCHAR},
-      </if>
-      <if test="userLogintime != null" >
-        #{userLogintime,jdbcType=DATE},
-      </if>
-      <if test="userLoginouttime != null" >
-        #{userLoginouttime,jdbcType=DATE},
-      </if>
-      <if test="userNum != null" >
-        #{userNum,jdbcType=INTEGER},
-      </if>
-      <if test="userBackup1 != null" >
-        #{userBackup1,jdbcType=VARCHAR},
-      </if>
-      <if test="userBackup2 != null" >
-        #{userBackup2,jdbcType=VARCHAR},
-      </if>
-    </trim>
-  </insert>
-  <select id="countByExample" parameterType="com.lnsf.bean.UserInfoExample" resultType="java.lang.Integer" >
-    select count(*) from user_info
-    <if test="_parameter != null" >
-      <include refid="Example_Where_Clause" />
-    </if>
-  </select>
-  <update id="updateByExampleSelective" parameterType="map" >
-    update user_info
-    <set >
-      <if test="record.userId != null" >
-        user_id = #{record.userId,jdbcType=INTEGER},
-      </if>
-      <if test="record.username != null" >
-        username = #{record.username,jdbcType=VARCHAR},
-      </if>
-      <if test="record.realName != null" >
-        real_name = #{record.realName,jdbcType=VARCHAR},
-      </if>
-      <if test="record.userTel != null" >
-        user_tel = #{record.userTel,jdbcType=VARCHAR},
-      </if>
-      <if test="record.userEmil != null" >
-        user_emil = #{record.userEmil,jdbcType=VARCHAR},
-      </if>
-      <if test="record.password != null" >
-        password = #{record.password,jdbcType=VARCHAR},
-      </if>
-      <if test="record.userPower != null" >
-        user_power = #{record.userPower,jdbcType=VARCHAR},
-      </if>
-      <if test="record.userStatus != null" >
-        user_status = #{record.userStatus,jdbcType=VARCHAR},
-      </if>
-      <if test="record.userLogintime != null" >
-        user_logintime = #{record.userLogintime,jdbcType=DATE},
-      </if>
-      <if test="record.userLoginouttime != null" >
-        user_loginouttime = #{record.userLoginouttime,jdbcType=DATE},
-      </if>
-      <if test="record.userNum != null" >
-        user_num = #{record.userNum,jdbcType=INTEGER},
-      </if>
-      <if test="record.userBackup1 != null" >
-        user_backup1 = #{record.userBackup1,jdbcType=VARCHAR},
-      </if>
-      <if test="record.userBackup2 != null" >
-        user_backup2 = #{record.userBackup2,jdbcType=VARCHAR},
-      </if>
-    </set>
-    <if test="_parameter != null" >
-      <include refid="Update_By_Example_Where_Clause" />
-    </if>
-  </update>
-  <update id="updateByExample" parameterType="map" >
-    update user_info
-    set user_id = #{record.userId,jdbcType=INTEGER},
-      username = #{record.username,jdbcType=VARCHAR},
-      real_name = #{record.realName,jdbcType=VARCHAR},
-      user_tel = #{record.userTel,jdbcType=VARCHAR},
-      user_emil = #{record.userEmil,jdbcType=VARCHAR},
-      password = #{record.password,jdbcType=VARCHAR},
-      user_power = #{record.userPower,jdbcType=VARCHAR},
-      user_status = #{record.userStatus,jdbcType=VARCHAR},
-      user_logintime = #{record.userLogintime,jdbcType=DATE},
-      user_loginouttime = #{record.userLoginouttime,jdbcType=DATE},
-      user_num = #{record.userNum,jdbcType=INTEGER},
-      user_backup1 = #{record.userBackup1,jdbcType=VARCHAR},
-      user_backup2 = #{record.userBackup2,jdbcType=VARCHAR}
-    <if test="_parameter != null" >
-      <include refid="Update_By_Example_Where_Clause" />
-    </if>
-  </update>
-  <update id="updateByPrimaryKeySelective" parameterType="com.lnsf.bean.UserInfo" >
-    update user_info
-    <set >
-      <if test="username != null" >
-        username = #{username,jdbcType=VARCHAR},
-      </if>
-      <if test="realName != null" >
-        real_name = #{realName,jdbcType=VARCHAR},
-      </if>
-      <if test="userTel != null" >
-        user_tel = #{userTel,jdbcType=VARCHAR},
-      </if>
-      <if test="userEmil != null" >
-        user_emil = #{userEmil,jdbcType=VARCHAR},
-      </if>
-      <if test="password != null" >
-        password = #{password,jdbcType=VARCHAR},
-      </if>
-      <if test="userPower != null" >
-        user_power = #{userPower,jdbcType=VARCHAR},
-      </if>
-      <if test="userStatus != null" >
-        user_status = #{userStatus,jdbcType=VARCHAR},
-      </if>
-      <if test="userLogintime != null" >
-        user_logintime = #{userLogintime,jdbcType=DATE},
-      </if>
-      <if test="userLoginouttime != null" >
-        user_loginouttime = #{userLoginouttime,jdbcType=DATE},
-      </if>
-      <if test="userNum != null" >
-        user_num = #{userNum,jdbcType=INTEGER},
-      </if>
-      <if test="userBackup1 != null" >
-        user_backup1 = #{userBackup1,jdbcType=VARCHAR},
-      </if>
-      <if test="userBackup2 != null" >
-        user_backup2 = #{userBackup2,jdbcType=VARCHAR},
-      </if>
-    </set>
-    where user_id = #{userId,jdbcType=INTEGER}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.lnsf.bean.UserInfo" >
-    update user_info
-    set username = #{username,jdbcType=VARCHAR},
-      real_name = #{realName,jdbcType=VARCHAR},
-      user_tel = #{userTel,jdbcType=VARCHAR},
-      user_emil = #{userEmil,jdbcType=VARCHAR},
-      password = #{password,jdbcType=VARCHAR},
-      user_power = #{userPower,jdbcType=VARCHAR},
-      user_status = #{userStatus,jdbcType=VARCHAR},
-      user_logintime = #{userLogintime,jdbcType=DATE},
-      user_loginouttime = #{userLoginouttime,jdbcType=DATE},
-      user_num = #{userNum,jdbcType=INTEGER},
-      user_backup1 = #{userBackup1,jdbcType=VARCHAR},
-      user_backup2 = #{userBackup2,jdbcType=VARCHAR}
-    where user_id = #{userId,jdbcType=INTEGER}
-  </update>
 </mapper>

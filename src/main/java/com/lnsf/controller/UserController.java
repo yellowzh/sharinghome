@@ -1,18 +1,18 @@
 package com.lnsf.controller;
 
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
-import com.lnsf.bean.UserInfo;
-import com.lnsf.dao.UserInfoMapper;
+
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.lnsf.entity.UserInfoEntity;
 import com.lnsf.service.UserInfoService;
+import com.lnsf.util.UploadImgUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
@@ -47,12 +47,12 @@ public class UserController {
     public ModelAndView business(Map<String,Object> map,String power,Integer page){
         if (page==null)
         {page=1;}
-        PageHelper.startPage(page,5);
-        UserInfo userInfo = new UserInfo();
+//        PageHelper.startPage(page,5);
+        UserInfoEntity userInfo = new UserInfoEntity();
         userInfo.setUserPower(power);
         log.info("power:"+power);
-        List<UserInfo> userInfos = userInfoService.findAllUser(userInfo);
-        map=maps(userInfos,map);
+        List<UserInfoEntity> userInfos = userInfoService.findAllUser(userInfo);
+        map=maps(userInfos,map,page);
         log.info("所有用户查询"+userInfos);
         map.put("users",userInfos);
         map.put("business","getBusiness");
@@ -60,11 +60,11 @@ public class UserController {
         return model;
     }
     /*分页插件数据返回*/
-    public Map<String,Object> maps(List<UserInfo> list,Map<String,Object> map ){
-        PageInfo<UserInfo> pageInfo = new PageInfo<UserInfo>(list);
-        map.put("users",pageInfo.getList());
-        map.put("totalPage",pageInfo.getPages());
-        map.put("indexPage",pageInfo.getPageNum());
+    public Map<String,Object> maps(List<UserInfoEntity> list, Map<String,Object> map,Integer page){
+        IPage<UserInfoEntity> ipage = new Page<>(page, 5);
+        map.put("users",ipage.getRecords());
+        map.put("totalPage",ipage.getTotal());
+        map.put("indexPage",ipage.getPages());
         return map;
     }
     private String Sname;
@@ -73,8 +73,8 @@ public class UserController {
     public ModelAndView getBusinessLikeName(Map<String,Object> map,String power,String name,Integer page){
         if (page==null)
         { page=1;}
-        PageHelper.startPage(page,10);
-        UserInfo userInfo = new UserInfo();
+//        PageHelper.startPage(page,10);
+        UserInfoEntity userInfo = new UserInfoEntity();
         userInfo.setUserPower(power);
         if (name==null){
             userInfo.setRealName(Sname);
@@ -84,9 +84,9 @@ public class UserController {
         }
         log.info("power:"+power);
         log.info("name:"+name+"--Sname:"+Sname);
-        List<UserInfo> userInfos = userInfoService.getBusinessLikeName(userInfo);
-        map=maps(userInfos,map);
-        for (UserInfo u: userInfos) {
+        List<UserInfoEntity> userInfos = userInfoService.getBusinessLikeName(userInfo);
+        map=maps(userInfos,map,page);
+        for (UserInfoEntity u: userInfos) {
             log.info("u:"+u.getRealName());
         }
         map.put("users",userInfos);
@@ -104,7 +104,7 @@ public class UserController {
     @ResponseBody
     @RequestMapping("stu-exist")
     public Boolean stuIsExist(String username){
-        UserInfo userInfo = new UserInfo();
+        UserInfoEntity userInfo = new UserInfoEntity();
         userInfo.setUsername(username);
         Boolean stuIsExist = userInfoService.stuIsExist(userInfo);
         System.out.println(stuIsExist);
@@ -117,7 +117,7 @@ public class UserController {
     */
     @ApiOperation(value = "添加用户", notes = "添加用户",httpMethod = "POST")
     @RequestMapping("/addUser")
-    public ModelAndView addUser(UserInfo user ,String falg,Map<String,Object> map){
+    public ModelAndView addUser(UserInfoEntity user , String falg, Map<String,Object> map){
         if (falg.equals("3")){
             user.setUserPower("0");
         }else {
@@ -166,11 +166,12 @@ public class UserController {
         return model(falg);
     }
     /**
-    *@Description 批量删除。还需加事务
+    *@Description 批量删除。
     *@Author huangrunzhi
     *@Date 2020/1/5 10:04
     */
     @ApiOperation(value = "批量删除用户", notes = "批量删除用户",httpMethod = "DELETE")
+    @Transactional
     @RequestMapping("deleteUsers")
     public ModelAndView deleteUsers(String checkedID,String falg,Map<String,Object> map){
         String[] strs=checkedID.split(",");
@@ -192,7 +193,7 @@ public class UserController {
     @RequestMapping("updateUserIndex")
     public ModelAndView updateUserIndex(Integer uid,Map<String,Object> map){
         System.out.println("用户更新"+uid);
-        UserInfo user1 = userInfoService.getUserById(uid);
+        UserInfoEntity user1 = userInfoService.getUserById(uid);
         map.put("user",user1);
         /*页面跳转*/
         ModelAndView model_html = new ModelAndView();
@@ -201,7 +202,7 @@ public class UserController {
     }
     /*更新用户*/
     @RequestMapping("updateUser")
-    public ModelAndView updateUser(UserInfo userInfo,Map<String,Object> map){
+    public ModelAndView updateUser(UserInfoEntity userInfo, Map<String,Object> map){
         log.info("更新用户编号："+userInfo.getUserId());
         log.info("更新用户密码："+userInfo.getPassword());
         log.info("用户名："+userInfo.getUsername());
@@ -217,5 +218,57 @@ public class UserController {
         business(map,userInfo.getUserPower(),1);
         return model(userInfo.getUserPower());
     }
+
+    /*个人中心页面跳转*/
+    @ApiOperation(value = "个人中心", notes = "个人中心",httpMethod = "GET")
+    @RequestMapping("myself")
+    public ModelAndView getMyself(String users, int userId, Map<String,Object> map){
+        System.out.println("个人中心"+userId);
+        UserInfoEntity user1 = userInfoService.getUserById(userId);
+        map.put("user",user1);
+        /*页面跳转*/
+        ModelAndView model_html = new ModelAndView();
+        if ("admin".equals(users)) {
+            model_html.setViewName("admin/myself");/*redirect:重定向*/
+        }
+        if ("user".equals(users)) {
+            model_html.setViewName("user/myself");/*redirect:重定向*/
+        }
+        return model_html;
+    }
+    @ApiOperation(value = "修改头像", notes = "修改头像",httpMethod = "POST")
+    @RequestMapping("upload")
+    public ModelAndView upload( @RequestParam("upload-file") MultipartFile file,String users, int userId, Map<String,Object> map){
+        try {
+            map=UploadImgUtil.uplond(file,map);
+            log.info("上传图片后需要获取的路径："+map.get("filename"));
+            /*更新头像*/
+            UserInfoEntity userInfo = new UserInfoEntity();
+            userInfo.setUserBackup2(String.valueOf(map.get("filename")));
+            userInfo.setUserId(userId);
+            userInfoService.updateUser(userInfo);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+            ModelAndView model_html = getMyself(users,userId,map);
+            return model_html;
+    }
+    @ApiOperation(value = "修改个人信息", notes = "修改个人信息",httpMethod = "POST")
+    @RequestMapping("updateUserInfo")
+    public ModelAndView updateUserInfo(UserInfoEntity userInfo, String users, Map<String,Object> map){
+        log.info("userInfo:"+userInfo.getUserId());
+       int user = userInfoService.updateUser(userInfo);
+       if (user>0) {
+           map.put("msg","更新成功");
+           ModelAndView model_html = getMyself(users, userInfo.getUserId(), map);
+           return model_html;
+       }else {
+           log.info("更新失败");
+           ModelAndView model_html = getMyself(users, userInfo.getUserId(), map);
+           model_html.setViewName("myself");
+           return model_html;
+       }
+    }
+
 
 }

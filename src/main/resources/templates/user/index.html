@@ -44,10 +44,10 @@
 						<li role="presentation" class="dropdown">
 							<a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true"  aria-expanded="false" style="text-decoration: none; width: 160px" >
 								<img src="../images/y.jpg" class="radius-circle rotate-hover" height="15" alt="" />
-								<span th:text="${name}" style="width: 150px"></span>
+								<span th:text="${user.getRealName()}" style="width: 150px"></span>
 							</a>
 							<ul class="dropdown-menu" style="display:none; min-width: 80px; left: 10px;">
-								<li><a style="text-decoration: none;" href="#">个人中心</a></li>
+								<li><a style="text-decoration: none;" th:href="'myself?users=user&userId='+${user.getUserId()}">个人中心</a></li>
 								<li><a href="/api/loginOut" style="color: #ff5500;text-decoration: none;">退出</a></li>
 							</ul>
 						</li>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lnsf.dao.IndexSlideMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.lnsf.entity.IndexSlideEntity">
+        <id column="slide_id" property="slideId" />
+        <result column="slide_url" property="slideUrl" />
+        <result column="house_id" property="houseId" />
+        <result column="house_tilte" property="houseTilte" />
+        <result column="house_dista" property="houseDista" />
+        <result column="slide_order" property="slideOrder" />
+        <result column="is_del" property="isDel" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="BaseColumnList">
+        slide_id, slide_url, house_id, house_tilte, house_dista, slide_order, is_del
+    </sql>
+
+
+    <select id="page" resultType="com.lnsf.entity.IndexSlideEntity">
+        select * from index_slide t where t.delete_tag=0
+
+        <if test="dto.slideUrl !=null and dto.slideUrl != ''">
+            and t.slide_url like CONCAT('%',#{dto.slideUrl},'%')
+        </if>
+        <if test="dto.houseId !=null">
+            and t.house_id = #{dto.houseId}
+        </if>
+        <if test="dto.houseTilte !=null and dto.houseTilte != ''">
+            and t.house_tilte like CONCAT('%',#{dto.houseTilte},'%')
+        </if>
+        <if test="dto.houseDista !=null and dto.houseDista != ''">
+            and t.house_dista like CONCAT('%',#{dto.houseDista},'%')
+        </if>
+        <if test="dto.slideOrder !=null">
+            and t.slide_order = #{dto.slideOrder}
+        </if>
+        <if test="dto.isDel !=null">
+            and t.is_del = #{dto.isDel}
+        </if>
+    </select>
+</mapper>
