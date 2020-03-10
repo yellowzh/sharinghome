@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lnsf.dao.ArticleMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.lnsf.entity.ArticleEntity">
+        <id column="article_id" property="articleId" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="create_user" property="createUser" />
+        <result column="article_info" property="articleInfo" />
+        <result column="artice_title" property="articeTitle" />
+        <result column="artice_url" property="articeUrl" />
+        <result column="is_del" property="isDel" />
+        <result column="is_publis" property="isPublis" />
+        <result column="see_num" property="seeNum" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="BaseColumnList">
+        create_time,
+        update_time,
+        create_user,
+        article_id, article_info, artice_title, artice_url, is_del, is_publis, see_num
+    </sql>
+
+
+    <select id="page" resultType="com.lnsf.entity.ArticleEntity">
+        select * from article t where t.delete_tag=0
+
+        <if test="dto.articleInfo !=null and dto.articleInfo != ''">
+            and t.article_info like CONCAT('%',#{dto.articleInfo},'%')
+        </if>
+        <if test="dto.articeTitle !=null and dto.articeTitle != ''">
+            and t.artice_title like CONCAT('%',#{dto.articeTitle},'%')
+        </if>
+        <if test="dto.articeUrl !=null and dto.articeUrl != ''">
+            and t.artice_url like CONCAT('%',#{dto.articeUrl},'%')
+        </if>
+        <if test="dto.isDel !=null">
+            and t.is_del = #{dto.isDel}
+        </if>
+        <if test="dto.isPublis !=null">
+            and t.is_publis = #{dto.isPublis}
+        </if>
+        <if test="dto.seeNum !=null">
+            and t.see_num = #{dto.seeNum}
+        </if>
+    </select>
+</mapper>

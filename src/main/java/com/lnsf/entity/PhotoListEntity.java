@@ -42,14 +42,6 @@ public class PhotoListEntity{
     @TableField("content_type")
     private String contentType;
 
-    @ApiModelProperty(value = "扩展字段1")
-    @TableField("backerup1")
-    private String backerup1;
-
-    @ApiModelProperty(value = "扩展字段2")
-    @TableField("backerup2")
-    private String backerup2;
-
     @TableField("housesId")
     private Integer housesId;
 

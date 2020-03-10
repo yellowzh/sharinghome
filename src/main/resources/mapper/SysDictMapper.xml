@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lnsf.dao.SysDictMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.lnsf.entity.SysDictEntity">
+        <id column="dict_id" property="dictId" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="create_user" property="createUser" />
+        <result column="update_user" property="updateUser" />
+        <result column="pid" property="pid" />
+        <result column="name" property="name" />
+        <result column="code" property="code" />
+        <result column="description" property="description" />
+        <result column="sort" property="sort" />
+        <result column="is_del" property="isDel" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="BaseColumnList">
+        create_time,
+        update_time,
+        create_user,
+        update_user,
+        dict_id, pid, name, code, description, sort, is_del
+    </sql>
+
+
+    <select id="page" resultType="com.lnsf.entity.SysDictEntity">
+        select * from sys_dict t where t.delete_tag=0
+
+        <if test="dto.pid !=null">
+            and t.pid = #{dto.pid}
+        </if>
+        <if test="dto.name !=null and dto.name != ''">
+            and t.name like CONCAT('%',#{dto.name},'%')
+        </if>
+        <if test="dto.code !=null and dto.code != ''">
+            and t.code like CONCAT('%',#{dto.code},'%')
+        </if>
+        <if test="dto.description !=null and dto.description != ''">
+            and t.description like CONCAT('%',#{dto.description},'%')
+        </if>
+        <if test="dto.sort !=null">
+            and t.sort = #{dto.sort}
+        </if>
+        <if test="dto.isDel !=null">
+            and t.is_del = #{dto.isDel}
+        </if>
+    </select>
+</mapper>

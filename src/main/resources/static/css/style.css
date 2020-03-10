@@ -313,7 +313,27 @@ a.upload-img:hover{
     background: white;
     position: fixed;
     float: right;
-    margin-left: 70%;
+    margin-left: 60%;
     margin-top:90px;
     top: 0;
+}
+
+/*首页搜索样式*/
+.select{
+	margin-left: 10%;
+}
+.select input[type=text]{
+	height: 30px;
+	width: 140px;
+	border: #5a6268;
+}
+.select button{
+	border: none;
+	height: 30px;
+	width: 70px;
+}
+.select select{
+	height: 30px;
+	width: 140px;
+	border: #5a6268;
 }

@@ -5,6 +5,8 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.lnsf.entity.HousesEntity">
         <id column="houses_id" property="housesId" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
         <result column="business_id" property="businessId" />
         <result column="houses_photo" property="housesPhoto" />
         <result column="houses_title" property="housesTitle" />
@@ -14,13 +16,15 @@
         <result column="houses_view" property="housesView" />
         <result column="houses_prices" property="housesPrices" />
         <result column="houses_address" property="housesAddress" />
+        <result column="houses_farction" property="housesFarction" />
         <result column="houses_falgs" property="housesFalgs" />
-        <result column="houses_backup" property="housesBackup" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="BaseColumnList">
-        houses_id, business_id, houses_photo, houses_title, houses_describe, houses_count, houses_focus, houses_view, houses_prices, houses_address, houses_falgs, houses_backup
+        create_time,
+        update_time,
+        houses_id, business_id, houses_photo, houses_title, houses_describe, houses_count, houses_focus, houses_view, houses_prices, houses_address, houses_farction, houses_falgs
     </sql>
 
 
@@ -54,11 +58,11 @@
         <if test="dto.housesAddress !=null and dto.housesAddress != ''">
             and t.houses_address like CONCAT('%',#{dto.housesAddress},'%')
         </if>
+        <if test="dto.housesFarction !=null">
+            and t.houses_farction = #{dto.housesFarction}
+        </if>
         <if test="dto.housesFalgs !=null and dto.housesFalgs != ''">
             and t.houses_falgs like CONCAT('%',#{dto.housesFalgs},'%')
-        </if>
-        <if test="dto.housesBackup !=null and dto.housesBackup != ''">
-            and t.houses_backup like CONCAT('%',#{dto.housesBackup},'%')
         </if>
     </select>
 </mapper>

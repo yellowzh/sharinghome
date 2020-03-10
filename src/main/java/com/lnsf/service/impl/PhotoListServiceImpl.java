@@ -27,8 +27,9 @@ public class PhotoListServiceImpl implements PhotoListService {
     @Override
     public List<PhotoListEntity> list(Integer housesId){
         QueryWrapper wrapper = new QueryWrapper();
+        wrapper.eq("is_del",false);
         wrapper.eq("housesId",housesId);
-        return photoListMapper.selectList(null);
+        return photoListMapper.selectList(wrapper);
     }
 
 //    @Override

@@ -11,10 +11,6 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 /**
- * <p>
- * 
- * </p>
- *
  * @author 黄润志
  * @since 2020-03-05 15:32
  */
@@ -63,13 +59,14 @@ public class HousesEntity{
     @TableField("houses_address")
     private String housesAddress;
 
-    @ApiModelProperty(value = "标志位--0为在线,出租，1为下架修整，2为删除")
+    @ApiModelProperty(value = "房源评分")
+    @TableField("houses_farction")
+    private Double housesFarction;
+
+    @ApiModelProperty(value = "标志位--0为在线·出租，1为下架修整，2为删除")
     @TableField("houses_falgs")
     private String housesFalgs;
 
-    @ApiModelProperty(value = "扩展字段---次照片，存储，照片表id")
-    @TableField("houses_backup")
-    private String housesBackup;
 
 
 }

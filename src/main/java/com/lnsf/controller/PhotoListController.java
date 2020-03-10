@@ -30,7 +30,7 @@ public class PhotoListController {
 
 
     @ApiOperation("列表")
-    @GetMapping(path ="select/photoList" )
+    @GetMapping(path ="/select/photoList" )
     public List<PhotoListEntity> photoList(Integer housesId){
         return photoListService.list(housesId);
     }

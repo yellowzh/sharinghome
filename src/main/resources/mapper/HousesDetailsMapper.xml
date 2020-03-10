@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lnsf.dao.HousesDetailsMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.lnsf.entity.HousesDetailsEntity">
+        <id column="houses_id" property="housesId" />
+        <result column="dict_id" property="dictId" />
+        <result column="houses_specs" property="housesSpecs" />
+        <result column="in_num" property="inNum" />
+        <!--<result column="pwc" property="pwc" />-->
+        <result column="iwc" property="iwc" />
+        <result column="is_deposit" property="isDeposit" />
+        <result column="deposit" property="deposit" />
+        <result column="clean_prices" property="cleanPrices" />
+        <result column="is_towel" property="isTowel" />
+        <result column="is_slipper" property="isSlipper" />
+        <result column="is_air" property="isAir" />
+        <result column="is_wifi" property="isWifi" />
+        <result column="is_wash" property="isWash" />
+        <result column="is_clothes_hanger" property="isClothesHanger" />
+        <result column="is_hot_water" property="isHotWater" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="BaseColumnList">
+        houses_id, dict_id, houses_specs, in_num, iwc, is_deposit, deposit, clean_prices, is_towel, is_slipper, is_air, is_wifi, is_wash, is_clothes_hanger, is_hot_water
+    </sql>
+
+
+    <select id="page" resultType="com.lnsf.entity.HousesDetailsEntity">
+        select * from houses_details t where t.delete_tag=0
+
+        <if test="dto.dictId !=null">
+            and t.dict_id = #{dto.dictId}
+        </if>
+        <if test="dto.housesSpecs !=null and dto.housesSpecs != ''">
+            and t.houses_specs like CONCAT('%',#{dto.housesSpecs},'%')
+        </if>
+        <if test="dto.inNum !=null">
+            and t.in_num = #{dto.inNum}
+        </if>
+        <if test="dto.pwc !=null">
+            and t.pwc = #{dto.pwc}
+        </if>
+        <if test="dto.iwc !=null">
+            and t.iwc = #{dto.iwc}
+        </if>
+        <if test="dto.isDeposit !=null">
+            and t.is_deposit = #{dto.isDeposit}
+        </if>
+        <if test="dto.deposit !=null">
+            and t.deposit = #{dto.deposit}
+        </if>
+        <if test="dto.cleanPrices !=null">
+            and t.clean_prices = #{dto.cleanPrices}
+        </if>
+        <if test="dto.isTowel !=null">
+            and t.is_towel = #{dto.isTowel}
+        </if>
+        <if test="dto.isSlipper !=null">
+            and t.is_slipper = #{dto.isSlipper}
+        </if>
+        <if test="dto.isAir !=null">
+            and t.is_air = #{dto.isAir}
+        </if>
+        <if test="dto.isWifi !=null">
+            and t.is_wifi = #{dto.isWifi}
+        </if>
+        <if test="dto.isWash !=null">
+            and t.is_wash = #{dto.isWash}
+        </if>
+        <if test="dto.isClothesHanger !=null">
+            and t.is_clothes_hanger = #{dto.isClothesHanger}
+        </if>
+        <if test="dto.isHotWater !=null">
+            and t.is_hot_water = #{dto.isHotWater}
+        </if>
+    </select>
+</mapper>

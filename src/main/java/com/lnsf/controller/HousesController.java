@@ -232,10 +232,6 @@ public class HousesController {
     public ModelAndView findHousesById(Integer houserId,Map<String,Object> map){
         log.info("查看房源详情");
         HousesDTO houses = housesService.getHomeShowById(houserId);
-        /*查询房源图片*/
-
-        /*查询房源评价*/
-
         /*查询房屋详情*/
         map.put("houses",houses);
         ModelAndView model_html = new ModelAndView();

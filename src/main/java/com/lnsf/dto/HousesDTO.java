@@ -32,10 +32,10 @@ public class HousesDTO{
     private Integer housesPrices;
     @ApiModelProperty(value = "房源地址")
     private String housesAddress;
+    @ApiModelProperty(value = "房源评分")
+    private Double housesFarction;
     @ApiModelProperty(value = "标志位--0为在线·出租，1为下架修整，2为删除")
     private String housesFalgs;
-    @ApiModelProperty(value = "扩展字段---次照片，存储，照片表id")
-    private String housesBackup;
     @ApiModelProperty(value = "对应的房主")
     private UserInfoEntity userInfo;
 }
