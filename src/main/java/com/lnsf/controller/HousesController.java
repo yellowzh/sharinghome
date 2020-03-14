@@ -5,6 +5,7 @@ import com.lnsf.dto.HousesDTO;
 import com.lnsf.entity.HousesEntity;
 import com.lnsf.service.HousesService;
 import com.lnsf.util.UploadImgUtil;
+import com.lnsf.vo.HousesVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.log4j.Logger;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 @Api(description = "房源模块",tags = "房源模块控制层")
@@ -231,12 +233,25 @@ public class HousesController {
     @RequestMapping("/select/findHousesById")
     public ModelAndView findHousesById(Integer houserId,Map<String,Object> map){
         log.info("查看房源详情");
-        HousesDTO houses = housesService.getHomeShowById(houserId);
+        HousesDTO houses = housesService.getIndexHomeShowById(houserId);
         /*查询房屋详情*/
         map.put("houses",houses);
         ModelAndView model_html = new ModelAndView();
         model_html.setViewName("user/housesInfo");
         return model_html;
+    }
+
+    /**
+    *@Description 拼接查询房源信息
+    *@Author huangrunzhi
+    *@Date 2020/3/11 10:39
+    */
+    @ApiOperation(value = "拼接查询房源", notes = "拼接查询房源",httpMethod = "POST")
+    @RequestMapping("/select/selectHousesByCondition")
+    public List<HousesDTO> selectHousesByCondition(@RequestBody HousesVO housesVO){
+        log.info("拼接查询房源--地址："+housesVO.getHousesAddress()+"--时间："+housesVO.getStartTime()+"--入住人数："+housesVO.getPeopleNum());
+       List<HousesDTO> houses =  housesService.getIndexHomeSelect(housesVO);
+        return houses;
     }
 
 }

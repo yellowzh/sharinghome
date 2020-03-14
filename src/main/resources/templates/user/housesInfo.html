@@ -3,6 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="/css/pintuer.css">
 	<link rel="stylesheet" href="/css/normalize.css">
 	<link rel="stylesheet" href="/css/styleTab.css" media="screen" type="text/css" />
 	<link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -17,6 +18,7 @@
 
 	<script th:inline="javascript">
 		var housesId = [[${houses.getHousesId()}]];
+		var housesOnlyprice = [[${houses.getHousesPrices()}]];
 		var app=angular.module('myApp',[]); //定义了一个叫myApp的模块
 		//定义控制器
 		app.controller('myController',function($scope,$http){
@@ -31,6 +33,17 @@
 										$scope.sysDictById=response;
 									}
 							);
+							/*查看房源类型选择*/
+							$http.get('/api/select/getHousesType?name=房源类型').success(
+									function(response){
+										$scope.housesType=response;
+									}
+							)/*查看房源入住人数限制选择*/
+							$http.get('/api/select/getHousesType?name=入住房客数').success(
+									function(response){
+										$scope.peopleNum=response;
+									}
+							)
 						}
 				);
 				/*查看房源轮播图片*/
@@ -39,7 +52,97 @@
 							$scope.photoList=response;
 						}
 				);
+				/*查看房源评论*/
+				$http.get('/api/select/commentList?housesId='+housesId).success(
+						function(response){
+							$scope.commentList=response;
+							$scope.commentVoList=response.commentVO;
+						}
+				);
+			};
 
+			/*搜索*/
+			$scope.show=true;
+			// $scope.housesVO = {};
+			$scope.selectHousesVO=function(){
+				$http.post("/api/select/selectHousesByCondition",$scope.housesVO).success(
+						function(response){
+							$scope.housesList=response;
+							$scope.show=false;
+						}
+				)};
+			/*预定*/
+			$scope.reserve=function(){
+				var dt = doTable();
+				if(dt){
+				// location.href="/api/select/reserveHouses?houserId="+id;
+					$scope.orderList.orderPrices=$scope.priceAll;
+					$scope.orderList.housesId=housesId;
+					$http.post("/api/reserveHouses",$scope.orderList).success(
+							//添加后直接跳转到支付页面
+							function(response){
+								location.href="/api/gotoPagePay";
+								// $scope.housesList=response;
+								// $scope.show=false;
+							})
+				}
+				else {
+					alert("请填写完整的预订信息！");
+				}
+				};
+			$scope.priceShow=false;
+			/*校验预定*/
+			$(function() {
+				/*验证限制提交订单前算出总价显示*/
+				/*失去焦点的时候执行*/
+				$("input[name=startday]").blur(function () {startday();	});
+				$("input[name=endday]").blur(function () {
+					endday();
+					var dt = doTable();
+					if(dt==true){
+						var dateSpan,tempDate1,tempDate2,iDays;
+						tempDate1 = Date.parse($scope.orderList.endTime);
+						tempDate2 = Date.parse($scope.orderList.startTime);
+						dateSpan = tempDate1 - tempDate2;
+						dateSpan = Math.abs(dateSpan);
+						iDays = Math.floor(dateSpan / (24 * 3600 * 1000));
+						$scope.iDays=iDays+1
+						$scope.priceAll=(iDays+1)*housesOnlyprice;
+						// alert("时间："+$scope.priceAll);
+						$scope.priceShow=true;
+					}
+				});
+			});
+			function startday(){
+					if($scope.orderList.startTime==null){
+						alert("开始时间不能为空");
+						return false;
+					}
+					// alert($scope.orderList.startTime);
+				return true
+			}
+			function endday(){
+				if($scope.orderList.endTime!=null){
+					// alert($scope.orderList.endTime);
+					// alert("退租时间不能为空");
+					if($scope.orderList.startTime>$scope.orderList.endTime){
+						alert("退租时间不能在入住时间前面");
+						return false;
+					}
+				}else {
+					return false;
+				}
+				return true
+			}
+			function doTable(){
+				var sd = startday();
+				// var lo = doOnlyname();
+				var ed = endday();
+				if(sd&&ed){
+					return true;
+				}else{
+					return false;
+				}
 			}
 		});
 	</script>
@@ -62,6 +165,20 @@
 		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
 			<span class="navbar-toggler-icon"></span>
 		</button>
+		<!--搜索栏-->
+		<div class="select">
+			<input type="text" placeholder="你想去哪里？" ng-model="housesVO.housesAddress">
+			入住:<input type="date" ng-model="housesVO.startTime">
+			退租:<input type="date" ng-model="housesVO.endTime">
+			<select name="housesFalgs" ng-model="housesVO.peopleNum">
+				<option value="{{num.name}}" ng-repeat="num in peopleNum">{{num.name}}位房客</option>
+			</select>
+			<select name="housesFalgs" ng-model="housesVO.typeId">
+				<option value="{{type.dictId}}" ng-repeat="type in housesType">{{type.name}}</option>
+			</select>
+			<button ng-click="selectHousesVO()">搜索</button>
+		</div>
+		<!--菜单-->
 		<div class="collapse navbar-collapse" id="navbarText">
 			<ul class="navbar-nav ml-auto">
 				<li class="nav-item">
@@ -74,16 +191,30 @@
 					<a class="nav-link" href="#Restaurant">最新动态</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="about.html">关于我们</a>
+					<a class="nav-link" href="#aboutUs">关于我们</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="about.html#Reservation">联系我们</a>
+					<a class="nav-link" href="#Reservation">联系我们</a>
 				</li>
-				<li class="nav-item">
+				<li class="nav-item" th:if="${session.user}==null">
 					<a href="/api/indexToLogin"  class="nav-link">登录</a>
 				</li>
-				<li class="nav-item">
+				<li class="nav-item" th:if="${session.user}==null">
 					<a href="/api/indexToRegister" class="nav-link">注册</a>
+				</li>
+				<li class="nav-item" style="width: 150px" th:if="${session.user}!=null">
+					<ul class="nav nav-pills">
+						<li role="presentation" class="dropdown">
+							<a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true"  aria-expanded="false" style="text-decoration: none; width: 160px" >
+								<img src="/images/y.jpg" class="radius-circle rotate-hover" height="15" alt="" />
+								<span th:text="${session.user.getRealName()}" style="width: 150px"></span>
+							</a>
+							<ul class="dropdown-menu" style="display:none; min-width: 80px; left: 10px;">
+								<li><a style="text-decoration: none;" th:href="'../myself?users=user&userId='+${session.user.getUserId()}">个人中心</a></li>
+								<li><a href="/api/loginOut" style="color: #ff5500;text-decoration: none;">退出</a></li>
+							</ul>
+						</li>
+					</ul>
 				</li>
 			</ul>
 		</div>
@@ -121,7 +252,7 @@
 			<ul class="tabBlock-tabs">
 				<li class="tabBlock-tab is-active">房屋概况</li>
 				<li class="tabBlock-tab">配备设施</li>
-				<li class="tabBlock-tab">用户评价</li>
+				<li class="tabBlock-tab">用户评价（{{commentList.count}}分）</li>
 			</ul>
 			<div class="tabBlock-content">
 				<div class="tabBlock-pane" style="height: 100px;">
@@ -142,9 +273,26 @@
 					<div style="width:200px;text-align: center;float: left" ng-if="housesDetails.isHotWater"><img src="/icon/24reshui.png"><div>24小时热水</div></div>
 				</div>
 				<div class="tabBlock-pane">
-					<ul>
-						<li>评价</li>
-					</ul>
+					<div>
+						<div class="comment" ng-repeat="comment in commentVoList">
+							<div class="photo">
+								<img src="{{comment.userPhoto}}">
+								{{comment.username}}
+								<span>{{comment.createTime}}</span>
+								<span style="margin-left: 10px;">评分:{{comment.commentPower}}</span>
+							</div>
+							<hr>
+							<div class="context">
+								{{comment.commentContent}}
+							</div>
+							<div ng-if="comment.isPhoto">
+								<img src="{{comment.commentPhoto}}"/>
+							</div>
+						</div>
+					</div>
+					<div ng-if="!commentList.isData">
+						该房源暂无评论
+					</div>
 				</div>
 			</div>
 		</figure>
@@ -158,21 +306,27 @@
         </div><br>
         <div class="inp">
             <label>入住日期</label>
-            <input type="text" id="c1" value="年-月-日" onclick="J.calendar.get();"/>
+            <input type="date" name="startday" style="border: none;width: 120px;height: 30px;" value="年-月-日" ng-model="orderList.startTime"/>
         </div>
         <div class="inp">
             <label>退房日期</label>
-            <input type="text" id="c1" value="年-月-日" onclick="J.calendar.get();"/>
+            <input type="date" name="endday" style="border: none;width: 120px;height: 30px;" value="年-月-日" ng-model="orderList.endTime"/>
         </div>
         <div class="inp">
             <label>人数</label>
-            <select>
-                <option>1人</option>
-                <option>2人</option>
+            <select ng-model="orderList.pepoleNum">
+                <option value="1">1人</option>
+                <option value="2">2人</option>
             </select>
         </div>
+		<div ng-show="priceShow" style="margin-left: 30px;font-size: 20px;">
+			<label>总价计算:单价*预订天数</label>
+			<br>
+			<label>需支付:{{priceAll}}</label>
+		</div>
         <div class="price">
-            <input type="submit" value="立即预定">
+			<!-- data-toggle="modal" data-target="#myModal"  -->
+            <input type="submit" ng-click="reserve()" value="立即预定">
         </div>
     </div>
     <!--房主信息-->
@@ -188,7 +342,7 @@
     </div>
 </div>
 
-
+<script src="/js/bootstrap.min.js"></script>
 <!--轮播图js-->
 <link href="/css/base.css" rel="stylesheet">
 <script src="/js/lunbo.js"></script>

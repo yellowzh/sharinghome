@@ -1,0 +1,28 @@
+body{
+    font-family: 'Merienda';
+    font-size: 15px;
+    border-radius: 2%;
+}
+.bbp{
+    width: 50%;
+    background-color: #e9ecef;
+    box-shadow: #5a6268;
+    margin-left: 25%;
+    padding: 2em;
+}
+.orderTitle{
+    text-align: center;
+}
+.pay{
+    margin-top: 10px;
+    font-size: 13px;
+    padding: 1em;
+}
+.pay button{
+    width: 100%;
+    height: 60px;
+    alignment: center;
+    background: orange;
+    box-shadow: white;
+    border: none;
+}

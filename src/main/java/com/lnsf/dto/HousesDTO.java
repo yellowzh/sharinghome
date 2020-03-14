@@ -1,9 +1,12 @@
 package com.lnsf.dto;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.lnsf.entity.UserInfoEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import java.util.Date;
 
 /**
  * @author 黄润志
@@ -29,9 +32,13 @@ public class HousesDTO{
     @ApiModelProperty(value = "预览量")
     private Integer housesView;
     @ApiModelProperty(value = "出租价格")
-    private Integer housesPrices;
+    private Double housesPrices;
     @ApiModelProperty(value = "房源地址")
     private String housesAddress;
+    @ApiModelProperty(value = "创建时间")
+    private Date createTime;
+    @ApiModelProperty(value = "更新时间")
+    private Date updateTime;
     @ApiModelProperty(value = "房源评分")
     private Double housesFarction;
     @ApiModelProperty(value = "标志位--0为在线·出租，1为下架修整，2为删除")

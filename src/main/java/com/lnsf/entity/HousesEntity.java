@@ -10,6 +10,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import java.util.Date;
+
 /**
  * @author 黄润志
  * @since 2020-03-05 15:32
@@ -53,7 +55,7 @@ public class HousesEntity{
 
     @ApiModelProperty(value = "出租价格")
     @TableField("houses_prices")
-    private Integer housesPrices;
+    private Double housesPrices;
 
     @ApiModelProperty(value = "房源地址")
     @TableField("houses_address")
@@ -62,6 +64,18 @@ public class HousesEntity{
     @ApiModelProperty(value = "房源评分")
     @TableField("houses_farction")
     private Double housesFarction;
+
+    @ApiModelProperty(value = "创建时间")
+    @TableField("create_time")
+    private Date createTime;
+
+    @ApiModelProperty(value = "更新时间")
+    @TableField("update_time")
+    private Date updateTime;
+
+    @ApiModelProperty(value = "是否推荐")
+    @TableField("is_recommend")
+    private Boolean isRecommend;
 
     @ApiModelProperty(value = "标志位--0为在线·出租，1为下架修整，2为删除")
     @TableField("houses_falgs")

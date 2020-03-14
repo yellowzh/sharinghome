@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lnsf.dao.OrderListMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.lnsf.entity.OrderListEntity">
+        <id column="order_id" property="orderId" />
+        <result column="create_time" property="createTime" />
+        <result column="passenger_id" property="passengerId" />
+        <result column="business_id" property="businessId" />
+        <result column="houses_id" property="housesId" />
+        <result column="pepole_num" property="pepoleNum" />
+        <result column="houses_num" property="housesNum" />
+        <result column="only_prices" property="onlyPrices" />
+        <result column="order_prices" property="orderPrices" />
+        <result column="houses_in" property="housesIn" />
+        <result column="order_pay" property="orderPay" />
+        <result column="start_time" property="startTime" />
+        <result column="end_time" property="endTime" />
+        <result column="is_del" property="isDel" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="BaseColumnList">
+        create_time,
+        order_id, passenger_id, business_id, houses_id, pepole_num, houses_num, only_prices, order_prices, houses_in, order_pay, start_time, end_time, is_del
+    </sql>
+
+
+    <select id="page" resultType="com.lnsf.entity.OrderListEntity">
+        select * from order_list t where t.delete_tag=0
+
+        <if test="dto.passengerId !=null">
+            and t.passenger_id = #{dto.passengerId}
+        </if>
+        <if test="dto.businessId !=null">
+            and t.business_id = #{dto.businessId}
+        </if>
+        <if test="dto.housesId !=null">
+            and t.houses_id = #{dto.housesId}
+        </if>
+        <if test="dto.pepoleNum !=null">
+            and t.pepole_num = #{dto.pepoleNum}
+        </if>
+        <if test="dto.housesNum !=null">
+            and t.houses_num = #{dto.housesNum}
+        </if>
+        <if test="dto.onlyPrices !=null">
+            and t.only_prices = #{dto.onlyPrices}
+        </if>
+        <if test="dto.orderPrices !=null">
+            and t.order_prices = #{dto.orderPrices}
+        </if>
+        <if test="dto.housesIn !=null and dto.housesIn != ''">
+            and t.houses_in like CONCAT('%',#{dto.housesIn},'%')
+        </if>
+        <if test="dto.orderPay !=null and dto.orderPay != ''">
+            and t.order_pay like CONCAT('%',#{dto.orderPay},'%')
+        </if>
+        <if test="dto.startTime !=null">
+            and t.start_time = #{dto.startTime}
+        </if>
+        <if test="dto.endTime !=null">
+            and t.end_time = #{dto.endTime}
+        </if>
+        <if test="dto.isDel !=null">
+            and t.is_del = #{dto.isDel}
+        </if>
+    </select>
+</mapper>

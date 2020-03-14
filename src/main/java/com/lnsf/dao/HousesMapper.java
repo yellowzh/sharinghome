@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.lnsf.dto.HousesDTO;
 import com.lnsf.entity.HousesEntity;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.lnsf.vo.HousesVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.data.repository.query.Param;
 
@@ -19,5 +20,7 @@ import java.util.List;
 public interface HousesMapper extends BaseMapper<HousesEntity> {
 
     List<HousesEntity> page(@Param("dto") HousesDTO dto, IPage<HousesEntity> page);
+
+    List<HousesDTO> selectHousesByCondition(@Param("vo") HousesVO vo);
 
 }

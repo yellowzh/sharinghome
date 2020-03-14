@@ -143,7 +143,7 @@ public class LoginController {
         ModelAndView model_html = new ModelAndView();
         /*商家与旅客登录成功跳转*/
         if("user".equals(users)){
-            model_html.setViewName("user/index");
+            model_html.setViewName("index");
         }
         if("admin".equals(users)){
             model_html.setViewName("admin/index");

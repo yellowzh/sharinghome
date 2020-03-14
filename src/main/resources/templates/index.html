@@ -3,10 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../css/pintuer.css">
 <link rel="stylesheet" href="../css/bootstrap.min.css">
 <link rel="stylesheet" type="text/css" href="../css/style.css">
 <link href='https://fonts.googleapis.com/css?family=Merienda' rel='stylesheet'>
 <link href="../css/aos.css" rel="stylesheet">
+
+	<!--<script src="../js/jquery.js"></script>-->
 <title>小智民宿</title>
 <link rel="icon" href="../images/logo.png">
 	<script src="../js/jquery.min.js"></script>
@@ -50,7 +53,20 @@
 			$scope.select=function(id) {
 				location.href="/api/select/findHousesById?houserId="+id;
 			};
+			$scope.show=true;
+			// $scope.housesVO = {};
+			$scope.selectHousesVO=function(){
+				$http.post("/api/select/selectHousesByCondition",$scope.housesVO).success(
+						function(response){
+							$scope.housesList=response;
+							$scope.show=false;
+						}
+				)};
+			$scope.reserve=function(id){
+				location.href="/api/reserveHouses?houserId="+id;
+				// location.href="/api/gopay";
 
+			};
 		});
 	</script>
 	<!--自动消失的弹出提示信息-->
@@ -74,17 +90,16 @@
 		</button>
 		<!--搜索栏-->
 		<div class="select">
-			<input type="text" value="你想去哪里？">
-			<input type="text" value="入住日期？">
-			<select name="housesFalgs" class="input w50">
-				<option>---入住房客---</option>
-				<option value="{{num.dictId}}" ng-repeat="num in peopleNum">{{num.name}}位房客</option>
+			<input type="text" placeholder="你想去哪里？" ng-model="housesVO.housesAddress">
+			入住:<input type="date" ng-model="housesVO.startTime">
+			退租:<input type="date" ng-model="housesVO.endTime">
+			<select name="housesFalgs" ng-model="housesVO.peopleNum">
+				<option value="{{num.name}}" ng-repeat="num in peopleNum">{{num.name}}位房客</option>
 			</select>
-			<select name="housesFalgs" class="input w50">
-				<option>---房源类型---</option>
+			<select name="housesFalgs" ng-model="housesVO.typeId">
 				<option value="{{type.dictId}}" ng-repeat="type in housesType">{{type.name}}</option>
 			</select>
-			<button ng-click="select(house.housesId)">搜索</button>
+			<button ng-click="selectHousesVO()">搜索</button>
 		</div>
 		<!--菜单-->
 		<div class="collapse navbar-collapse" id="navbarText">
@@ -99,16 +114,30 @@
 					<a class="nav-link" href="#Restaurant">最新动态</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="about.html">关于我们</a>
+					<a class="nav-link" href="#Reservation">关于我们</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="about.html#Reservation">联系我们</a>
+					<a class="nav-link" href="#OurLocation">联系我们</a>
 				</li>
-				<li class="nav-item">
+				<li class="nav-item" th:if="${user}==null">
 					<a href="/api/indexToLogin"  class="nav-link">登录</a>
 				</li>
-				<li class="nav-item">
+				<li class="nav-item" th:if="${user}==null">
 					<a href="/api/indexToRegister" class="nav-link">注册</a>
+				</li>
+				<li class="nav-item" style="width: 150px" th:if="${user}!=null">
+					<ul class="nav nav-pills">
+						<li role="presentation" class="dropdown">
+							<a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true"  aria-expanded="false" style="text-decoration: none; width: 160px" >
+								<img src="../images/y.jpg" class="radius-circle rotate-hover" height="15" alt="" />
+								<span th:text="${user.getRealName()}" style="width: 150px"></span>
+							</a>
+							<ul class="dropdown-menu" style="display:none; min-width: 80px; left: 10px;">
+								<li><a style="text-decoration: none;" th:href="'myself?users=user&userId='+${user.getUserId()}">个人中心</a></li>
+								<li><a href="/api/loginOut" style="color: #ff5500;text-decoration: none;">退出</a></li>
+							</ul>
+						</li>
+					</ul>
 				</li>
 				<!--<li class="nav-item">-->
 					<!--<a href="/api/test" class="nav-link">测试</a>-->
@@ -117,27 +146,28 @@
 		</div>
 	</nav>
 	<!-- End Navigation Bar -->
-	<!--Start lunBo-->
-	<div id="box">
-		<!-- 这里的图片可以用一个for循环动态成多个li就可以了 -->
-		<ul id="picBox">
-			<li class="sPic" ng-repeat="img in slideList">
-				<a ng-click="select(img.houseId)">
-					<!--<p style="position: absolute;font-size: 40px;color: white">{{img.houseTilte}}</p>-->
-					<img src="{{img.slideUrl}}"/>
-
-				</a>
-			</li>
-		</ul>
-		<div class="bn" id="before"></div>
-		<div class="bn" id="next"></div>
-		<!--右下角的几个点-->
-		<ul id="btnBox">
-			<li class="picBtn" ng-repeat="img in slideList"></li>
-		</ul>
+	<!--Start 轮播-->
+	<div ng-show="show">
+		<div id="box">
+			<!-- 这里的图片可以用一个for循环动态成多个li就可以了 -->
+			<ul id="picBox">
+				<li class="sPic" ng-repeat="img in slideList">
+					<a ng-click="select(img.houseId)">
+						<!--<p style="position: absolute;font-size: 40px;color: white">{{img.houseTilte}}</p>-->
+						<img src="{{img.slideUrl}}"/>
+					</a>
+				</li>
+			</ul>
+			<div class="bn" id="before"></div>
+			<div class="bn" id="next"></div>
+			<!--右下角的几个点-->
+			<ul id="btnBox">
+				<li class="picBtn" ng-repeat="img in slideList"></li>
+			</ul>
+		</div>
 	</div>
 </div>
-
+<div ng-if="!show" style="margin-top: 100px;"></div>
 	<!--End of Carousel-->
 <div class="container" style="width: 100%;">
 	<div class="row bg-light" id="Menu">
@@ -157,7 +187,8 @@
 								<img src="/images/shouchang.png">
 								<img src="/images/shouchang.png">
 								<img src="/images/shouchang.png"><!--评分等级-->
-								<button style="float: right;background-color: orange;border: none;margin-left: 10px;margin-top: 5px;" >立即预定</button>
+								<button th:if="${user}==null" ng-click="reserve(house.housesId)" style="float: right;background-color: orange;border: none;margin-left: 10px;margin-top: 5px;" >立即预定</button>
+								<button th:if="${user}!=null" data-toggle="modal" data-target="#myModal" style="float: right;background-color: orange;border: none;margin-left: 10px;margin-top: 5px;" >立即预定</button>
 								<button ng-click="select(house.housesId)" style="float: right;border: none;background-color: #00aa00;margin-top: 5px;"> 查看详情</button>
 							</span>
 						</li><!--收藏量-->
@@ -166,10 +197,10 @@
 			</div>
 		</div>
 		<!--分页显示-->
-
 	</div>
 	<!--End of Menu-->
 	<!--Restaurant-->
+<div ng-if="show">
 	<div class="row" id="Restaurant">
 		<div class="col navMenu">
 			<h2 class="text-center" >~ 最新动态 ~</h2>
@@ -200,9 +231,73 @@
 	</div>
 	<!--End of Restaurant-->
 	</div>
+</div>
 
+	<!--- Start of Reservation-->
+	<div class="row" id="Reservation">
+		<div class="col navMenu">
+			<h2 class="text-center">~ 关于我们 ~</h2>
+		</div>
+	</div>
+	<div class="row">
+		<div class=" col-lg-12 reserve-container" data-aos="fade-up">
+			<img class="img-fluid image-reserve" src="images/reserve.jpg">
+			<div class="reserve-text col-lg-12 ">
+				<h1 class="text-center">为自己生活添点彩~</h1>
+				<div class="row">
+					<div class="col-6">
+						<h2 class="text-center">此刻</h2>
+						<h5 class="text-center">你行动了吗？</h5>
+					</div>
+					<div class="col-6">
+						<h2 class="text-center">未来</h2>
+						<h5 class="text-center">你计划了吗？</h5>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<br>
+	<div class="row bg-light">
+		<div class="col">
+			<form>
+				<div class="form-row">
+					<div class="form-group col-6">
+						<h3>公司简介</h3>
+						<label for="inputDate"> 这是一个完美的公司</label>
 
-	<div class="row footer bg-light">
+					</div>
+					<div class="form-group col-6">
+						<h3>目前主要负责人</h3>
+						<label for="inputName"> 姓名：黄先生</label>
+						<p>电话：11110001010</p>
+						<p>邮箱：11@mam.com</p>
+					</div>
+				</div>
+				<div class="row">
+					<!-- 占位 -->
+				</div>
+			</form>
+		</div>
+	</div>
+	<!--- End of Reserve -->
+	<!--- Start of Our Location -->
+	<div class="row" id="OurLocation">
+		<div class="col navMenu">
+			<h2 class="text-center">~ 联系我们 ~</h2>
+		</div>
+	</div>
+	<div class="row">
+
+		<div class="col-md-3">
+			<h3>地址:</h3>
+			<h5>广东省湛江市岭南师范学院</h5>
+			<h3>邮箱:</h3>
+			<h5>yellowz@qq.com</h5>
+		</div>
+	</div>
+	<!--- End of Our Location -->
+	<div class="row footer bg-light" ng-if="show">
 		<div class="col">
 			
 		</div>
@@ -214,7 +309,75 @@
 		</div>
 	</div>
 </div>
+<script>
+	$('#myModal').on('shown.bs.modal', function () {
+		$('#myInput').focus()
+	})
 
+</script>
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	   <div class="modal-dialog">
+	       <div class="modal-content">
+	           <div class="modal-header">
+							<h4 class="modal-title" id="myModalLabel">请选择预定时间以及人数信息</h4>
+	               <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+	           </div>
+	<!--       <div class="modal-body">-->
+				<form action="/api/addHouses" enctype="multipart/form-data" class="fm" method="post" onsubmit="return doTable()">
+					<!--<input type="hidden" name="bussinid"/>-->
+					<table align="center">
+						<tr>
+							<td style="width: 20%">入住时间：</td>
+							<td class="wlIcon icon">
+								<s></s>
+								<input type="date" name="housesTitle" maxlength="20" class="input" style="width:250px; line-height:17px;display:inline-block"/>
+								<b>*</b>
+								<span></span>
+							</td>
+						</tr>
+						<tr>
+							<td style="width: 20%">退租时间：</td>
+							<td class="wlIcon icon">
+								<s class="mm"></s>
+								<input type="date" name="file" class="input" style="width:250px; line-height:17px;display:inline-block"/>
+								<b>*</b>
+								<span></span>
+							</td>
+						</tr>
+						<tr>
+							<td style="width: 20%">入住人数：</td>
+							<td class="wlIcon icon">
+								<s class="mm"></s>
+								<input type="number" name="housesCount" maxlength="18" class="input" style="width:250px; line-height:17px;display:inline-block"/>
+								<b>*</b>
+								<span></span>
+							</td>
+						</tr>
+						<tr>
+							<td style="width: 20%">出租价格：</td>
+							<td class="wlIcon icon">
+								<s class="mm"></s>
+								<input type="number" name="housesPrices" maxlength="18" class="input" style="width:250px; line-height:17px;display:inline-block"/>
+								<b>*</b>
+								<span></span>
+							</td>
+						</tr>
+						<tr>
+							<hr/>
+							<td class="wlBtns" align="center" colspan="2">
+								<s></s>
+								<button type="button" class="button border-red" style="padding:5px 15px;" data-dismiss="modal">关闭</button>
+								<button type="submit"  class="button border-blue" style="padding:5px 15px;">保存</button>
+							</td>
+						</tr>
+					</table>
+				</form>
+			<!--</div>-->
+	    </div>
+	  </div>
+</div>
+<!--model end-->
 <script src="../js/jquery-3.3.1.min.js"></script>
 <script src="../js/popper.min.js"></script>
 <script src="../js/bootstrap.min.js"></script>

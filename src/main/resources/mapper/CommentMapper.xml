@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lnsf.dao.CommentMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.lnsf.entity.CommentEntity">
+        <id column="comment_id" property="commentId" />
+        <result column="create_time" property="createTime" />
+        <result column="order_id" property="orderId" />
+        <result column="house_id" property="houseId" />
+        <result column="user_id" property="userId" />
+        <result column="comment_type" property="commentType" />
+        <result column="comment_content" property="commentContent" />
+        <result column="comment_photo" property="commentPhoto" />
+        <result column="comment_power" property="commentPower" />
+        <result column="reply_id" property="replyId" />
+        <result column="is_del" property="isDel" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="BaseColumnList">
+        create_time,
+        comment_id, order_id, house_id, user_id, comment_type, comment_content, comment_photo, comment_power, reply_id, is_del
+    </sql>
+
+
+    <select id="page" resultType="com.lnsf.entity.CommentEntity">
+        select * from comment t where t.delete_tag=0
+
+        <if test="dto.orderId !=null">
+            and t.order_id = #{dto.orderId}
+        </if>
+        <if test="dto.houseId !=null">
+            and t.house_id = #{dto.houseId}
+        </if>
+        <if test="dto.userId !=null">
+            and t.user_id = #{dto.userId}
+        </if>
+        <if test="dto.commentType !=null and dto.commentType != ''">
+            and t.comment_type like CONCAT('%',#{dto.commentType},'%')
+        </if>
+        <if test="dto.commentContent !=null and dto.commentContent != ''">
+            and t.comment_content like CONCAT('%',#{dto.commentContent},'%')
+        </if>
+        <if test="dto.commentPhoto !=null and dto.commentPhoto != ''">
+            and t.comment_photo like CONCAT('%',#{dto.commentPhoto},'%')
+        </if>
+        <if test="dto.commentPower !=null">
+            and t.comment_power = #{dto.commentPower}
+        </if>
+        <if test="dto.replyId !=null">
+            and t.reply_id = #{dto.replyId}
+        </if>
+        <if test="dto.isDel !=null">
+            and t.is_del = #{dto.isDel}
+        </if>
+    </select>
+</mapper>

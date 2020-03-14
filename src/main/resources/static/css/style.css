@@ -250,15 +250,16 @@ a.upload-img:hover{
 }
 .inp{
 	float: left;
-	margin-left: 10px;
-	width: 80px;
+	margin-left: 20px;
+	width: 110px;
+	padding: 1em;
 }
 .inp label{
 	width: 80px;
 	text-align: center;
 }
-.inp input[type=text]{
-	width: 80px;
+.inp input[type=date]{
+	width: 120px;
 	height: 30px;
 	border: none;
 	text-align: center;
@@ -309,13 +310,36 @@ a.upload-img:hover{
 }
 /*整体固定框框*/
 .hu_top{
-    width: 20%;
+    width: 25%;
     background: white;
     position: fixed;
     float: right;
     margin-left: 60%;
     margin-top:90px;
     top: 0;
+}
+/*详情页评论查看*/
+.comment{
+	width: 100%;
+	background-color: #e9ecef;
+	margin-top: 10px;
+	padding-bottom: 10px;
+	border-radius: 2%;
+}
+.comment .context{
+	margin-left: 10px;
+	padding: 1em;
+}
+.comment .photo img{
+	margin-left: 10px;
+	width: 50px;
+	height: 50px;
+	border-radius: 50%;
+
+}
+.comment img{
+	border-radius: 2%;
+	padding: 1em;
 }
 
 /*首页搜索样式*/
@@ -327,6 +351,11 @@ a.upload-img:hover{
 	width: 140px;
 	border: #5a6268;
 }
+.select input[type=date]{
+	height: 30px;
+	width: 120px;
+	border: #5a6268;
+}
 .select button{
 	border: none;
 	height: 30px;
@@ -334,6 +363,6 @@ a.upload-img:hover{
 }
 .select select{
 	height: 30px;
-	width: 140px;
+	width: 90px;
 	border: #5a6268;
 }

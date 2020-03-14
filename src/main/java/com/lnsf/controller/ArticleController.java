@@ -35,11 +35,11 @@ public class ArticleController {
     }
 
 
-    @ApiOperation("查看")
-    @GetMapping("{articleId}")
-    public ArticleEntity view(@ApiParam("资讯编号") @PathVariable(name = "articleId") Long articleId){
-        return articleService.getArticle(articleId);
-    }
+//    @ApiOperation("查看")
+//    @GetMapping("{articleId}")
+//    public ArticleEntity view(@ApiParam("资讯编号") @PathVariable(name = "articleId") Long articleId){
+//        return articleService.getArticle(articleId);
+//    }
 
 
 

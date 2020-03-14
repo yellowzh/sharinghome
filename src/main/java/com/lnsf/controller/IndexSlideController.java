@@ -29,11 +29,11 @@ public class IndexSlideController {
     private IndexSlideService indexSlideService;
 
 
-    @ApiOperation("查看")
-    @GetMapping("{slideId}")
-    public IndexSlideEntity view(@ApiParam("") @PathVariable(name = "slideId") Long slideId){
-        return indexSlideService.getIndexSlide(slideId);
-    }
+//    @ApiOperation("查看")
+//    @GetMapping("{slideId}")
+//    public IndexSlideEntity view(@ApiParam("") @PathVariable(name = "slideId") Long slideId){
+//        return indexSlideService.getIndexSlide(slideId);
+//    }
 
     @ApiOperation("列表")
     @GetMapping
