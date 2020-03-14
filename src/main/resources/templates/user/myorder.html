@@ -1,0 +1,204 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/css/pintuer.css">
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+<link rel="stylesheet" href="/css/normalize.css">
+<link rel="stylesheet" href="/css/styleTab.css" media="screen" type="text/css" />
+
+<script src='/js/jquery.js'></script>
+<script src="/js/index.js"></script>
+<script src="/js/popper.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script defer src="/js/all.js"></script>
+<!--<script type="text/javascript" src="/js/smooth-scroll.js"></script>-->
+<script src="/js/jquery.min.js"></script>
+<script src="/js/my/show.js"></script><!--自编弹出显示-->
+<script src="/js/angular.min.js"></script>
+<title>小智民宿</title>
+<link rel="icon" href="/images/logo.png">
+	<script th:inline="javascript">
+		var userId = [[${session.user.getUserId()}]];
+		var app=angular.module('myApp',[]); //定义了一个叫myApp的模块
+		//定义控制器
+		app.controller('myController',function($scope,$http){
+			$scope.findAll=function(){
+				/*查看房源其他信息*/
+				$http.get('/api/myOrderByUserId?userId='+userId).success(
+						function(response){
+							/*列表*/
+							$scope.orderAll=response.orderAll;
+							$scope.orderNotPay=response.orderNotPay;
+							$scope.orderNotIn=response.orderNotIn;
+							$scope.orderComment=response.orderComment;
+							/*计数*/
+							$scope.orderAllNum=response.orderAllNum;
+							$scope.orderNotPayNum=response.orderNotPayNum;
+							$scope.orderNotInNum=response.orderNotInNum;
+							$scope.orderCommentNum=response.orderCommentNum;
+						}
+				);
+
+			};
+			$scope.select=function(id) {
+				location.href="/api/select/findHousesById?houserId="+id;
+			};
+
+		});
+	</script>
+	<!--自动消失的弹出提示信息-->
+	<!--<script th:inline="javascript">-->
+	<!--var results = [[${msg}]];-->
+	<!--if (results!=null) {-->
+	<!--//alert(results)-->
+	<!--func(results,"#999999");-->
+	<!--}-->
+	<!--</script>-->
+</head>
+<body ng-app="myApp" ng-controller="myController" ng-init="findAll()" style="font-size: 12px;">
+<div id="Welcome">
+	<!---Start navigation Bar -->
+	<nav class="navbar navbar-expand-lg navbar fixed-top  navbar-light bg-light">
+		<a class="navbar-brand" href="#Welcome">
+			<img src="/images/logo.jpeg" width="50" height="50" class="d-inline-block" alt=""> 小智民宿
+		</a>
+		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		<div class="collapse navbar-collapse" id="navbarText">
+			<ul class="navbar-nav ml-auto">
+				<li class="nav-item">
+					<a class="nav-link" href="#">首页</a>
+				</li>
+
+				<li class="nav-item">
+					<a class="nav-link" href="#">民宿服务</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="#">最新动态</a>
+				</li>
+				<li class="nav-item" style="width: 150px">
+					<ul class="nav nav-pills">
+						<li role="presentation" class="dropdown">
+							<a class="dropdown-toggle" data-toggle="dropdown" href="#myself" aria-haspopup="true"  aria-expanded="false" style="text-decoration: none; width: 160px" >
+								<img th:if="${session.user.getUserBackup2()}!=null" th:src="${session.user.getUserBackup2()}" class="radius-circle rotate-hover" height="15" alt="">
+								<img th:if="${session.user.getUserBackup2()}==null" src="/images/y.jpg" class="radius-circle rotate-hover" height="15" alt="">
+								<span th:text="${session.user.getRealName()}" style="width: 150px"></span>
+							</a>
+							<ul class="dropdown-menu" style="display:none; min-width: 80px; left: 10px;">
+								<li><a style="text-decoration: none;" th:href="'myself?users=user&userId='+${session.user.getUserId()}">个人中心</a></li>
+								<li><a href="/api/loginOut" style="color: #ff5500;text-decoration: none;">退出</a></li>
+							</ul>
+						</li>
+					</ul>
+				</li>
+			</ul>
+		</div>
+	</nav>
+	<!--- End Navigation Bar -->
+<div class="container" style="width: 100%;margin-top: 45px;">
+	<!--- Restaurant-->
+	<figure class="tabBlock">
+		<ul class="tabBlock-tabs">
+			<li class="tabBlock-tab is-active">全部({{orderAllNum}})</li>
+			<li class="tabBlock-tab">待付款({{orderNotPayNum}})</li>
+			<li class="tabBlock-tab">待入住({{orderNotInNum}})</li>
+			<li class="tabBlock-tab">待评价({{orderCommentNum}})</li>
+		</ul>
+		<div class="tabBlock-content">
+			<div class="tabBlock-pane">
+				<div ng-repeat="all in orderAll">
+					<div style="background: #e9ecef;padding: 1em;border-radius: 2%;margin-top: 5px;">
+						<div style="padding: 4px;">
+							<a ng-click="select(all.housesDTO.housesId)"><img src="/images/fanzi.png" alt="" style="width: 30px;height: 30px;"/><label>{{all.housesDTO.housesTitle}}</label></a>
+						</div>
+						<div style="width: 20%;float: left;">
+							<img src="{{all.housesDTO.housesPhoto}}" style="width: 100px;height:100px;float: left;border-radius: 2%;">
+						</div>
+						<div style="width: 80%;float: left;">
+						<h5>入住时间:{{all.startTime}}</h5>
+						<h5>退租时间:{{all.endTime}}</h5>
+						<h5>单价:{{all.onlyPrices}}/天&nbsp&nbsp&nbsp需支付:{{all.orderPrices}}</h5>
+						<h5>入住:{{all.pepoleNum}}人</h5>
+						<h5>支付状态:{{all.orderPay}}&nbsp&nbsp&nbsp入住状态:{{all.housesIn}}</h5>
+						</div>
+						<button style="border: none;border-radius: 4%;color: white;">删除订单</button>
+						<button style="border: none;border-radius: 4%;color: white;background-color: orange">取消订单</button>
+					</div>
+				</div>
+			</div>
+			<div class="tabBlock-pane">
+				<div ng-repeat="notPay in orderNotPay">
+					<div style="background: #e9ecef;padding: 1em;border-radius: 2%;margin-top: 5px;">
+						<div style="padding: 4px;">
+							<a ng-click="select(notPay.housesDTO.housesId)"><img src="/images/fanzi.png" alt="" style="width: 30px;height: 30px;"/><label>{{notPay.housesDTO.housesTitle}}</label></a>
+						</div>
+						<div style="width: 20%;float: left;">
+							<img src="{{notPay.housesDTO.housesPhoto}}" style="width: 100px;height:100px;float: left;border-radius: 2%;">
+						</div>
+						<div style="width: 80%;float: left;">
+							<h5>入住时间:{{notPay.startTime}}</h5>
+							<h5>退租时间:{{notPay.endTime}}</h5>
+							<h5>单价:{{notPay.onlyPrices}}/天&nbsp&nbsp&nbsp需支付:{{notPay.orderPrices}}</h5>
+							<h5>入住:{{notPay.pepoleNum}}人</h5>
+							<h5>支付状态:{{notPay.orderPay}}&nbsp&nbsp&nbsp入住状态:{{notPay.housesIn}}</h5>
+						</div>
+						<button style="border: none;border-radius: 4%;color: white;">删除订单</button>
+						<button style="border: none;border-radius: 4%;color: white;background-color: orange">取消订单</button>
+						<button style="border: none;border-radius: 4%;color: white;background-color: red">去支付</button>
+					</div>
+				</div>
+			</div>
+			<div class="tabBlock-pane">
+				<div ng-repeat="notIn in orderNotIn">
+					<div style="background: #e9ecef;padding: 1em;border-radius: 2%;margin-top: 5px;">
+						<div style="padding: 4px;">
+							<a ng-click="select(notIn.housesDTO.housesId)"><img src="/images/fanzi.png" alt="" style="width: 30px;height: 30px;"/><label>{{notIn.housesDTO.housesTitle}}</label></a>
+						</div>
+						<div style="width: 20%;float: left;">
+							<img src="{{notIn.housesDTO.housesPhoto}}" style="width: 100px;height:100px;float: left;border-radius: 2%;">
+						</div>
+						<div style="width: 80%;float: left;">
+							<h5>入住时间:{{notIn.startTime}}</h5>
+							<h5>退租时间:{{notIn.endTime}}</h5>
+							<h5>单价:{{notPay.onlyPrices}}&nbsp&nbsp&nbsp需支付:{{notIn.orderPrices}}</h5>
+							<h5>入住:{{notIn.pepoleNum}}人</h5>
+							<h5>支付状态:{{notIn.orderPay}}&nbsp&nbsp&nbsp入住状态:{{notIn.housesIn}}</h5>
+						</div>
+						<button style="border: none;border-radius: 4%;color: white;">删除订单</button>
+						<button style="border: none;border-radius: 4%;color: white;background-color: orange">取消订单</button>
+						<!--<button style="border: none;border-radius: 4%;color: white;background-color: orange">入住民宿</button>-->
+					</div>
+				</div>
+			</div>
+			<div class="tabBlock-pane">
+				<div ng-repeat="comment in orderComment">
+					<div style="background: #e9ecef;padding: 1em;border-radius: 2%;margin-top: 5px;">
+						<div style="padding: 4px;">
+							<a ng-click="select(comment.housesDTO.housesId)"><img src="/images/fanzi.png" alt="" style="width: 30px;height: 30px;"/><label>{{comment.housesDTO.housesTitle}}</label></a>
+						</div>
+						<div style="width: 20%;float: left;">
+							<img src="{{comment.housesDTO.housesPhoto}}" style="width: 100px;height:100px;float: left;border-radius: 2%;">
+						</div>
+						<div style="width: 80%;float: left;">
+							<h5>入住时间:{{comment.startTime}}</h5>
+							<h5>退租时间:{{comment.endTime}}</h5>
+							<h5>单价:{{comment.onlyPrices}}/天&nbsp&nbsp&nbsp需支付:{{comment.orderPrices}}</h5>
+							<h5>入住:{{comment.pepoleNum}}人</h5>
+							<h5>支付状态:{{comment.orderPay}}&nbsp&nbsp&nbsp入住状态:{{comment.housesIn}}</h5>
+						</div>
+						<button style="border: none;border-radius: 4%;color: white;">删除订单</button>
+						<button style="border: none;border-radius: 4%;color: white;background-color: orange">取消订单</button>
+						<button style="border: none;border-radius: 4%;color: white;background-color: orange">去评价</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</figure>
+	<!--- End of Restaurant -->
+</div>
+</div>
+</body>
+</html>

@@ -11,9 +11,12 @@ import com.lnsf.service.HousesService;
 import com.lnsf.service.OrderListService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import cn.hutool.core.bean.BeanUtil;
+import com.lnsf.vo.MyOrderVO;
 import org.hibernate.service.spi.ServiceException;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -48,6 +51,7 @@ public class OrderListServiceImpl implements OrderListService {
     }
 
     /*查询订单*/
+    @Override
    public OrderListEntity getOrderOne(OrderListEntity orderListEntity){
        if (null == orderListEntity) {
            throw new ServiceException("参数为空!");
@@ -56,6 +60,7 @@ public class OrderListServiceImpl implements OrderListService {
        return orderListMapper.selectOne(wrapper);
    }
    /*更新订单*/
+   @Override
    public OrderListEntity update(OrderListEntity orderListEntity) {
         if (null == orderListEntity) {
             return null;
@@ -64,17 +69,71 @@ public class OrderListServiceImpl implements OrderListService {
         orderListMapper.updateById(orderListEntity);
         return orderListEntity;
     }
-
+    /*根据用户id查询我的订单*/
+    @Override
+    public MyOrderVO getMyOrderByUserId(Integer userId){
+        QueryWrapper wrapper = new QueryWrapper();
+        wrapper.eq("passenger_id",userId);
+        wrapper.eq("is_del",false);
+        MyOrderVO myOrderVO = new MyOrderVO();
+        /*列表*/
+        List<OrderListDTO> orderAll=new ArrayList<>();
+        List<OrderListDTO> orderNotPay=new ArrayList<>();
+        List<OrderListDTO> orderNotIn=new ArrayList<>();
+        List<OrderListDTO> orderComment=new ArrayList<>();
+        /*计数*/
+        int orderNotPayNum=0;
+        int orderNotInNum=0;
+        int orderCommentNum=0;
+        List<OrderListEntity> orderListEntities=orderListMapper.selectList(wrapper);
+        for (OrderListEntity o:orderListEntities) {
+            OrderListDTO orderListDTO = new OrderListDTO();
+            BeanUtil.copyProperties(o, orderListDTO);
+           HousesDTO housesDTO = housesService.getHomeShowById(o.getHousesId());
+           orderListDTO.setHousesDTO(housesDTO);
+           if ("未支付".equals(o.getOrderPay())){
+               orderNotPay.add(orderListDTO);
+               orderAll.add(orderListDTO);
+               orderNotPayNum++;
+           }else if ("未入住".equals(o.getHousesIn())){
+               orderNotIn.add(orderListDTO);
+               orderAll.add(orderListDTO);
+               orderNotInNum++;
+           }else {
+               orderComment.add(orderListDTO);
+               orderAll.add(orderListDTO);
+               orderCommentNum++;
+           }
+        }
+        myOrderVO.setOrderAll(orderAll);
+        myOrderVO.setOrderNotPay(orderNotPay);
+        myOrderVO.setOrderNotIn(orderNotIn);
+        myOrderVO.setOrderComment(orderComment);
+        myOrderVO.setOrderNotPayNum(orderNotPayNum);
+        myOrderVO.setOrderNotInNum(orderNotInNum);
+        myOrderVO.setOrderCommentNum(orderCommentNum);
+        myOrderVO.setOrderAllNum(orderNotPayNum+orderNotInNum+orderCommentNum);
+        return myOrderVO;
+    }
+    @Override
+    public OrderListEntity deleteOrder(Integer orderId) {
+        if (null == orderId) {
+            return null;
+        }
+        OrderListEntity existEntity = orderListMapper.selectById(orderId);
+        if (null == existEntity) {
+            return null;
+        }
+        existEntity.setIsDel(true);
+        orderListMapper.updateById(existEntity);
+        return existEntity;
+    }
 //    @Override
 //    public OrderListEntity getOrderList(Integer orderId){
 //        return orderListMapper.selectById(orderId);
 //    }
 //
 //    @Override
-//    public List<OrderListEntity> list(){
-//        return orderListMapper.selectList(null);
-//    }
-
 
 //    @Override
 //    public void delete(Integer orderId) {

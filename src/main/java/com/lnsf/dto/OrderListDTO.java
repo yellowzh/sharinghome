@@ -1,5 +1,6 @@
 package com.lnsf.dto;
 
+import com.lnsf.entity.HousesEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -13,7 +14,8 @@ import java.util.Date;
 @Data
 @ApiModel
 public class OrderListDTO{
-
+    @ApiModelProperty(value = "订单编号")
+    private Long orderId;
     @ApiModelProperty(value = "旅客编号")
     private Integer passengerId;
     @ApiModelProperty(value = "商家编号")
@@ -38,4 +40,6 @@ public class OrderListDTO{
     private Date endTime;
     @ApiModelProperty(value = "标注位")
     private Boolean isDel;
+    @ApiModelProperty(value = "房源信息")
+    private HousesDTO housesDTO;
 }

@@ -3,6 +3,7 @@ package com.lnsf.controller;
 import cn.hutool.db.PageResult;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.lnsf.entity.UserInfoEntity;
+import com.lnsf.vo.MyOrderVO;
 import org.apache.log4j.Logger;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -85,6 +86,19 @@ public class OrderListController {
         ModelAndView model_html = new ModelAndView();
         model_html.setViewName("user/gotoPagePay");
         return model_html;
+    }
+    @ApiOperation(value = "我的订单页面跳转", notes = "我的订单页面跳转",httpMethod = "GET")
+    @RequestMapping("/myorder")
+    public ModelAndView myorder(){
+        ModelAndView model_html = new ModelAndView();
+        model_html.setViewName("user/myorder");
+        return model_html;
+    }
+
+    @ApiOperation(value = "我的订单查询", notes = "我的订单查询",httpMethod = "GET")
+    @RequestMapping("/myOrderByUserId")
+    public MyOrderVO getMyOrderByUserId(Integer userId){
+        return orderListService.getMyOrderByUserId(userId);
     }
 
 //    @ApiOperation("删除")

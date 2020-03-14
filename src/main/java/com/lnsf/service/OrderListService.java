@@ -3,6 +3,7 @@ package com.lnsf.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.lnsf.dto.OrderListDTO;
 import com.lnsf.entity.OrderListEntity;
+import com.lnsf.vo.MyOrderVO;
 
 import java.util.List;
 
@@ -20,13 +21,12 @@ public interface OrderListService {
     OrderListEntity getOrderOne(OrderListEntity orderListEntity);
     /*更新订单状态*/
     OrderListEntity update(OrderListEntity orderListEntity);
+    /*根据用户编号查询用户订单*/
+    MyOrderVO getMyOrderByUserId(Integer userId);
+    /*根据订单编号删除订单*/
+    OrderListEntity deleteOrder(Integer orderId);
 
 //    OrderListEntity getOrderList(Integer orderId);
-//
-//    List<OrderListEntity> list();
-//
-
-//
 //    void delete(Integer orderId);
 //
 //    OrderListEntity update(Integer orderId, OrderListDTO dto);

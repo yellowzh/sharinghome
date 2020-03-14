@@ -221,6 +221,12 @@ public class HousesController {
         res.put("msg",title);
         return res;
     }*/
+    /*首页查看房源详情*/
+    @ApiOperation(value = "查看所有房源详情", notes = "记录",httpMethod = "POST")
+    @RequestMapping("/getHomeShowById")
+    public HousesDTO getHomeShowById(Integer houserId){
+        return housesService.getHomeShowById(houserId);
+    }
 
     @ApiOperation("查看所有房源")
     @GetMapping(path = "/select/findAllHouses")
