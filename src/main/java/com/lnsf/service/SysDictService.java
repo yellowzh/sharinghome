@@ -19,13 +19,18 @@ public interface SysDictService {
 
     SysDictEntity getSysDict(Long dictId);
 
-    List<SysDictEntity> list();
+    List<SysDictEntity> getAllDictList();
 
-    SysDictEntity create(SysDictDTO dto);
+    SysDictEntity createAllDict(SysDictDTO dto);
 
-    void delete(Long dictId);
+    String delete(Long dictId);
+
+    /*验证添加字典的唯一性*/
+    Boolean dictIsExist(String name);
 
     SysDictEntity update(Long dictId, SysDictDTO dto);
 
-    List<SysDictEntity> page(SysDictDTO dto, IPage<SysDictEntity> page);
+    List<SysDictEntity> selectDictson(Long dictId);
+//
+//    List<SysDictEntity> page(SysDictDTO dto, IPage<SysDictEntity> page);
 }

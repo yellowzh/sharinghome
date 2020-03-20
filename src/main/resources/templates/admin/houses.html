@@ -118,7 +118,7 @@
     <table class="table table-hover text-center">
 
       <tr>
-        <th style="text-align:left; padding-left:20px;">ID</th>
+        <th style="text-align:left;">ID</th>
         <th>房源照片</th>
         <th>房主</th>
         <th>标题</th>
@@ -128,11 +128,11 @@
         <th width="10%">出租价格</th>
         <th width="10%">地址</th>
         <th>状态</th>
-        <th width="310">操作</th>
+        <th width="30%">操作</th>
       </tr>
         <volist name="list" id="vo">
         <tr th:each="house:${houses}">
-          <td style="text-align:left; padding-left:20px;">
+          <td style="text-align:left;">
               <input type="checkbox" name="id[]" th:value="${house.getHousesId()}"/>
            </td>
           <td width="10%"><img th:src="${house.getHousesPhoto()}" alt="" width="70" height="50" /></td>
@@ -152,6 +152,12 @@
               <div class="button-group">
                   <a class="button border-main" th:href="'updateHousesIndex?housesId='+${house.getHousesId()}">
                       <span class="icon-edit"></span> 修改
+                  </a>
+                  <a class="button border-green" th:href="'selectHousesOrder?housesId='+${house.getHousesId()}">
+                      <span class="icon-search"></span> 查看订单
+                  </a>
+                  <a class="button border-blue" th:href="'selectHousesComment?housesId='+${house.getHousesId()}">
+                      <span class="icon-search"></span> 查看评论
                   </a>
                   <a class="button border-red" th:onclick="del([[${house.getHousesId()}]],[[${house.getHousesFalgs()}]])">
                       <span class="icon-trash-o"></span> 删除

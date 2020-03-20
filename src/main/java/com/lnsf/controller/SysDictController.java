@@ -5,10 +5,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.lnsf.entity.SysDictEntity;
 import com.lnsf.service.SysDictService;
 import java.util.List;
+import java.util.Map;
+
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import com.lnsf.dto.SysDictDTO;
+import org.springframework.web.servlet.ModelAndView;
+
 import javax.validation.Valid;
 
 
@@ -40,24 +44,85 @@ public class SysDictController {
         System.out.println("查看字典表"+dictId);
         return sysDictService.getSysDict(dictId);
     }
-
-    @ApiOperation("新增字典表")
-    @PostMapping(path = "create")
-    public SysDictEntity create(@RequestBody @Valid SysDictDTO dto){
-        return sysDictService.create(dto);
+    @ApiOperation("查看字典表")
+    @GetMapping("/sysDictById")
+    public SysDictEntity sysDictByIdH(Long dictId){
+        System.out.println("查看字典表"+dictId);
+        return sysDictService.getSysDict(dictId);
     }
 
-    @ApiOperation("删除字典表")
-    @DeleteMapping("{dictId}")
-    public void delete(@ApiParam("主键id") @PathVariable(name = "dictId") Long dictId) {
-        sysDictService.delete(dictId);
+    /*管理端查询字典*/
+    @ApiOperation("字典查询列表")
+    @GetMapping(path = "/getAllDict")
+    public List<SysDictEntity> getAllDict(){
+        return sysDictService.getAllDictList();
+    }
+    @ApiOperation("新增字典表")
+    @PostMapping(path = "createAllDict")
+    public SysDictEntity createAllDict(@RequestBody SysDictDTO dto){
+        return sysDictService.createAllDict(dto);
+    }
+    /*删除*/
+
+    @ApiOperation("删除字典")
+    @GetMapping("/deleteDict")
+    public String deleteDict(Long dictId) {
+        return sysDictService.delete(dictId);
+    }
+    @ApiOperation("管理员端跳转字典管理页面")
+    @GetMapping(path = "/getDict")
+    public ModelAndView getDict(){
+        //获取当前用户
+        ModelAndView model_html = new ModelAndView();
+        model_html.setViewName("admin/dict");
+        return model_html;
+
+    }
+    @ApiOperation(value = "验证验证字典名称唯一性", notes = "验证字典名",httpMethod = "GET")
+    @ResponseBody
+    @RequestMapping("dict-exist")
+    public Boolean dictIsExist(String name){
+        System.out.println("字典名称："+name);
+        Boolean dictIsExist = sysDictService.dictIsExist(name);
+        System.out.println(dictIsExist);
+        return dictIsExist;
     }
 
     @ApiOperation("更新字典表")
-    @PutMapping("{dictId}")
-    public SysDictEntity update(@ApiParam("主键id") @PathVariable("dictId") Long dictId,
-                            @RequestBody @Valid SysDictDTO dto) {
+    @PostMapping("/updateDict")
+    public SysDictEntity updateDict(Long dictId,@RequestBody SysDictDTO dto) {
         return sysDictService.update(dictId, dto);
     }
+    @ApiOperation("查看子字典")
+    @GetMapping("/selectDictson")
+    public ModelAndView selectDictson(Long dictId, Map<String, Object> map) {
+
+        map.put("dictId",dictId);
+        ModelAndView model_html = new ModelAndView();
+        model_html.setViewName("admin/dictSon");
+        return model_html;
+    }
+    @ApiOperation("字典查询列表")
+    @GetMapping(path = "/getDictson")
+    public List<SysDictEntity> getDictson(Long dictId){
+        List<SysDictEntity> sysDicts = sysDictService.selectDictson(dictId);
+        return sysDicts;
+    }
+
+
+
+//    @ApiOperation("新增字典表")
+//    @PostMapping(path = "create")
+//    public SysDictEntity create(@RequestBody @Valid SysDictDTO dto){
+//        return sysDictService.create(dto);
+//    }
+//
+//    @ApiOperation("删除字典表")
+//    @DeleteMapping("{dictId}")
+//    public void delete(@ApiParam("主键id") @PathVariable(name = "dictId") Long dictId) {
+//        sysDictService.delete(dictId);
+//    }
+//
+
 
 }

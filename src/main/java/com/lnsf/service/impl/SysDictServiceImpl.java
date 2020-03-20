@@ -5,7 +5,6 @@ import com.lnsf.entity.SysDictEntity;
 import com.lnsf.dto.SysDictDTO;
 import com.lnsf.dao.SysDictMapper;
 import com.lnsf.service.SysDictService;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import cn.hutool.core.bean.BeanUtil;
 import org.hibernate.service.spi.ServiceException;
 import org.springframework.stereotype.Service;
@@ -28,6 +27,7 @@ public class SysDictServiceImpl implements SysDictService{
     public List<SysDictEntity> getHousesType(String name){
         QueryWrapper wrapper =new QueryWrapper();
         wrapper.eq("name",name);
+        wrapper.eq("is_del",false);
         QueryWrapper wrappers =null;
         List<SysDictEntity> sysDictEntityList= null;
         SysDictEntity sysDictEntity = sysDictMapper.selectOne(wrapper);
@@ -36,6 +36,7 @@ public class SysDictServiceImpl implements SysDictService{
         }else {
             wrappers = new QueryWrapper();
             wrappers.eq("pid",sysDictEntity.getDictId());
+            wrappers.eq("is_del",false);
             sysDictEntityList=sysDictMapper.selectList(wrappers);
         }
         if (null==sysDictEntityList){
@@ -50,12 +51,15 @@ public class SysDictServiceImpl implements SysDictService{
     }
 
     @Override
-    public List<SysDictEntity> list(){
-        return sysDictMapper.selectList(null);
+    public List<SysDictEntity> getAllDictList(){
+        QueryWrapper wrapper = new QueryWrapper();
+        wrapper.isNull("pid");
+        wrapper.eq("is_del",false);
+        return sysDictMapper.selectList(wrapper);
     }
-
+/*新增字典*/
     @Override
-    public SysDictEntity create(SysDictDTO dto) {
+    public SysDictEntity createAllDict(SysDictDTO dto) {
         if (null == dto) {
             throw new ServiceException("参数为空!");
         }
@@ -64,13 +68,33 @@ public class SysDictServiceImpl implements SysDictService{
         sysDictMapper.insert(entity);
         return entity;
     }
-
+/*删除字典*/
     @Override
-    public void delete(Long dictId) {
+    public String delete(Long dictId) {
         if (null == dictId) {
-            return;
+            return "参数为空";
         }
-        sysDictMapper.deleteById(dictId);
+        SysDictEntity sysDictEntity = new SysDictEntity();
+        sysDictEntity.setDictId(dictId);
+        sysDictEntity.setIsDel(true);
+       int num =  sysDictMapper.updateById(sysDictEntity);
+       if (num>0){
+           return "删除成功";
+       }else {
+           return "删除失败";
+       }
+    }
+    /*验证添加字典的唯一性*/
+    public Boolean dictIsExist(String name){
+        QueryWrapper wrapper = new QueryWrapper();
+        wrapper.eq("name",name);
+        wrapper.eq("is_del",false);
+        SysDictEntity sysDictEntity=sysDictMapper.selectOne(wrapper);
+        if (null==sysDictEntity){
+            return false;
+        }else {
+            return true;
+        }
     }
 
     @Override
@@ -86,10 +110,17 @@ public class SysDictServiceImpl implements SysDictService{
         sysDictMapper.updateById(existEntity);
         return existEntity;
     }
-
     @Override
-    public List<SysDictEntity> page(SysDictDTO dto, IPage<SysDictEntity> page) {
-        return sysDictMapper.page(dto, page);
+    public List<SysDictEntity> selectDictson(Long dictId){
+        QueryWrapper wrapper = new QueryWrapper();
+        wrapper.eq("pid",dictId);
+        wrapper.eq("is_del",false);
+        return sysDictMapper.selectList(wrapper);
     }
+//
+//    @Override
+//    public List<SysDictEntity> page(SysDictDTO dto, IPage<SysDictEntity> page) {
+//        return sysDictMapper.page(dto, page);
+//    }
 
 }

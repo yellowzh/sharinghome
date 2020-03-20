@@ -1,5 +1,6 @@
 package com.lnsf.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -24,8 +25,8 @@ import lombok.experimental.Accessors;
 public class IndexSlideEntity{
 
 
-    @TableId("slide_id")
-    private Long slideId;
+    @TableId(value = "slide_id", type = IdType.AUTO)
+    private Integer slideId;
 
     @TableField("slide_url")
     private String slideUrl;

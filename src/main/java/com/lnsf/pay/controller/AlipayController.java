@@ -12,9 +12,12 @@ import com.alipay.api.request.AlipayTradeRefundRequest;
 import com.alipay.api.response.AlipayTradeCloseResponse;
 import com.alipay.api.response.AlipayTradeFastpayRefundQueryResponse;
 import com.alipay.api.response.AlipayTradeRefundResponse;
+import com.lnsf.entity.OrderListEntity;
 import com.lnsf.pay.properties.AlipayProperties;
+import com.lnsf.service.OrderListService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.support.ManagedMap;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -44,6 +47,11 @@ public class AlipayController {
 
     @Autowired
     private AlipayClient alipayClient;
+
+    @Autowired
+    private OrderListService orderListService;
+
+    private AlipayTradeRefundResponse alipayResponse;
 
 //    @Autowired
 //    private AlipayTradeService alipayTradeService;
@@ -158,24 +166,40 @@ public class AlipayController {
      */
     @PostMapping("/refund")
     @ResponseBody
-    public String refund(String orderNo) throws AlipayApiException {
-        AlipayTradeRefundRequest alipayRequest = new AlipayTradeRefundRequest();
+    public String refund(Long orderNo) throws AlipayApiException {
+        System.out.println("订单编号"+orderNo);
+        /*查询该订单信息*/
+        OrderListEntity orderListEntity = orderListService.getOrderList(orderNo);
+        if ("未支付".equals(orderListEntity.getOrderPay())){
+            orderListService.deleteOrder(orderNo);
+            Map<String, Object> map = new HashMap<>();
+            map.put("msg","订单取消成功");
+            return "user/myorder";
+        }else {
+            AlipayTradeRefundRequest alipayRequest = new AlipayTradeRefundRequest();
 
-        AlipayTradeRefundModel model=new AlipayTradeRefundModel();
-        // 商户订单号
-        model.setOutTradeNo(orderNo);
-        // 退款金额
-        model.setRefundAmount("0.01");
-        // 退款原因
-        model.setRefundReason("无理由退货");
-        // 退款订单号(同一个订单可以分多次部分退款，当分多次时必传)
+
+            AlipayTradeRefundModel model = new AlipayTradeRefundModel();
+            // 商户订单号
+            model.setOutTradeNo(orderNo + "");
+            // 退款金额
+            model.setRefundAmount(orderListEntity.getOrderPrices() + "");
+            // 退款原因
+            model.setRefundReason("无理由退货");
+            // 退款订单号(同一个订单可以分多次部分退款，当分多次时必传)
 //        model.setOutRequestNo(UUID.randomUUID().toString());
-        alipayRequest.setBizModel(model);
-
-        AlipayTradeRefundResponse alipayResponse = alipayClient.execute(alipayRequest);
-        System.out.println(alipayResponse.getBody());
-
+            alipayRequest.setBizModel(model);
+            AlipayTradeRefundResponse alipayResponse = alipayClient.execute(alipayRequest);
+            System.out.println(alipayResponse.getBody());
+            Map<String, Object> map = new HashMap<>();
+            map.put("msg","订单取消成功");
+            /*更改订单状态*/
+            OrderListEntity orderListEntity1 = new OrderListEntity();
+            orderListEntity1.setOrderId(orderNo);
+            orderListEntity1.setOrderPay("已退款");
+            orderListService.updateById(orderListEntity1);
         return alipayResponse.getBody();
+        }
     }
 
     /**

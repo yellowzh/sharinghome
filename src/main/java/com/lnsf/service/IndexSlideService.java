@@ -15,15 +15,19 @@ import java.util.List;
  */
 public interface IndexSlideService {
 
-    IndexSlideEntity getIndexSlide(Long slideId);
+
 
     List<IndexSlideEntity> list();
 
-    IndexSlideEntity create(IndexSlideDTO dto);
-
-    void delete(Long slideId);
-
-    IndexSlideEntity update(Long slideId, IndexSlideDTO dto);
+    void delete(Integer slideId);
+    /*修改*/
+    IndexSlideEntity update(Integer slideId, IndexSlideDTO dto);
     /*查询原先轮播图列表*/
-    List<IndexSlideEntity> selectOldSlideList();
+    List<IndexSlideDTO> selectOldSlideList();
+    /*删除轮播*/
+    String delSlideUpdate(Integer slideId);
+    /*查询单条*/
+    IndexSlideDTO getIndexSlide(Integer slideId);
+    /*添加*/
+    IndexSlideEntity create(IndexSlideDTO dto);
 }

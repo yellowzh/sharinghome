@@ -4,10 +4,14 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.lnsf.entity.CommentEntity;
 import com.lnsf.dto.CommentDTO;
 import com.lnsf.dao.CommentMapper;
+import com.lnsf.entity.HousesEntity;
+import com.lnsf.entity.OrderListEntity;
 import com.lnsf.entity.UserInfoEntity;
 import com.lnsf.service.CommentService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import cn.hutool.core.bean.BeanUtil;
+import com.lnsf.service.HousesService;
+import com.lnsf.service.OrderListService;
 import com.lnsf.service.UserInfoService;
 import com.lnsf.vo.CommentListVO;
 import com.lnsf.vo.CommentVO;
@@ -32,6 +36,10 @@ public class CommentServiceImpl implements CommentService {
 
     @Autowired
     private UserInfoService userInfoService;
+    @Autowired
+    private OrderListService orderListService;
+    @Autowired
+    private HousesService housesService;
     /*查看评论列表*/
     @Override
     public CommentListVO list(Integer houserId){
@@ -91,6 +99,29 @@ public class CommentServiceImpl implements CommentService {
         CommentEntity entity = new CommentEntity();
         BeanUtil.copyProperties(dto, entity);
         commentMapper.insert(entity);
+        /*更新房源分数*/
+        QueryWrapper wrapper = new QueryWrapper();
+        wrapper.eq("house_id",dto.getHouseId());
+        wrapper.eq("is_del",false);
+        List<CommentEntity> commentEntityList = commentMapper.selectList(wrapper);
+        float num=0;
+        double fenshu=0;
+        double nums=0;
+        for (CommentEntity c:commentEntityList) {
+            fenshu+=c.getCommentPower();
+            num++;
+        }
+        if (num!=0) {
+            nums = fenshu / num;
+        }
+        HousesEntity housesEntity = new HousesEntity();
+        housesEntity.setHousesId(dto.getHouseId());
+        housesEntity.setHousesFarction(nums);
+        housesService.updateHouses(housesEntity);
+        /*更新订单评价状态*/
+        OrderListEntity orderListEntity=orderListService.getOrderList(dto.getOrderId());
+        orderListEntity.setIsComment(true);
+        orderListService.updateById(orderListEntity);
         return entity;
     }
 

@@ -15,7 +15,7 @@ import java.util.List;
  * @author 黄润志
  * @since 2020-03-09 12:36
  */
-@Mapper
+@Repository
 public interface SysDictMapper extends BaseMapper<SysDictEntity> {
 
     List<SysDictEntity> page(@Param("dto")SysDictDTO dto, IPage<SysDictEntity> page);

@@ -72,5 +72,9 @@ public class UserInfoEntity{
     @TableField("user_backup2")
     private String userBackup2;
 
+    @ApiModelProperty(value = "积分")
+    @TableField("points")
+    private Integer points;
+
 
 }

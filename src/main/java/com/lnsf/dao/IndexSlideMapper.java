@@ -15,7 +15,7 @@ import java.util.List;
  * @author 黄润志
  * @since 2020-03-07 09:32
  */
-@Mapper
+@Repository
 public interface IndexSlideMapper extends BaseMapper<IndexSlideEntity> {
 
     List<IndexSlideEntity> page(@Param("dto")IndexSlideDTO dto, IPage<IndexSlideEntity> page);

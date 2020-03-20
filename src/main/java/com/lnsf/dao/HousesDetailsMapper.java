@@ -15,7 +15,7 @@ import java.util.List;
  * @author 黄润志
  * @since 2020-03-10 15:10
  */
-@Mapper
+@Repository
 public interface HousesDetailsMapper extends BaseMapper<HousesDetailsEntity> {
 
     List<HousesDetailsEntity> page(@Param("dto")HousesDetailsDTO dto, IPage<HousesDetailsEntity> page);

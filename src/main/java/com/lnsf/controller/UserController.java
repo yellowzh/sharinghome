@@ -1,12 +1,17 @@
 package com.lnsf.controller;
 
 
+import cn.hutool.db.PageResult;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.lnsf.dto.UserInfoDTO;
 import com.lnsf.entity.UserInfoEntity;
 import com.lnsf.service.UserInfoService;
 import com.lnsf.util.UploadImgUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,29 +47,48 @@ public class UserController {
         return model_html;
     }
     /*查询所有商家*/
+//    @ApiOperation(value = "查询所有商家", notes = "记录",httpMethod = "GET")
+//    @RequestMapping("/getBusiness2")
+//    public ModelAndView business2(Map<String,Object> map,String power,Integer page){
+//        if (page==null)
+//        {page=1;}
+////        PageHelper.startPage(page,5);
+//        UserInfoEntity userInfo = new UserInfoEntity();
+//        userInfo.setUserPower(power);
+//        log.info("power:"+power);
+//        List<UserInfoEntity> userInfos = userInfoService.findAllUser(userInfo);
+////        map=maps(userInfos,map,page);
+//        log.info("所有用户查询"+userInfos);
+//        map.put("users",userInfos);
+//        map.put("business","getBusiness");
+//        ModelAndView model = model(power);
+//        return model;
+//    }
+    /*查询所有商家*/
     @ApiOperation(value = "查询所有商家", notes = "记录",httpMethod = "GET")
     @RequestMapping("/getBusiness")
     public ModelAndView business(Map<String,Object> map,String power,Integer page){
         if (page==null)
         {page=1;}
-//        PageHelper.startPage(page,5);
         UserInfoEntity userInfo = new UserInfoEntity();
         userInfo.setUserPower(power);
-        log.info("power:"+power);
-        List<UserInfoEntity> userInfos = userInfoService.findAllUser(userInfo);
-        map=maps(userInfos,map,page);
-        log.info("所有用户查询"+userInfos);
-        map.put("users",userInfos);
+        IPage<UserInfoEntity> infoEntityIPage = userInfoService.findAllUserPage(userInfo,page);
+        /*如果为最后一页则返回最后一页数据*/
+        if(infoEntityIPage.getCurrent()>infoEntityIPage.getPages()){
+            page=Integer.parseInt(String.valueOf(infoEntityIPage.getPages()));
+            infoEntityIPage = userInfoService.findAllUserPage(userInfo,page);
+        }
+        map=maps(infoEntityIPage,map);
         map.put("business","getBusiness");
         ModelAndView model = model(power);
         return model;
     }
     /*分页插件数据返回*/
-    public Map<String,Object> maps(List<UserInfoEntity> list, Map<String,Object> map,Integer page){
-        IPage<UserInfoEntity> ipage = new Page<>(page, 5);
-        map.put("users",ipage.getRecords());
-        map.put("totalPage",ipage.getTotal());
-        map.put("indexPage",ipage.getPages());
+    public Map<String,Object> maps(IPage<UserInfoEntity> list, Map<String,Object> map){
+        System.out.println("页面取值：size"+list.getSize()+"-to-:"+list.getTotal()+"=page=="+list.getPages()+"cun:"+list.getCurrent());
+        map.put("users",list.getRecords());
+        map.put("totalPage",list.getPages());
+        map.put("indexPage",list.getCurrent());
         return map;
     }
     private String Sname;
@@ -73,7 +97,6 @@ public class UserController {
     public ModelAndView getBusinessLikeName(Map<String,Object> map,String power,String name,Integer page){
         if (page==null)
         { page=1;}
-//        PageHelper.startPage(page,10);
         UserInfoEntity userInfo = new UserInfoEntity();
         userInfo.setUserPower(power);
         if (name==null){
@@ -82,14 +105,16 @@ public class UserController {
             userInfo.setRealName(name);
             Sname=name;
         }
-        log.info("power:"+power);
-        log.info("name:"+name+"--Sname:"+Sname);
-        List<UserInfoEntity> userInfos = userInfoService.getBusinessLikeName(userInfo);
-        map=maps(userInfos,map,page);
-        for (UserInfoEntity u: userInfos) {
+        IPage<UserInfoEntity> infoEntityIPage = userInfoService.getBusinessLikeNamePage(userInfo,page);
+        /*如果为最后一页则返回最后一页数据*/
+        if(infoEntityIPage.getCurrent()>infoEntityIPage.getPages()){
+            page=Integer.parseInt(String.valueOf(infoEntityIPage.getPages()));
+            infoEntityIPage = userInfoService.getBusinessLikeNamePage(userInfo,page);
+        }
+        map=maps(infoEntityIPage,map);
+        for (UserInfoEntity u: infoEntityIPage.getRecords()) {
             log.info("u:"+u.getRealName());
         }
-        map.put("users",userInfos);
         map.put("business","getBusinessLikeName");
         /*返回跳转页面*/
         ModelAndView model = model(power);
@@ -269,6 +294,33 @@ public class UserController {
            return model_html;
        }
     }
+
+//    @ApiOperation("分页查询")
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(paramType = "query", dataType = "String", name = "username", value = "用户昵称"),
+//            @ApiImplicitParam(paramType = "query", dataType = "String", name = "realName", value = "真实姓名"),
+//            @ApiImplicitParam(paramType = "query", dataType = "String", name = "userTel", value = "用户电话"),
+//            @ApiImplicitParam(paramType = "query", dataType = "String", name = "userEmil", value = "用户邮箱"),
+//            @ApiImplicitParam(paramType = "query", dataType = "String", name = "password", value = "密码"),
+//            @ApiImplicitParam(paramType = "query", dataType = "String", name = "userPower", value = "权限：0普通用户、1管理员、2商家"),
+//            @ApiImplicitParam(paramType = "query", dataType = "String", name = "userStatus", value = "状态：1锁定、2冻结、0正常"),
+//            @ApiImplicitParam(paramType = "query", dataType = "Date", name = "userLogintime", value = "登录时间"),
+//            @ApiImplicitParam(paramType = "query", dataType = "Date", name = "userLoginouttime", value = "登出时间"),
+//            @ApiImplicitParam(paramType = "query", dataType = "Integer", name = "userNum", value = "密码错误次数"),
+//            @ApiImplicitParam(paramType = "query", dataType = "String", name = "userBackup1", value = "扩展字段1--地址"),
+//            @ApiImplicitParam(paramType = "query", dataType = "String", name = "userBackup2", value = "扩展字段2--头像"),
+//            @ApiImplicitParam(paramType = "query", dataType = "Integer", name = "points", value = "积分"),
+//            @ApiImplicitParam(paramType = "query", dataType = "Integer", name = "page", value = "分页页码"),
+//            @ApiImplicitParam(paramType = "query", dataType = "Integer", name = "size", value = "每页数量"),
+//            @ApiImplicitParam(paramType = "query", dataType = "String", name = "ascs", value = "升序字段，多个用逗号隔开"),
+//            @ApiImplicitParam(paramType = "query", dataType = "String", name = "descs", value = "降序字段，多个用逗号隔开")
+//    })
+//    @GetMapping(path = "/page")
+//    public PageResult page(UserInfoDTO dto) {
+//        IPage<UserInfoEntity> page = PageFactory.convertPageByParameters();
+//        List<UserInfoEntity> list = userInfoService.page(dto, page);
+//        return PageFactory.buildPageResult(page, list);
+//    }
 
 
 }

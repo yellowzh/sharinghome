@@ -86,7 +86,7 @@ public class AlipayPagePayController {
             OrderListEntity orderListEntity = (OrderListEntity) request.getSession().getAttribute("oneOrder");
             orderListService.update(orderListEntity);
 
-            return "user/pagePaySuccess";
+            return "user/myorder";
 
         }else{
             return "user/pagePayFail";

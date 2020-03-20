@@ -61,16 +61,7 @@
 				);
 			};
 
-			/*搜索*/
-			$scope.show=true;
-			// $scope.housesVO = {};
-			$scope.selectHousesVO=function(){
-				$http.post("/api/select/selectHousesByCondition",$scope.housesVO).success(
-						function(response){
-							$scope.housesList=response;
-							$scope.show=false;
-						}
-				)};
+
 			/*预定*/
 			$scope.reserve=function(){
 				var dt = doTable();
@@ -165,19 +156,7 @@
 		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
 			<span class="navbar-toggler-icon"></span>
 		</button>
-		<!--搜索栏-->
-		<div class="select">
-			<input type="text" placeholder="你想去哪里？" ng-model="housesVO.housesAddress">
-			入住:<input type="date" ng-model="housesVO.startTime">
-			退租:<input type="date" ng-model="housesVO.endTime">
-			<select name="housesFalgs" ng-model="housesVO.peopleNum">
-				<option value="{{num.name}}" ng-repeat="num in peopleNum">{{num.name}}位房客</option>
-			</select>
-			<select name="housesFalgs" ng-model="housesVO.typeId">
-				<option value="{{type.dictId}}" ng-repeat="type in housesType">{{type.name}}</option>
-			</select>
-			<button ng-click="selectHousesVO()">搜索</button>
-		</div>
+
 		<!--菜单-->
 		<div class="collapse navbar-collapse" id="navbarText">
 			<ul class="navbar-nav ml-auto">
@@ -223,22 +202,25 @@
 	</nav>
 	<!-- End Navigation Bar -->
 	<!--Start lunBo-->
-	<div id="box" style="width: 100%;margin-left: 20%;margin-top: 90px;">
-		<!-- 这里的图片可以用一个for循环动态成多个li就可以了 -->
-		<ul id="picBox">
-			<li class="sPic" ng-repeat="img in photoList">
-					<!--<p style="position: absolute;font-size: 40px;color: white">{{img.houseTilte}}</p>-->
-					<img src="{{img.photoPath}}">
-			</li>
-		</ul>
-		<div class="bn" id="before"></div>
-		<div class="bn" id="next"></div>
-		<!--右下角的几个点-->
-		<ul id="btnBox">
-			<li class="picBtn" ng-repeat="img in photoList"></li>
-		</ul>
-	</div>
+
+		<div id="box" style="width: 100%;margin-left: 20%;margin-top: 90px;">
+			<!-- 这里的图片可以用一个for循环动态成多个li就可以了 -->
+			<ul id="picBox">
+				<li class="sPic" ng-repeat="img in photoList">
+						<!--<p style="position: absolute;font-size: 40px;color: white">{{img.houseTilte}}</p>-->
+						<img src="{{img.photoPath}}">
+				</li>
+			</ul>
+			<div class="bn" id="before"></div>
+			<div class="bn" id="next"></div>
+			<!--右下角的几个点-->
+			<ul id="btnBox">
+				<li class="picBtn" ng-repeat="img in photoList"></li>
+			</ul>
+		</div>
+
 </div>
+
 <div style="width: 100%;margin-left: 20%">
 	<h3 th:text="${houses.getHousesTitle()}"></h3>
 	<h5 th:text="${houses.getHousesDescribe()}"></h5>

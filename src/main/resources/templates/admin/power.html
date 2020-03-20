@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta name="renderer" content="webkit">
+<title></title>
+<link rel="stylesheet" href="../css/pintuer.css">
+<link rel="stylesheet" href="../css/admin.css">
+<script src="../js/jquery.js"></script>
+<script src="../js/pintuer.js"></script>
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/my/show.js"></script><!--自编弹出显示-->
+  <script src="/js/angular.min.js"></script>
+  <script>
+    var app=angular.module('myApp',[]); //定义了一个叫myApp的模块
+    //定义控制器
+    app.controller('myController',function($scope,$http){
+      $scope.findAll=function(){
+        $http.get('/api/getAllMenu').success(
+                function(response){
+                  $scope.menuList=response;
+                }
+        )};
+      $scope.del=function(id){
+        $http.get('/api/deleteUpdate?menuId='+id).success(
+                function(response){
+                  func(response,"#999999");
+                  /*删除成功后刷新列表*/
+                  $scope.findAll();
+                }
+
+        )};
+
+
+      $scope.addoneMenu=function(){
+        if(doTable()==false){
+          func("该菜单名称、请求地址已存在","#999999");
+        }else {
+                //使复选框选中
+                $("#isUser").attr("checked",true);
+                $("#isHouses").attr("checked",true);
+                if($scope.oneMenu.u==true){
+                    $scope.oneMenu.userPower=0;
+                }//判断是否已经打勾
+                else if($scope.oneMenu.s==true){
+                    $scope.oneMenu.userPower=1;
+                  }
+              $http.post('/api/createMenu',$scope.oneMenu).success(
+                  function(response){
+                    func("菜单添加成功","#999999");
+                    /*添加成功后刷新列表*/
+                    $scope.findAll();
+                  }
+          )}};
+    // };
+
+
+      /*点击修改的时候查询单条数据*/
+      $scope.findMenu=function(id){
+        $scope.oneMenuId=id;
+        $http.get('/api/getMenuById?menuId='+id).success(
+                function(response){
+                  $scope.oneMenu=response;
+                  if (response.userPower==0) {
+                    $scope.oneMenu.u=true;
+                    $scope.oneMenu.s=true;
+                  }
+                  if (response.userPower==1) {
+                    $scope.oneMenu.u=false;
+                    $scope.oneMenu.s=true;
+                  }
+                }
+
+        )};
+
+      /*保存修改*/
+      $scope.updateMenu=function(){
+        if($scope.oneMenu.u==true){
+          $scope.oneMenu.userPower=0;
+        }//判断是否已经打勾
+        else if($scope.oneMenu.s==true){
+          $scope.oneMenu.userPower=1;
+        }else {
+          $scope.oneMenu.userPower=-1;
+        }
+        $http.post('/api/updateMenu?menuId='+$scope.oneMenuId,$scope.oneMenu).success(
+                function(response){
+                  func("修改成功","#999999");
+                  /*修改成功后刷新列表*/
+                  $scope.findAll();
+                }
+
+        )};
+      /*点击添加按钮变会添加*/
+      $scope.clear=function(){
+        // 点击添加清空
+        $scope.oneMenuId=null;
+        $scope.oneMenu={}
+      };
+      /*校验添加标题*/
+      $(function() {
+        $("input[name=menuname]").focus(function(){
+          if($(this).val() == this.defaultValue){
+            $(this).val('');
+          }
+        }).blur(function(){
+          if($(this).val() == ''){
+            $(this).val(this.defaultValue);
+          }
+        });
+        $("input[name=reqmenu]").focus(function(){
+          if($(this).val() == this.defaultValue){
+            $(this).val('');
+          }
+        }).blur(function(){
+          if($(this).val() == ''){
+            $(this).val(this.defaultValue);
+          }
+        });
+        /*验证限制提交订单前算出总价显示*/
+        /*失去焦点的时候执行*/
+        $("input[name=menuname]").blur(function () {menuname();	});
+        $("input[name=reqmenu]").blur(function () {reqmenu();	});
+      });
+      function menuname(){
+        var t = $("input[name=menuname]");
+        if(t.val()==''){
+          span.html("该名称不能为空").css({color:"#ec4e4e",fontSize:"12px"});
+          return false;
+        }else {
+          doOnlyMenu();
+        }
+        // alert($scope.orderList.startTime);
+        return true
+      }
+      function reqmenu(){
+        var t = $("input[name=reqmenu]");
+        if(t.val()==''){
+          span.html("该请求路径不能为空").css({color:"#ec4e4e",fontSize:"12px"});
+          return false;
+        }else {
+          doOnlyReqmenu();
+        }
+        // alert($scope.orderList.startTime);
+        return true
+      }
+      // 菜单名称唯一性的验证==========================
+      function doOnlyMenu(){
+        var t = $("input[name=menuname]");
+        var span = t.next();
+        $.ajax({
+          type:"post",
+          //发送请求的地址1
+          url : "doOnlyMenu-exist",
+          data : {"menuProcince" :t.val()},
+          //服务器返回的数据类型
+          dataType : "json",
+          success : function(data) {
+            if(data==false){
+              span.html("该菜单名称可用").css({color:"green",fontSize:"12px"});
+              return true;
+            }else{
+              span.html("该菜单已经存在，不可用").css({color:"#ec4e4e",fontSize:"12px"});
+              return false;
+            }
+          }
+        })
+      }
+      // 请求路径唯一性的验证==========================
+      function doOnlyReqmenu(){
+        var t = $("input[name=reqmenu]");
+        var span = t.next();
+        $.ajax({
+          type:"post",
+          //发送请求的地址1
+          url : "doOnlyReqmenu-exist",
+          data : {"menuRequest" :t.val()},
+          //服务器返回的数据类型
+          dataType : "json",
+          success : function(data) {
+            if(data==false){
+              span.html("该菜单链接可用").css({color:"green",fontSize:"12px"});
+              return true;
+            }else{
+              span.html("该菜单链接已经存在，不可用").css({color:"#ec4e4e",fontSize:"12px"});
+              return false;
+            }
+          }
+        })
+      }
+      function doTable(){
+        var mn = menuname();
+        var rm = reqmenu();
+        if(mn&&rm){
+          return true;
+        }else{
+          return false;
+        }
+      }
+
+    });
+  </script>
+</head>
+<body ng-app="myApp" ng-controller="myController" ng-init="findAll()">
+<div class="panel admin-panel">
+  <!--id="add"-->
+  <div class="panel-head" ><strong><span class="icon-pencil-square-o"></span>菜单列表</strong></div>
+  <div class="padding border-bottom">
+    <button type="button" class="button border-yellow" onclick="window.location.href='#add'" ng-click="clear()"><span class="icon-plus-square-o"></span> 添加菜单</button>
+  </div>
+  <table class="table table-hover text-center">
+    <tr >
+      <th width="5%">菜单名称</th>
+      <th width="25%">菜单请求地址</th>
+      <th width="15%">操作</th>
+    </tr>
+    <tr ng-repeat="menu in menuList">
+      <td>{{menu.menuProcince}}</td>
+      <td>{{menu.menuRequest}}</td>
+      <td>
+        <div class="button-group">
+          <!--data-toggle="modal" data-target="#myModal"-->
+          <a class="button border-main"  ng-click="findMenu(menu.menuId)" ><span class="icon-edit"></span> 修改</a>
+          <a class="button border-blue" ng-click="del(menu.menuId)" style="color: red;"><span class="icon-trash-o"></span> 删除</a>
+        </div>
+      </td>
+    </tr>
+
+  </table>
+  <div class="panel-head" id="add"><strong><span class="icon-pencil-square-o"></span>菜单添加/修改</strong></div>
+  <div class="body-content">
+    <form method="post" class="form-x" action="">  
+      <div class="form-group">
+        <div class="label">
+          <label>菜单名称：</label>
+        </div>
+        <div class="field">
+          <input type="text" class="input w50" ng-model="oneMenu.menuProcince" name="menuname" data-validate="required:请输入菜单名称" />
+          <div class="tips"></div>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="label">
+          <label>菜单请求路径：</label>
+        </div>
+        <div class="field">
+          <input type="text" class="input w50" ng-model="oneMenu.menuRequest" name="reqmenu" data-validate="required:请输入菜单请求路径" />
+          <div class="tips"></div>
+        </div>
+      </div>
+       <div class="form-group">
+          <div class="label">
+            <label>可访问角色：</label>
+          </div>
+          <div class="field" style="padding-top:8px;">
+            普通用户 <input id="isUser" ng-model="oneMenu.u" type="checkbox" />
+            商家 <input id="isHouses" ng-model="oneMenu.s" type="checkbox" />
+          </div>
+        </div>
+      <div class="form-group">
+      <div class="label">
+          <label></label>
+        </div>
+        <div class="field">
+          <!--id="image1"-->
+          <input type="button" class="button bg-blue margin-left" ng-if="oneMenuId==null" ng-click="addoneMenu()"  value="+ 新增菜单"  style="float:left;">
+          <input type="button" class="button bg-blue margin-left" ng-if="oneMenuId!=null" ng-click="updateMenu()"  value="保存修改"  style="float:left;">
+        </div>
+      </div>
+      <!--id="add"-->
+       <div class="panel-head" ><strong><span class="icon-pencil-square-o"></span>菜单分配</strong></div>
+      <if condition="$iscid eq 1">
+        <div class="form-group">
+          <div class="label">
+            <label>普通用户：</label>
+          </div>
+          <div class="field" style="padding-top:8px;">
+            <div ng-repeat="menu in menuList">
+              {{menu.menuProcince}}
+              <!--id="isUTrue"-->
+              <input   type="checkbox" checked="checked" ng-if="menu.userPower==0"/>
+              <input   type="checkbox" ng-if="menu.userPower!=0"/>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="label">
+            <label>商家：</label>
+          </div>
+          <div class="field" style="padding-top:8px;">
+            <div ng-repeat="menu in menuList">
+              {{menu.menuProcince}}
+              <!--id="isSTrue" -->
+              <input  type="checkbox" checked="checked" ng-if="menu.userPower==1||menu.userPower==0"/>
+              <input  type="checkbox" ng-if="menu.userPower==-1"/>
+            </div>
+         
+          </div>
+        </div>
+      </if>
+   
+      <div class="form-group">
+        <div class="label">
+          <label></label>
+        </div>
+        <div class="field">
+          <!--<button class="button bg-main icon-check-square-o" type="submit"> 保存修改</button>-->
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+</body></html>

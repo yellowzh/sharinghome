@@ -33,10 +33,10 @@ public class HousesServiceImpl implements HousesService {
 
     /*查询所有房屋*/
     @Override
-    public List<HousesDTO> getAllHomeShow() {
-        List<HousesEntity> houses = housesMapper.selectList(null);
-        List<HousesDTO> housesDTOS = getUserByHId(houses);
-        return housesDTOS;
+    public IPage<HousesEntity> getAllHomeShowPage(Integer page) {
+        IPage<HousesEntity> ipage = new Page<>(page, 8);
+        IPage<HousesEntity> pages = housesMapper.selectPage(ipage,null);
+        return pages;
     }
 
     @Override
@@ -78,12 +78,13 @@ public class HousesServiceImpl implements HousesService {
     }
     /*模糊查询，加状态查询*/
     @Override
-    public List<HousesDTO> getAllHousesShowLikeTitle(HousesEntity houses) {
-        QueryWrapper wrapper = new QueryWrapper();
+    public IPage<HousesEntity> getAllHousesShowLikeTitle(HousesEntity houses,Integer page) {
+        IPage<HousesEntity> ipage = new Page<>(page, 8);
+        HousesEntity housesEntity = new HousesEntity();
+        QueryWrapper<HousesEntity> wrapper = new QueryWrapper<>(housesEntity);
         wrapper.like("houses_title",houses.getHousesTitle());
-        List<HousesEntity> housesLike = housesMapper.selectList(wrapper);
-        List<HousesDTO> housesDTOS = getUserByHId(housesLike);
-        return housesDTOS;
+        IPage<HousesEntity> pages = housesMapper.selectPage(ipage,wrapper);
+        return pages;
     }
 
     @Override
@@ -103,7 +104,6 @@ public class HousesServiceImpl implements HousesService {
     public HousesDTO getHomeShowById(Integer id) {
         HousesEntity housesEntity = housesMapper.selectById(id);
         HousesDTO housesDTO =new HousesDTO();
-
         if (null != housesEntity) {
             BeanUtil.copyProperties(housesEntity, housesDTO);
             UserInfoEntity userInfoEntity = userInfoService.getUserById(housesEntity.getBusinessId());
@@ -138,6 +138,93 @@ public class HousesServiceImpl implements HousesService {
     @Override
     public int insertHouses(HousesEntity houses) {
         return housesMapper.insert(houses);
+    }
+
+    /*查看我的房源*/
+    public List<HousesDTO> getMyHousesByUserId(Integer userId){
+        QueryWrapper wrapper = new QueryWrapper();
+        wrapper.like("business_id",userId);
+        wrapper.ne("houses_falgs",2);
+        List<HousesEntity> housesLike = housesMapper.selectList(wrapper);
+        List<HousesDTO> housesDTOS = getUserByHId(housesLike);
+        return housesDTOS;
+    }
+    /*更新房源状态*/
+    public String updateHousesByFalgs(String falgs ,Integer housesId){
+        HousesEntity housesEntity = new HousesEntity();
+        housesEntity.setHousesFalgs(falgs);
+        housesEntity.setHousesId(housesId);
+       int houses = housesMapper.updateById(housesEntity);
+       if (houses>0){
+            if ("0".equals(falgs)){
+                return "房源上架成功";
+            }
+            if ("1".equals(falgs)){
+                return "房源下架成功";
+            }
+            if ("2".equals(falgs)){
+                return "房源删除成功";
+            }
+        }else {
+           if ("0".equals(falgs)){
+               return "房源上架失败";
+           }
+           if ("1".equals(falgs)){
+               return "房源下架失败";
+           }
+           if ("2".equals(falgs)){
+               return "房源删除失败";
+           }
+       }
+       return null;
+    }
+   public List<HousesDTO> getNotRecommendHouses(){
+       QueryWrapper wrapper = new QueryWrapper();
+       wrapper.eq("houses_falgs",0);
+       /*推荐列表*/
+       wrapper.eq("is_recommend",false);
+       List<HousesEntity> houses = housesMapper.selectList(wrapper);
+       List<HousesDTO> housesDTOS = getUserByHId(houses);
+       return housesDTOS;
+    }
+
+    public String recomHouses(Integer houseId){
+        HousesEntity housesEntity = new HousesEntity();
+        housesEntity.setHousesId(houseId);
+        housesEntity.setIsRecommend(true);
+        int num = housesMapper.updateById(housesEntity);
+        if (num>0){
+            return "推荐成功";
+        }else {
+            return "推荐失败";
+        }
+    }
+    public String delrecomHouses(Integer houseId){
+        HousesEntity housesEntity = new HousesEntity();
+        housesEntity.setHousesId(houseId);
+        housesEntity.setIsRecommend(false);
+        int num = housesMapper.updateById(housesEntity);
+        if (num>0){
+            return "取消成功";
+        }else {
+            return "取消失败";
+        }
+    }
+    /*查看所有在线出租房源*/
+    public List<HousesDTO> getAllHousesByNow(){
+        QueryWrapper wrapper = new QueryWrapper();
+        wrapper.eq("houses_falgs",0);
+        List<HousesEntity> houses = housesMapper.selectList(wrapper);
+        List<HousesDTO> housesDTOS = getUserByHId(houses);
+        return housesDTOS;
+    }
+    /*查看所有房源*/
+    public List<HousesDTO> getAllHouses(){
+        QueryWrapper wrapper = new QueryWrapper();
+        wrapper.ne("houses_falgs",2);
+        List<HousesEntity> houses = housesMapper.selectList(wrapper);
+        List<HousesDTO> housesDTOS = getUserByHId(houses);
+        return housesDTOS;
     }
 
 

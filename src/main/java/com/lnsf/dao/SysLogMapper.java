@@ -15,7 +15,7 @@ import java.util.List;
  * @author 黄润志
  * @since 2020-03-06 14:12
  */
-@Mapper
+@Repository
 public interface SysLogMapper extends BaseMapper<SysLogEntity> {
 
     List<SysLogEntity> page(@Param("dto")SysLogDTO dto, IPage<SysLogEntity> page);

@@ -11,12 +11,12 @@
     <div class="orderTitle">订单确认</div>
     <div class="pay">
     <form method="post" action="/alipay/page/gotoPayPage">
-        订单编号：<h3 th:text="${oneOder.orderId}"></h3>
-        入住时间：<h3 th:text="${oneOder.startTime}">2020-02-01</h3>
-        退租时间：<h3 th:text="${oneOder.endTime}">2020-02-02</h3>
-        入住人数：<h3 th:text="${oneOder.pepoleNum}">2个</h3>
-        单价：<h3 th:text="${oneOder.onlyPrices}">100元/天</h3>
-        需支付：<h3 th:text="${oneOder.orderPrices}">100元</h3>
+       <h3> 订单编号：<span th:text="${oneOder.orderId}"></span></h3>
+        <h3> 入住时间：<span th:text="${#dates.format(oneOder.startTime, 'yyyy/MM/dd')}">2020-02-01</span></h3>
+        <h3> 退租时间：<span th:text="${#dates.format(oneOder.endTime, 'yyyy/MM/dd')}">2020-02-02</span></h3>
+        <h3> 入住人数：<span th:text="${oneOder.pepoleNum}">2个</span>人</h3>
+        <h3>  房源单价：<span th:text="${oneOder.onlyPrices}">100元/天</span>/天</h3>
+        <h3>  需要支付：<span th:text="${oneOder.orderPrices}">100元</span>元</h3>
         <button type="submit">立即支付</button>
     </form>
     </div>

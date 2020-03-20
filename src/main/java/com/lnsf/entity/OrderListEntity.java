@@ -70,9 +70,19 @@ public class OrderListEntity{
     @TableField("end_time")
     private Date endTime;
 
+    @ApiModelProperty(value = "下单时间")
+    @TableField("create_time")
+    private Date createTime;
+
     @ApiModelProperty(value = "标注位")
     @TableField("is_del")
     private Boolean isDel;
+
+    @ApiModelProperty(value = "是否评价")
+    @TableField("is_comment")
+    private Boolean isComment;
+
+
 
 
 }

@@ -1,6 +1,7 @@
 package com.lnsf.service;
 
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.lnsf.dto.HousesDTO;
 import com.lnsf.entity.HousesEntity;
 import com.lnsf.vo.HousesVO;
@@ -13,10 +14,10 @@ public interface HousesService {
     /*首页搜索在线出租的房源*/
     List<HousesDTO> getIndexHomeSelect(HousesVO housesVO);
     /*后台查询所有*/
-    List<HousesDTO> getAllHomeShow();
+    IPage<HousesEntity> getAllHomeShowPage(Integer page);
 
     //模糊查询，后期添加状态查询
-    List<HousesDTO> getAllHousesShowLikeTitle(HousesEntity houses);
+    IPage<HousesEntity> getAllHousesShowLikeTitle(HousesEntity houses,Integer page);
 
     Boolean deleteHouse(Integer houseId);
 
@@ -27,5 +28,19 @@ public interface HousesService {
     int updateHouses(HousesEntity houses);
     /*添加*/
     int insertHouses(HousesEntity houses);
+    /*查看我的房源*/
+    List<HousesDTO> getMyHousesByUserId(Integer userId);
+    /*更具id更新房源状态*/
+    String updateHousesByFalgs(String falgs ,Integer housesId);
+    /*查询在线出租但是未推荐的房源*/
+    List<HousesDTO> getNotRecommendHouses();
+    /*推荐房源*/
+    String recomHouses(Integer houseId);
+    /*取消推荐房源*/
+    String delrecomHouses(Integer houseId);
+    /*查看所有在线房源*/
+    List<HousesDTO> getAllHousesByNow();
+    /*查看所有房源*/
+    List<HousesDTO> getAllHouses();
 
 }

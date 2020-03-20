@@ -15,7 +15,7 @@ import java.util.List;
  * @author 黄润志
  * @since 2020-03-06 19:58
  */
-@Mapper
+@Repository
 public interface PhotoListMapper extends BaseMapper<PhotoListEntity> {
 
     List<PhotoListEntity> page(@Param("dto")PhotoListDTO dto, IPage<PhotoListEntity> page);

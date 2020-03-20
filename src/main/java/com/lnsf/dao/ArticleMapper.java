@@ -15,7 +15,7 @@ import java.util.List;
  * @author 黄润志
  * @since 2020-03-10 10:26
  */
-@Mapper
+@Repository
 public interface ArticleMapper extends BaseMapper<ArticleEntity> {
 
     List<ArticleEntity> page(@Param("dto")ArticleDTO dto, IPage<ArticleEntity> page);

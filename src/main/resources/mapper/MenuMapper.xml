@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lnsf.dao.MenuMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.lnsf.entity.MenuEntity">
+        <id column="menu_id" property="menuId" />
+        <result column="menu_procince" property="menuProcince" />
+        <result column="menu_request" property="menuRequest" />
+        <result column="menu_pcode" property="menuPcode" />
+        <result column="user_power" property="userPower" />
+        <result column="is_del" property="isDel" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="BaseColumnList">
+        menu_id, menu_procince, menu_request, menu_pcode, user_power, is_del
+    </sql>
+
+
+    <select id="page" resultType="com.lnsf.entity.MenuEntity">
+        select * from menu t where t.delete_tag=0
+
+        <if test="dto.menuProcince !=null and dto.menuProcince != ''">
+            and t.menu_procince like CONCAT('%',#{dto.menuProcince},'%')
+        </if>
+        <if test="dto.menuRequest !=null and dto.menuRequest != ''">
+            and t.menu_request like CONCAT('%',#{dto.menuRequest},'%')
+        </if>
+        <if test="dto.menuPcode !=null">
+            and t.menu_pcode = #{dto.menuPcode}
+        </if>
+        <if test="dto.userPower !=null and dto.userPower != ''">
+            and t.user_power like CONCAT('%',#{dto.userPower},'%')
+        </if>
+        <if test="dto.isDel !=null">
+            and t.is_del = #{dto.isDel}
+        </if>
+    </select>
+</mapper>

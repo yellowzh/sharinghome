@@ -32,7 +32,7 @@ public class CommentEntity{
     private Long commentId;
 
     @TableField("order_id")
-    private Integer orderId;
+    private Long orderId;
 
     @ApiModelProperty(value = "房源编号")
     @TableField("house_id")

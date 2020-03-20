@@ -1,8 +1,11 @@
 package com.lnsf.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lnsf.dao.UserInfoMapper;
 import com.lnsf.dto.SysLogDTO;
+import com.lnsf.dto.UserInfoDTO;
 import com.lnsf.entity.UserInfoEntity;
 import com.lnsf.service.SysLogService;
 import com.lnsf.service.UserInfoService;
@@ -24,12 +27,21 @@ public class UserInfoServiceImpl implements UserInfoService {
     *@Author huangrunzhi
     *@Date 2020/1/4 9:41
     */
-    @Override
-    public List<UserInfoEntity> findAllUser(UserInfoEntity userInfo) {
-        QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("user_power",userInfo.getUserPower());
-        userInfoMapper.selectList(queryWrapper);
-        return userInfoMapper.selectList(queryWrapper);
+//    @Override
+//    public List<UserInfoEntity> findAllUser(UserInfoEntity userInfo) {
+//        QueryWrapper queryWrapper = new QueryWrapper();
+//        queryWrapper.eq("user_power",userInfo.getUserPower());
+//        userInfoMapper.selectList(queryWrapper);
+//        return userInfoMapper.selectList(queryWrapper);
+//    }
+    /*分页修改*/
+   public IPage<UserInfoEntity> findAllUserPage(UserInfoEntity userInfo,Integer page){
+       IPage<UserInfoEntity> ipage = new Page<>(page, 8);
+       UserInfoEntity userInfoEntity = new UserInfoEntity();
+       QueryWrapper<UserInfoEntity> wrapper = new QueryWrapper<>(userInfoEntity);
+       wrapper.eq("user_power",userInfo.getUserPower());
+       IPage<UserInfoEntity> pages = userInfoMapper.selectPage(ipage,wrapper);
+       return pages;
     }
     /**
     *@Description 商家模糊查询，根据名字模糊查询，传入名字以及权限
@@ -37,11 +49,14 @@ public class UserInfoServiceImpl implements UserInfoService {
     *@Date 2020/1/4 12:31
     */
     @Override
-    public List<UserInfoEntity> getBusinessLikeName(UserInfoEntity userInfo) {
-        QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("user_power",userInfo.getUserPower());
-        queryWrapper.like("real_name",userInfo.getRealName());
-        return userInfoMapper.selectList(queryWrapper);
+    public IPage<UserInfoEntity> getBusinessLikeNamePage(UserInfoEntity userInfo,Integer page) {
+        IPage<UserInfoEntity> ipage = new Page<>(page, 8);
+        UserInfoEntity userInfoEntity = new UserInfoEntity();
+        QueryWrapper<UserInfoEntity> wrapper = new QueryWrapper<>(userInfoEntity);
+        wrapper.eq("user_power",userInfo.getUserPower());
+        wrapper.like("real_name",userInfo.getRealName());
+        IPage<UserInfoEntity> pages = userInfoMapper.selectPage(ipage,wrapper);
+        return pages;
     }
     /*验证用户名的唯一性*/
     @Override
@@ -113,6 +128,11 @@ public class UserInfoServiceImpl implements UserInfoService {
         sysLogDTO.setMethod(method);
         sysLogDTO.setDescription(req);
         sysLogService.create(sysLogDTO);
+    }
+    /*分页查询*/
+    @Override
+    public List<UserInfoEntity> page(UserInfoDTO dto, IPage<UserInfoEntity> page) {
+        return userInfoMapper.page(dto, page);
     }
 
 

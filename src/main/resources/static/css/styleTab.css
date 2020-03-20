@@ -110,3 +110,16 @@ ol, ul {
 .tabBlock-pane > :last-child {
   margin-bottom: 0;
 }
+/*上传图片自定义*/
+#file_input1{
+  display: none;
+}
+.file_box1{
+  width: 100px;
+  height: 100px;
+  background: #f5f5f5;
+  font-size: 80px;
+  line-height: 100px;
+  text-align: center;
+  cursor:pointer;
+}

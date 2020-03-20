@@ -37,4 +37,6 @@ public class UserInfoDTO {
     private String userBackup1;
     @ApiModelProperty(value = "扩展字段2--头像")
     private String userBackup2;
+    @ApiModelProperty(value = "积分")
+    private Integer points;
 }

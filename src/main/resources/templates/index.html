@@ -48,10 +48,22 @@
 							$scope.articleList=response;
 						}
 				)
+                /*查询菜单*/
+                /*获取菜单*/
+                $http.get('/api/getMenuList').success(
+                    function(response){
+                        $scope.menuList=response;
+                    }
+                )
 			};
 			/*查看详情*/
 			$scope.select=function(id) {
-				location.href="/api/select/findHousesById?houserId="+id;
+				if (id==null){
+					func("该轮播仅为一个普通图片广告并无对应房源详情","#999999");
+				} else {
+					location.href="/api/select/findHousesById?houserId="+id;
+				}
+
 			};
 			$scope.show=true;
 			// $scope.housesVO = {};
@@ -198,8 +210,8 @@
 				<li class="nav-item">
 					<a class="nav-link" href="#Restaurant">最新动态</a>
 				</li>
-				<li class="nav-item">
-					<a class="nav-link" href="/api/myorder">我的订单</a>
+				<li class="nav-item" ng-repeat="menu in menuList">
+					<a class="nav-link" href="{{menu.menuRequest}}">{{menu.menuProcince}}</a>
 				</li>
 				<!--<li class="nav-item">-->
 					<!--<a class="nav-link" href="#OurLocation">联系我们</a>-->

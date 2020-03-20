@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta name="renderer" content="webkit">
+<title></title>
+<link rel="stylesheet" href="/css/pintuer.css">
+<link rel="stylesheet" href="/css/admin.css">
+<script src="/js/jquery.js"></script>
+<script src="/js/upload.js"></script>
+<script src="/js/pintuer.js"></script>
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/my/show.js"></script><!--自编弹出显示-->
+  <script src="/js/angular.min.js"></script>
+  <script>
+    var app=angular.module('myApp',[]); //定义了一个叫myApp的模块
+    //定义控制器
+    app.controller('myController',function($scope,$http){
+      $scope.findAll=function(){
+        /*查询原有轮播列表*/
+        $http.get('/api/getOldSlide').success(
+                function(response){
+                  $scope.slideList=response;
+                });
+        /*查询之前推荐过的列表*/
+        $http.get('/api/getRecommendHouses').success(
+                function(response){
+                  $scope.recommendHousesList=response;
+                });
+        /*查询未推荐过的列表*/
+        $http.get('/api/getNotRecommendHouses').success(
+                function(response){
+                  $scope.NotRecommendHouses=response;
+                })
+        $http.get('/api/getAllHousesByNow').success(
+                function(response){
+                  $scope.HousesNow=response;
+                })
+
+      };
+      /*刷新推荐列表*/
+      $scope.reload=function(){
+        $http.get('/api/getRecommendHouses').success(
+                function(response){
+                  $scope.recommendHousesList=response;
+                });
+        /*查询未推荐过的列表*/
+        $http.get('/api/getNotRecommendHouses').success(
+                function(response){
+                  $scope.NotRecommendHouses=response;
+                }
+        )};
+      /*重刷轮播列表*/
+      $scope.reloadSlide=function(){
+        /*查询原有轮播列表*/
+        $http.get('/api/getOldSlide').success(
+                function(response){
+                  $scope.slideList=response;
+                }
+        )};
+      /*推荐房源*/
+      $scope.recomHouses=function(){
+        $http.get('/api/recomHouses?houserId='+$scope.Recom.housesId).success(
+                function(response){
+                  func(response,"#999999");
+                  /*推荐成功后刷新推荐房源列表*/
+                  $scope.reload();
+                }
+
+        )};
+      /*取消推荐*/
+      $scope.removehouses=function(id){
+        $http.get('/api/delrecomHouses?houserId='+id).success(
+                function(response){
+                  func(response,"#999999");
+                  /*推荐成功后刷新推荐房源列表*/
+                  $scope.reload();
+                }
+
+        )};
+      /*删除轮播*/
+      $scope.delSlide=function(id){
+        $http.get('/api/delSlideUpdate?slideId='+id).success(
+                function(response){
+                  func(response,"#999999");
+                  /*删除成功后刷新列表*/
+                  $scope.reloadSlide();
+                }
+
+        )};
+      /*添加轮播图*/
+      $scope.imgshow=false;
+      var dragImgUpload = new DragImgUpload("#drop_area",{
+        callback:function (files) {
+          //回调函数，可以传递给后台等等
+          var file = files[0];
+          $scope.file=file;
+          $scope.imgshow=false;
+          // alert("fd:"+$scope.file.name);
+          console.log(file.name);
+        }
+      });
+      $scope.createSlide=function(){
+        // alert("fd:"+$scope.file.name);
+        var form = new FormData();
+        var file = $scope.file;
+        var dto =JSON.stringify($scope.oneSlide);
+        form.append('file', file);
+        form.append('dto',dto);
+        $http({
+          method:'POST',
+          url:"/api/createSlide",
+          data: form,
+          headers: {'Content-Type':undefined},
+          transformRequest: angular.identity
+        }).success( function ( response ){
+          //上传成功的操作
+          func("添加成功","#999999");
+          $scope.reloadSlide();
+        }).error(function (data) {
+          func("添加失败","#999999");
+        });
+        };
+
+      /*点击修改的时候查询单条数据*/
+      $scope.findSlide=function(id){
+        $scope.oneSlideId=id;
+        $scope.showAdd=true;
+        $http.get('/api/getSlideById?slideId='+id).success(
+                function(response){
+                  $scope.oneSlide=response;
+                  $scope.imgshow=true;
+                  $scope.oneSlideTilte=response.housesTilte;
+                }
+
+        )};
+
+      /*保存修改*/
+      $scope.updateSlide=function(){
+        var form = new FormData();
+        var url;
+        /*判断修改的时候有没有修改图片*/
+        if ($scope.file!=undefined) {
+        var file = $scope.file;
+        form.append('file', file);
+        url="/api/updateSlide";
+        }else {
+          var file=$scope.oneSlide.slideUrl;
+          url="/api/updateSlide2";
+        }
+        var dto =JSON.stringify($scope.oneSlide);
+        form.append('dto',dto);
+        $http({
+          method:'POST',
+          url:url,
+          data: form,
+          headers: {'Content-Type':undefined},
+          transformRequest: angular.identity
+        }).success( function ( response ){
+          //上传成功的操作
+          func("修改成功","#999999");
+          $scope.reloadSlide();
+        }).error(function (data) {
+          func("修改失败","#999999");
+        }
+        )};
+      $scope.showAdd=false;
+      /*点击添加按钮变会添加*/
+      $scope.clear=function(){
+        // 点击添加清空
+        $scope.oneSlideId=null;
+        $scope.oneSlide={};
+        $scope.showAdd=true;
+      };
+      $scope.removeadd=function(){
+        /*隐藏*/
+        $scope.showAdd=false;
+      };
+
+
+    });
+  </script>
+</head>
+<body ng-app="myApp" ng-controller="myController" ng-init="findAll()">
+<div class="panel admin-panel">
+  <div class="panel-head"><strong class="icon-reorder"> 轮播列表</strong></div>
+  <div class="padding border-bottom">  
+  <button type="button" class="button border-yellow" ng-click="clear()" onclick="window.location.href='#add'"><span class="icon-plus-square-o"></span> 添加轮播</button>
+  </div>
+  <table class="table table-hover text-center">
+    <tr>
+      <th width="15%">标题</th>
+      <th width="20%">图片</th>
+      <th width="15%">房源详情</th>
+      <th width="20%">描述</th>
+      <th width="5%">排序</th>
+      <th width="15%">操作</th>
+    </tr>
+   
+    <tr ng-repeat="slide in slideList">
+      <td>{{slide.houseTilte}}</td>
+      <td><img src="{{slide.slideUrl}}" alt="" width="120" height="50" /></td>
+      <td>{{slide.housesTilte}}</td>
+      <td>{{slide.houseDista}}</td>
+      <td>{{slide.slideOrder}}</td>
+      <td><div class="button-group">
+      <a class="button border-main" ng-click="findSlide(slide.slideId)"><span class="icon-edit"></span> 修改</a>
+      <a class="button border-red" ng-click="delSlide(slide.slideId)"><span class="icon-trash-o"></span> 删除</a>
+      </div></td>
+    </tr>
+  </table>
+</div>
+<div class="panel admin-panel margin-top" ng-show="showAdd">
+  <div class="panel-head"><strong><span class="icon-pencil-square-o"></span> 增加内容</strong></div>
+  <div class="body-content">
+    <form method="post" class="form-x" action="">    
+      <div class="form-group">
+        <div class="label">
+          <label>标题：</label>
+        </div>
+        <div class="field">
+          <input type="text" class="input w50" name="title" data-validate="required:请输入标题" ng-model="oneSlide.houseTilte" />
+          <div class="tips"></div>
+        </div>
+      </div>
+       <div class="form-group">
+          <div class="label">
+            <label>房源选择：</label>
+          </div>
+          <div class="field">
+            <select name="cid" class="input w50" ng-model="oneSlide.houseId">
+              <option ng-value="oneSlide.houseId" selected="selected">{{oneSlideTilte}}</option>
+              <option ng-value="hou.housesId" ng-repeat="hou in HousesNow">{{hou.housesTitle}}</option>
+            </select>
+            <div class="tips"></div>
+          </div>
+        </div>
+      <div class="form-group">
+        <div class="label">
+          <label>图片：</label>
+        </div>
+        <div class="field">
+          <img src="{{oneSlide.slideUrl}}" class="img-responsive"  style="width: 25%;height: auto;" ng-show="imgshow">
+          <div id="drop_area"></div>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="label">
+          <label>描述：</label>
+        </div>
+        <div class="field">
+          <textarea type="text" class="input" name="note" style="height:120px;" ng-model="oneSlide.houseDista"></textarea>
+          <div class="tips"></div>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="label">
+          <label>排序：</label>
+        </div>
+        <div class="field">
+          <input type="text" class="input w50" name="sort"  data-validate="required:,number:排序必须为数字" ng-model="oneSlide.slideOrder" />
+          <div class="tips"></div>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="label">
+          <label></label>
+        </div>
+        <div class="field">
+          <button class="button bg-main icon-check-square-o" ng-click="createSlide()" type="submit" ng-show="oneSlideId==null"> 提交</button>
+          <button class="button bg-main icon-check-square-o" ng-click="updateSlide()" type="submit" ng-show="oneSlideId!=null"> 保存修改</button>
+          <button class="button bg-red icon-check-circle-o" ng-click="removeadd()" type="submit"> 取消</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<div class="panel-head"><strong class="icon-reorder"> 房源推荐列表</strong></div>
+  <!--<div class="padding border-bottom">  -->
+  <!--<button type="button" class="button border-yellow" onclick="window.location.href='#add'"><span class="icon-plus-square-o"></span> 推荐设置</button>-->
+  <!--</div>-->
+  <table class="table table-hover text-center">
+    <tr>
+      <th width="15%">标题</th>
+      <th width="20%">图片</th>
+      <th width="15%">房源详情</th>
+      <th width="20%">出租价格</th>
+      <th width="5%">评分</th>
+      <th width="15%">操作</th>
+    </tr>
+   
+    <tr ng-repeat="houses in recommendHousesList">
+      <td>{{houses.housesTitle}}</td>
+      <td><img src="{{houses.housesPhoto}}" alt="" width="120" height="50" /></td>
+      <td>{{houses.housesDescribe}}</td>
+      <td>{{houses.housesPrices}}</td>
+      <td>{{houses.housesFarction}}</td>
+      <td><div class="button-group">
+      <!-- <a class="button border-main" href="#add"><span class="icon-edit"></span> 修改</a> -->
+      <a class="button border-red" ng-click="removehouses(houses.housesId)"><span class="icon-trash-o"></span> 取消推荐</a>
+      </div></td>
+    </tr>
+  </table>
+</div>
+<div class="panel admin-panel margin-top" id="add">
+  <div class="panel-head"><strong><span class="icon-pencil-square-o"></span> 房源推荐</strong></div>
+  <div class="body-content">
+    <form method="post" class="form-x" action="">    
+       <div class="form-group">
+          <div class="label">
+            <label>房源详情选择：</label>
+          </div>
+          <div class="field">
+            <select name="cid" class="input w50" ng-model="Recom.housesId">
+              <option ng-value="notRecom.housesId" ng-repeat="notRecom in NotRecommendHouses">{{notRecom.housesTitle}}</option>
+            </select>
+            <div class="tips"></div>
+          </div>
+        </div>
+      <div class="form-group">
+        <div class="label">
+          <label></label>
+        </div>
+        <div class="field">
+          <button class="button bg-main icon-check-square-o" ng-click="recomHouses()" type="submit">推荐</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<script type="text/javascript">
+  // var dragImgUpload = new DragImgUpload("#drop_area",{
+  //   callback:function (files) {
+  //     //回调函数，可以传递给后台等等
+  //     var file = files[0];
+  //     console.log(file.name);
+  //     // return file;
+  //   }
+  // })
+</script>
+</body></html>

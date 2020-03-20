@@ -12,8 +12,8 @@ import lombok.Data;
 @ApiModel
 public class CommentDTO{
 
-    @ApiModelProperty(value = "")
-    private Integer orderId;
+    @ApiModelProperty(value = "订单编号")
+    private Long orderId;
     @ApiModelProperty(value = "房源编号")
     private Integer houseId;
     @ApiModelProperty(value = "用户编号")

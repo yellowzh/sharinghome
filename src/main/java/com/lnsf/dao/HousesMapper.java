@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.lnsf.vo.HousesVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
@@ -16,7 +17,7 @@ import java.util.List;
  * @author 黄润志
  * @since 2020-03-05 19:15
  */
-@Mapper
+@Repository
 public interface HousesMapper extends BaseMapper<HousesEntity> {
 
     List<HousesEntity> page(@Param("dto") HousesDTO dto, IPage<HousesEntity> page);

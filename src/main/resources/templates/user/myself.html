@@ -3,63 +3,30 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
-<link rel="stylesheet" href="/css/bootstrap.min.css">
-<link rel="stylesheet" href="/css/pintuer.css">
+	<link rel="stylesheet" href="/css/pintuer.css">
+	<link rel="stylesheet" href="/css/bootstrap.min.css">
+	<link rel="stylesheet" href="/css/normalize.css">
 <link rel="stylesheet" type="text/css" href="/css/style.css">
 <link href="/css/aos.css" rel="stylesheet">
-<script src="/js/jquery.js"></script>
+	<script src="/js/angular.min.js"></script>
+	<script>
+		var app=angular.module('myApp',[]); //定义了一个叫myApp的模块
+		//定义控制器
+		app.controller('myController',function($scope,$http){
+			$scope.findAll=function() {
+				/*获取菜单*/
+				$http.get('/api/getMenuList').success(
+						function (response) {
+							$scope.menuList = response;
+						}
+				)};
+			});
+	</script>
 <title>小智民宿</title>
 <link rel="icon" href="/images/logo.png">
-	<script>
-		$('#myModal').on('shown.bs.modal', function () {
-			$('#myInput').focus()
-		})
 
-	</script>
-
-	<!--模态框脚本end-->
-	<!-- 模态框（Modal） -->
-	<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-		   <div class="modal-dialog">
-		       <div class="modal-content">
-		           <div class="modal-header">
-							<h4 class="modal-title" id="myModalLabel">修改头像</h4>
-		 					<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
-		           </div>
-		           <div class="modal-body">
-						<!--显示开始-->
-						<div class="container">
-							<div class="imageBox">
-								<!--<div class="thumbBox"></div>-->
-								<div class="spinner" style="display: none">Loading...</div>
-							</div>
-							<div class="action">
-								<form method="post" enctype="multipart/form-data" class="form-x" action="/api/upload?users=user">
-									<!-- <input type="file" id="file" style=" width: 200px">-->
-									<div class="new-contentarea tc">
-										<a href="javascript:void(0)" class="upload-img">
-											<label for="upload-file">上传头像</label>
-										</a>
-										<input type="file" class="" name="upload-file" id="upload-file" />
-										<input type="hidden" name="userId" th:value="${user.getUserId()}" />
-									</div>
-									<input type="button" class="Btnsty_peyton" data-dismiss="modal" value="取消">
-									<input type="submit" id="btnCrop"  class="Btnsty_peyton" value="保存">
-									<!--<input type="button" id="btnZoomIn" class="Btnsty_peyton" value="+"  >
-									<input type="button" id="btnZoomOut" class="Btnsty_peyton" value="-" >-->
-								</form>
-							</div>
-							<!--   <div class="cropped"></div> -->
-						</div>
-						<!--显示end-->
-						</div>
-		       </div>
-		   </div>
-	</div>
-	<!--model end-->
 </head>
-<body data-spy="scroll" data-target=".navbar" data-offset="50">
+<body data-spy="scroll" data-target=".navbar" data-offset="50" ng-app="myApp" ng-controller="myController" ng-init="findAll()">
 <div id="Welcome">
 	<!---Start navigation Bar -->
 	<nav class="navbar navbar-expand-lg navbar fixed-top  navbar-light bg-light">
@@ -80,6 +47,9 @@
 				</li>
 				<li class="nav-item">
 					<a class="nav-link" href="#">最新动态</a>
+				</li>
+				<li class="nav-item" ng-repeat="menu in menuList">
+					<a class="nav-link" href="{{menu.menuRequest}}">{{menu.menuProcince}}</a>
 				</li>
 				<li class="nav-item" style="width: 150px">
 					<ul class="nav nav-pills">
@@ -102,7 +72,7 @@
 	<!--- End Navigation Bar -->
 <div class="container" style="width: 100%;margin-top: 45px;margin-left: 20%">
 	<!--- Restaurant-->
-	<div class="row" id="myself">
+	<div class="row">
 		<div class="col navMenu">
 			<h2 class="text-center" style="font-size: 25px;">个人中心</h2>
 		</div>
@@ -140,8 +110,8 @@
 </div>
 
 	<!--图片处理-->
-<script type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
-<script type="text/javascript" src="../js/cropbox.js"></script>
+<script type="text/javascript" src="/js/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="/js/cropbox.js"></script>
 	<script type="text/javascript" th:inline="javascript">
 		$(window).load(function() {
 			var img1= [[${user.getUserBackup2()}]]
@@ -186,6 +156,52 @@
 		});
 	</script>
 	<!--end-->
+	<script>
+		$('#myModal').on('shown.bs.modal', function () {
+			$('#myInput').focus()
+		})
+	</script>
+
+	<!--模态框脚本end-->
+	<!-- 模态框（Modal） -->
+	<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		   <div class="modal-dialog">
+		       <div class="modal-content">
+		           <div class="modal-header">
+							<h4 class="modal-title" id="myModalLabel">修改头像</h4>
+		 					<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+		           </div>
+		           <div class="modal-body">
+		<!--显示开始-->
+		<div class="container">
+			<div class="imageBox">
+				<!--<div class="thumbBox"></div>-->
+				<div class="spinner" style="display: none">Loading...</div>
+			</div>
+			<div class="action">
+				<form method="post" enctype="multipart/form-data" class="form-x" action="/api/upload?users=user">
+					<!-- <input type="file" id="file" style=" width: 200px">-->
+					<div class="new-contentarea tc">
+						<a href="javascript:void(0)" class="upload-img">
+							<label for="upload-file">上传头像</label>
+						</a>
+						<input type="file" class="" name="upload-file" id="upload-file" />
+						<input type="hidden" name="userId" th:value="${user.getUserId()}" />
+					</div>
+					<input type="button" class="Btnsty_peyton" data-dismiss="modal" value="取消">
+					<input type="submit" id="btnCrop"  class="Btnsty_peyton" value="保存">
+					<!--<input type="button" id="btnZoomIn" class="Btnsty_peyton" value="+"  >
+                    <input type="button" id="btnZoomOut" class="Btnsty_peyton" value="-" >-->
+				</form>
+			</div>
+			<!--   <div class="cropped"></div> -->
+		</div>
+		<!--显示end-->
+	</div>
+		       </div>
+		   </div>
+	</div>
+	<!--model end-->
 <!--<script src="../js/jquery-3.3.1.min.js"></script>-->
 <script src="/js/popper.min.js"></script>
 <script src="/js/bootstrap.min.js"></script>
@@ -194,6 +210,7 @@
 <script type="text/javascript" src="/js/smooth-scroll.js"></script>
 <script src="/js/aos.js"></script>
 <script type="text/javascript" src="/js/image-effect.js"></script>
+<!--<script src="/js/jquery.js"></script>-->
 
 </div>
 </body>

@@ -15,7 +15,7 @@ import java.util.List;
  * @author 黄润志
  * @since 2020-03-13 01:20
  */
-@Mapper
+@Repository
 public interface OrderListMapper extends BaseMapper<OrderListEntity> {
 
     List<OrderListEntity> page(@Param("dto")OrderListDTO dto, IPage<OrderListEntity> page);

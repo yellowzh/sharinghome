@@ -7,7 +7,8 @@
 <link rel="stylesheet" href="/css/bootstrap.min.css">
 <link rel="stylesheet" href="/css/normalize.css">
 <link rel="stylesheet" href="/css/styleTab.css" media="screen" type="text/css" />
-
+<!--星星评分样式-->
+<link rel="stylesheet" href="/css/star.css">
 <script src='/js/jquery.js'></script>
 <script src="/js/index.js"></script>
 <script src="/js/popper.min.js"></script>
@@ -21,6 +22,7 @@
 <link rel="icon" href="/images/logo.png">
 	<script th:inline="javascript">
 		var userId = [[${session.user.getUserId()}]];
+		// var msg = [[${msg}]];
 		var app=angular.module('myApp',[]); //定义了一个叫myApp的模块
 		//定义控制器
 		app.controller('myController',function($scope,$http){
@@ -45,17 +47,74 @@
 			$scope.select=function(id) {
 				location.href="/api/select/findHousesById?houserId="+id;
 			};
+			/*点击去支付按钮*/
+			$scope.goPay=function(id) {
+				location.href="/api/myOrderGoPay?orderId="+id;
+			};
+			/*点击取消订单*/
+			$scope.removePay=function(id) {
+					$http.post("/alipay/refund?orderNo="+id).success(
+							//添加后直接跳转到支付页面
+							function(response) {
+								func("订单取消成功","#999999");
+								/*重新刷新一下页面数据*/
+								$scope.findAll();
+								// location.href = "/api/myorder";
+							}
+					)
+			};
+			/*点击删除订单*/
+			$scope.goDel=function(id){
+				$http.get("/api/delOrder?orderId="+id).success(
+						//添加后直接跳转到支付页面
+						function(response) {
+							func(response,"#999999");
+							/*重新刷新一下页面数据*/
+							$scope.findAll();
+						}
+				)
+			};
+			/*保存评论*/
+			/*先查询该订单出来*/
+			$scope.comment={};
+			$scope.goSelect=function(id){
+				$http.get("/api/selectOrderById?orderId="+id).success(
+						//添加后直接跳转到支付页面
+						function(response) {
+							$scope.comment.orderId=response.orderId;
+							$scope.comment.houseId=response.housesId;
+							$scope.comment.userId=response.passengerId;
+							$scope.comment.commentType="房源评价";
+						}
+				)
+			};
+			$scope.goComment=function(){
+				/*从star.js传值过来的*/
+				$scope.comment.commentPower=iScore;
+				$http.post("/api/addComment",$scope.comment).success(
+						//添加后直接跳转到支付页面
+						function(response) {
+							alert("订单评价成功");
+							// func("订单评价成功","#999999");
+							/*重新刷新一下页面数据*/
+							// $scope.findAll();
+							location.href = "/api/myorder";
+						}
+				)
+
+
+			}
 
 		});
 	</script>
 	<!--自动消失的弹出提示信息-->
-	<!--<script th:inline="javascript">-->
-	<!--var results = [[${msg}]];-->
-	<!--if (results!=null) {-->
-	<!--//alert(results)-->
-	<!--func(results,"#999999");-->
-	<!--}-->
-	<!--</script>-->
+	<script th:inline="javascript">
+	var results = [[${msg}]];
+	if (results!=null) {
+	// alert(results);
+	func(results,"#999999");
+	}
+	</script>
 </head>
 <body ng-app="myApp" ng-controller="myController" ng-init="findAll()" style="font-size: 12px;">
 <div id="Welcome">
@@ -124,8 +183,10 @@
 						<h5>入住:{{all.pepoleNum}}人</h5>
 						<h5>支付状态:{{all.orderPay}}&nbsp&nbsp&nbsp入住状态:{{all.housesIn}}</h5>
 						</div>
-						<button style="border: none;border-radius: 4%;color: white;">删除订单</button>
-						<button style="border: none;border-radius: 4%;color: white;background-color: orange">取消订单</button>
+						<button ng-click="goDel(all.orderId)" style="border: none;border-radius: 4%;color: white;width: 60px;height: 20px;">删除订单</button>
+						<button ng-if="all.housesIn=='未入住'" ng-show="all.orderPay!='已退款'" ng-click="removePay(all.orderId)" style="border: none;border-radius: 4%;color: white;width: 60px;height: 20px;">取消订单</button>
+						<button ng-if="all.orderPay=='未支付'" ng-click="goPay(all.orderId)" style="border: none;border-radius: 4%;color: white;background-color: red;width: 60px;height: 20px;">去支付</button>
+						<button ng-if="all.housesIn!='未入住'" ng-click="goSelect(all.orderId)" ng-show="!all.isComment" data-toggle="modal" data-target="#myModal"  style="border: none;border-radius: 4%;color: white;background-color: orange;width: 60px;height: 20px;">去评价</button>
 					</div>
 				</div>
 			</div>
@@ -145,9 +206,9 @@
 							<h5>入住:{{notPay.pepoleNum}}人</h5>
 							<h5>支付状态:{{notPay.orderPay}}&nbsp&nbsp&nbsp入住状态:{{notPay.housesIn}}</h5>
 						</div>
-						<button style="border: none;border-radius: 4%;color: white;">删除订单</button>
-						<button style="border: none;border-radius: 4%;color: white;background-color: orange">取消订单</button>
-						<button style="border: none;border-radius: 4%;color: white;background-color: red">去支付</button>
+						<button ng-click="goDel(all.orderId)" style="border: none;border-radius: 4%;color: white;width: 60px;height: 20px;">删除订单</button>
+						<button style="border: none;border-radius: 4%;color: white;width: 60px;height: 20px;" ng-click="removePay(notPay.orderId)">取消订单</button>
+						<button ng-click="goPay(notPay.orderId)" style="border: none;border-radius: 4%;color: white;background-color: red;width: 60px;height: 20px;">去支付</button>
 					</div>
 				</div>
 			</div>
@@ -167,8 +228,8 @@
 							<h5>入住:{{notIn.pepoleNum}}人</h5>
 							<h5>支付状态:{{notIn.orderPay}}&nbsp&nbsp&nbsp入住状态:{{notIn.housesIn}}</h5>
 						</div>
-						<button style="border: none;border-radius: 4%;color: white;">删除订单</button>
-						<button style="border: none;border-radius: 4%;color: white;background-color: orange">取消订单</button>
+						<button ng-click="goDel(all.orderId)" style="border: none;border-radius: 4%;color: white;width: 60px;height: 20px;">删除订单</button>
+						<button style="border: none;border-radius: 4%;color: white;width: 60px;height: 20px;" ng-click="removePay(notIn.orderId)">取消订单</button>
 						<!--<button style="border: none;border-radius: 4%;color: white;background-color: orange">入住民宿</button>-->
 					</div>
 				</div>
@@ -189,9 +250,8 @@
 							<h5>入住:{{comment.pepoleNum}}人</h5>
 							<h5>支付状态:{{comment.orderPay}}&nbsp&nbsp&nbsp入住状态:{{comment.housesIn}}</h5>
 						</div>
-						<button style="border: none;border-radius: 4%;color: white;">删除订单</button>
-						<button style="border: none;border-radius: 4%;color: white;background-color: orange">取消订单</button>
-						<button style="border: none;border-radius: 4%;color: white;background-color: orange">去评价</button>
+						<button ng-click="goDel(all.orderId)" style="border: none;border-radius: 4%;color: white;width: 60px;height: 20px;">删除订单</button>
+						<button style="border: none;border-radius: 4%;color: white;background-color: orange;width: 60px;height: 20px;" data-toggle="modal" data-target="#myModal">去评价</button>
 					</div>
 				</div>
 			</div>
@@ -200,5 +260,78 @@
 	<!--- End of Restaurant -->
 </div>
 </div>
+<script>
+	$('#myModal').on('shown.bs.modal', function () {
+		$('#myInput').focus()
+	})
+</script>
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	   <div class="modal-dialog">
+	       <div class="modal-content">
+	           <div class="modal-header">
+							<h5 class="modal-title" id="myModalLabel">请填写评价信息</h5>
+	               	<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+	           </div>
+	<!--       <div class="modal-body">-->
+				<div>
+					<div style="margin-top: 20px;padding: 1em;">
+						<label>评价内容</label><br/>
+						<textarea cols="50" rows="5" ng-model="comment.commentContent"></textarea>
+						<!--<input type="text" style="border: none;width: 100%;height: 50px;background-color: gainsboro;"/>-->
+					</div>
+					<div style="margin-top: 10px;padding: 1em;">
+						<!--星星评分-->
+						<span>请为我们的房源打分</span>
+						<div id="score">
+							<ul class="clearfix" style="margin-left:1px;">
+								<li></li>
+								<li></li>
+								<li></li>
+								<li></li>
+								<li></li>
+							</ul>
+							<p><strong></strong></p>
+							<div id="tip">
+								<strong>1星,非常糟糕</strong>
+								<div class="triangle"></div>
+								<div class="triangle_outer"></div>
+							</div>
+						</div>
+					</div>
+					<div style="margin-top: 10px;padding: 1em;">
+					<form action="" >
+						<div style="padding: 1em;">评价图片</div>
+						<div onclick="clickfile()" class="file_box1" style="float: left;">
+							+
+							<input type="file" id="file_input1" onchange="changefile(files)">
+						</div>
+						<div style="padding: 1em; margin-left: 10%;">
+							<img src="/images/logo.jpeg" width="50" height="50" class="d-inline-block" alt="">
+						</div>
+						<!--<input type="file" class="button border-main icon-plus-square-o" value="上传评价照片"/>-->
+					</form>
+					</div>
+					<div style="margin-top: 10px;padding: 1em;">
+						<!-- data-toggle="modal" data-target="#myModal"  -->
+						<input type="submit" ng-click="goComment()" value="保存评价" style="border: orange;width: 100%;text-align: center;height: 30px;background-color: orange">
+					</div>
+				</div>
+
+
+	    </div>
+	  </div>
+</div>
+<!--自定义上传图片样式-->
+<script>
+	function clickfile() {
+		document.getElementById('file_input1').click();
+	}
+	function changefile(files) {
+		console.log(files);
+	}
+</script>
+<!--星星评分js-->
+<script src='/js/star.js'></script>
 </body>
 </html>

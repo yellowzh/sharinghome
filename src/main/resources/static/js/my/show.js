@@ -15,7 +15,7 @@ function func(date,color){
         width:"200px",
         height:"30px",
         left:"50%",
-        top:"10%",
+        top:"15%",
         marginLeft:"-100px",
         marginTop:"-40px",
         borderRadius:"10px"

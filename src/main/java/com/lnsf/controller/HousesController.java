@@ -1,9 +1,13 @@
 package com.lnsf.controller;
 
 
+import cn.hutool.core.bean.BeanUtil;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.lnsf.dto.HousesDTO;
 import com.lnsf.entity.HousesEntity;
+import com.lnsf.entity.UserInfoEntity;
 import com.lnsf.service.HousesService;
+import com.lnsf.service.UserInfoService;
 import com.lnsf.util.UploadImgUtil;
 import com.lnsf.vo.HousesVO;
 import io.swagger.annotations.Api;
@@ -14,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +28,8 @@ import java.util.Map;
 public class HousesController {
     @Autowired
     private HousesService housesService;
+    @Autowired
+    private UserInfoService userInfoService;
 
     private static Logger log = Logger.getLogger(LoginController.class);
     /*查看所有房源*/
@@ -33,11 +40,13 @@ public class HousesController {
         log.info("获取用户数据"+map.get("user"));
         if (page==null)
         {page=1;}
-//        PageHelper.startPage(page,5);
-        List<HousesDTO> houses = housesService.getAllHomeShow();
-        map=maps(houses,map);
-        log.info("所有房源查询"+houses);
-        map.put("houses",houses);
+        IPage<HousesEntity> infoEntityIPage = housesService.getAllHomeShowPage(page);
+        /*如果为最后一页则返回最后一页数据*/
+        if(infoEntityIPage.getCurrent()>infoEntityIPage.getPages()){
+            page=Integer.parseInt(String.valueOf(infoEntityIPage.getPages()));
+            infoEntityIPage = housesService.getAllHomeShowPage(page);
+        }
+        map=maps(infoEntityIPage,map);
         map.put("request","getAllHomeShow");
         ModelAndView model_html = new ModelAndView();
         model_html.setViewName("admin/houses");
@@ -49,32 +58,38 @@ public class HousesController {
     public ModelAndView getHousesLikeName(Map<String,Object> map,String power,HousesEntity house,Integer page){
         if (page==null)
         { page=1;}
-//        PageHelper.startPage(page,10);
-
         if (house.getHousesTitle()==null){
             house.setHousesTitle(housesTitle);
         }else {
             housesTitle=house.getHousesTitle();
         }
         log.info("house.getHousesTitle():"+house.getHousesTitle()+"--housesTitle:"+housesTitle);
-        List<HousesDTO> houses = housesService.getAllHousesShowLikeTitle(house);
-        map=maps(houses,map);
-        for (HousesDTO houses1: houses) {
-            log.info("模糊查询houses标题:"+houses1.getHousesTitle());
+        IPage<HousesEntity> infoEntityIPage = housesService.getAllHousesShowLikeTitle(house,page);
+        if(infoEntityIPage.getCurrent()>infoEntityIPage.getPages()){
+            page=Integer.parseInt(String.valueOf(infoEntityIPage.getPages()));
+            infoEntityIPage = housesService.getAllHousesShowLikeTitle(house,page);
         }
-        map.put("houses",houses);
+        map=maps(infoEntityIPage,map);
         /*返回跳转页面*/
         map.put("request","getHousesLikeName");
         ModelAndView model_html = new ModelAndView();
         model_html.setViewName("admin/houses");
         return model_html;
     }
-    /*分页插件数据返回*/
-    public Map<String,Object> maps(List<HousesDTO> list,Map<String,Object> map ){
-//        PageInfo<HousesDTO> pageInfo = new PageInfo<HousesDTO>(list);
-//        map.put("houses",pageInfo.getList());
-//        map.put("totalPage",pageInfo.getPages());
-//        map.put("indexPage",pageInfo.getPageNum());
+    /*分页数据返回*/
+    public Map<String,Object> maps(IPage<HousesEntity> list, Map<String,Object> map ){
+        System.out.println("页面取值：size"+list.getSize()+"-to-:"+list.getTotal()+"=page=="+list.getPages()+"cun:"+list.getCurrent());
+        List<HousesDTO> houses = new ArrayList<>();
+        for (HousesEntity h:list.getRecords()) {
+            HousesDTO housesDTO = new HousesDTO();
+            UserInfoEntity userInfoEntity =userInfoService.getUserById(h.getBusinessId());
+            BeanUtil.copyProperties(h, housesDTO);
+            housesDTO.setUserInfo(userInfoEntity);
+            houses.add(housesDTO);
+        }
+        map.put("houses",houses);
+        map.put("totalPage",list.getPages());
+        map.put("indexPage",list.getCurrent());
         return map;
     }
     /**
@@ -259,5 +274,77 @@ public class HousesController {
        List<HousesDTO> houses =  housesService.getIndexHomeSelect(housesVO);
         return houses;
     }
+    /**
+    *@Description
+    *@Author huangrunzhi
+    *@Date 2020/3/15 23:35
+    */
+    @ApiOperation(value = "查询我的房源", notes = "查询我的房源",httpMethod = "GET")
+    @RequestMapping("/getMyHouses")
+    public List<HousesDTO> getMyHouses(HttpServletRequest httpServletRequest){
+        UserInfoEntity userInfoEntity = (UserInfoEntity)httpServletRequest.getSession().getAttribute("user");
+        if (null==userInfoEntity){
+            return null;
+        }else {
+            return housesService.getMyHousesByUserId(userInfoEntity.getUserId());
+        }
+    }
+    @ApiOperation(value = "查询我的房源页面跳转", notes = "查询我的房源",httpMethod = "GET")
+    @RequestMapping("/myHouse")
+    public ModelAndView myHouses(){
+        ModelAndView model_html = new ModelAndView();
+        model_html.setViewName("user/myhouses");
+        return model_html;
+    }
+
+    @ApiOperation(value = "查询我的房源页面跳转", notes = "查询我的房源",httpMethod = "POST")
+    @RequestMapping("/updateMyHouses")
+    public String updateMyHouses(String housesFalgs,Integer housesId){
+        return housesService.updateHousesByFalgs(housesFalgs,housesId);
+    }
+    /*后台管理系统推荐列表的推荐*/
+    @ApiOperation("查看所有推荐房源")
+    @GetMapping(path = "/getRecommendHouses")
+    public List<HousesDTO> getRecommendHouses(){
+        log.info("查看所有推荐房源：");
+        List<HousesDTO> houses = housesService.getIndexHomeShow();
+        return houses;
+    }
+    @ApiOperation("未推荐的所有在线房源")
+    @GetMapping(path = "/getNotRecommendHouses")
+    public List<HousesDTO> getNotRecommendHouses(){
+        log.info("查看所有推荐房源：");
+        List<HousesDTO> houses = housesService.getNotRecommendHouses();
+        return houses;
+    }
+    @ApiOperation("推荐房源")
+    @GetMapping(path = "/recomHouses")
+    public String recomHouses(Integer houserId){
+        log.info("查看所有推荐房源：");
+        String falg = housesService.recomHouses(houserId);
+        return falg;
+    }
+    @ApiOperation("推荐房源")
+    @GetMapping(path = "/delrecomHouses")
+    public String delrecomHouses(Integer houserId){
+        log.info("查看所有推荐房源：");
+        String falg = housesService.delrecomHouses(houserId);
+        return falg;
+    }
+    @ApiOperation("查看所有在线房源")
+    @GetMapping(path = "/getAllHousesByNow")
+    public List<HousesDTO> getAllHousesByNow(){
+        log.info("查看所有在线房源：");
+        List<HousesDTO> houses = housesService.getAllHousesByNow();
+        return houses;
+    }
+    @ApiOperation("查看所有房源列表")
+    @GetMapping(path = "/getAllHouses")
+    public List<HousesDTO> getAllHouses(){
+        log.info("查看所有在线房源：");
+        List<HousesDTO> houses = housesService.getAllHouses();
+        return houses;
+    }
+
 
 }

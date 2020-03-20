@@ -1,11 +1,14 @@
 package com.lnsf.dto;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.lnsf.entity.HousesEntity;
+import com.lnsf.entity.UserInfoEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.Date;
+
 
 /**
  * @author 黄润志
@@ -15,7 +18,7 @@ import java.util.Date;
 @ApiModel
 public class OrderListDTO{
     @ApiModelProperty(value = "订单编号")
-    private Long orderId;
+    private String orderId;
     @ApiModelProperty(value = "旅客编号")
     private Integer passengerId;
     @ApiModelProperty(value = "商家编号")
@@ -38,8 +41,14 @@ public class OrderListDTO{
     private Date startTime;
     @ApiModelProperty(value = "")
     private Date endTime;
+    @ApiModelProperty(value = "下单时间")
+    private Date createTime;
     @ApiModelProperty(value = "标注位")
     private Boolean isDel;
     @ApiModelProperty(value = "房源信息")
     private HousesDTO housesDTO;
+    @ApiModelProperty(value = "是否评价")
+    private Boolean isComment;
+    @ApiModelProperty(value = "对应的订单用户")
+    private UserInfoEntity userInfo;
 }

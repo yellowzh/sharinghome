@@ -12,10 +12,13 @@ import lombok.Data;
 @ApiModel
 public class IndexSlideDTO{
 
+    private Integer slideId;
     @ApiModelProperty(value = "")
     private String slideUrl;
     @ApiModelProperty(value = "")
     private Integer houseId;
+    /*房源标题*/
+    private String housesTilte;
     @ApiModelProperty(value = "")
     private String houseTilte;
     @ApiModelProperty(value = "")
