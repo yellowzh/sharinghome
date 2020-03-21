@@ -8,7 +8,10 @@ import com.lnsf.dto.HousesDTO;
 import com.lnsf.dto.OrderListDTO;
 import com.lnsf.entity.OrderListEntity;
 import com.lnsf.entity.UserInfoEntity;
+import com.lnsf.service.UserInfoService;
+import com.lnsf.util.UploadImgUtil;
 import com.lnsf.vo.CommentListVO;
+import com.lnsf.vo.CommentVO;
 import com.lnsf.vo.OrderListPageVO;
 import org.apache.log4j.Logger;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,6 +26,7 @@ import java.util.Map;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 
@@ -40,6 +44,8 @@ public class CommentController {
 
     @Autowired
     private CommentService commentService;
+    @Autowired
+    private UserInfoService userInfoService;
 
     private static Logger log = Logger.getLogger(LoginController.class);
 
@@ -48,6 +54,17 @@ public class CommentController {
     public CommentListVO commentList(Integer housesId){
         log.info("房源编号："+housesId);
         return commentService.list(housesId);
+    }
+    @ApiOperation("添加图片")
+    @PostMapping(path = "/addPhoto")
+    public String addPhoto(@RequestParam("file") MultipartFile file,Map<String,Object> map){
+        try {
+            map= UploadImgUtil.uplond(file,map);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        System.out.println("上传图片后需要获取的路径："+map.get("filename"));
+        return String.valueOf(map.get("filename"));
     }
 
     @ApiOperation("新增")
@@ -69,46 +86,80 @@ public class CommentController {
         model_html.setViewName("admin/housesComment");
         return model_html;
     }
-//    @ApiOperation(value = "订单管理以及查看我的订单", notes = "我的订单查询",httpMethod = "GET")
-//    @RequestMapping("/getHousesCommentPage")
-//    public OrderListPageVO getHousesCommentPage(Integer housesId, Integer page){
-//        if (page==null)
-//        { page=1;}
-//        IPage<OrderListEntity> infoEntityIPage = orderListService.getHouserOrderPage(housesId,page);
-//        if(infoEntityIPage.getCurrent()>infoEntityIPage.getPages()){
-//            page=Integer.parseInt(String.valueOf(infoEntityIPage.getPages()));
-//            infoEntityIPage = orderListService.getHouserOrderPage(housesId,page);
-//        }
-//        List<OrderListDTO> orderListDTOList = new ArrayList<>();
-//        for (OrderListEntity o:infoEntityIPage.getRecords()) {
-//            OrderListDTO orderListDTO = new OrderListDTO();
-//            BeanUtil.copyProperties(o, orderListDTO);
-//            orderListDTO.setOrderId(o.getOrderId() + "");
-//            /*查询对应用户*/
-//            UserInfoEntity userInfoEntity = userInfoService.getUserById(o.getPassengerId());
-//            orderListDTO.setUserInfo(userInfoEntity);
-//            /*添加房源信息*/
-//            HousesDTO housesDTO = housesService.getHomeShowById(o.getHousesId());
-//            orderListDTO.setHousesDTO(housesDTO);
-//            orderListDTOList.add(orderListDTO);
-//        }
-//        OrderListPageVO orderListPageVO = new OrderListPageVO();
-//        orderListPageVO.setOrderListDTOS(orderListDTOList);
-//        orderListPageVO.setIndexPage(infoEntityIPage.getCurrent());
-//        orderListPageVO.setTotalPage(infoEntityIPage.getPages());
-//        return orderListPageVO;
-//    }
+    @ApiOperation(value = "订单管理以及查看我的订单", notes = "我的订单查询",httpMethod = "GET")
+    @RequestMapping("/getHousesCommentPage")
+    public CommentListVO getHousesCommentPage(Integer housesId, Integer page){
+        if (page==null)
+        { page=1;}
+        IPage<CommentEntity> infoEntityIPage = commentService.getHousesCommentPage(housesId,page);
+        /*判断最后一页*/
+        if(infoEntityIPage.getCurrent()>infoEntityIPage.getPages()){
+            page=Integer.parseInt(String.valueOf(infoEntityIPage.getPages()));
+            infoEntityIPage =commentService.getHousesCommentPage(housesId,page);
+        }
+        List<CommentVO> commentVOS = new ArrayList<>();//评价
+//        List<CommentVO> replayVOs = new ArrayList<>();//回复
+        float num=0;
+        double fenshu=0;
+        double nums=0;
+        for (CommentEntity c:infoEntityIPage.getRecords()) {
+            CommentVO commentVO = new CommentVO();
+            BeanUtil.copyProperties(c, commentVO);
+            commentVO.setCommentId(c.getCommentId()+"");
+            /*查询对应用户*/
+            UserInfoEntity userInfoEntity = userInfoService.getUserById(c.getUserId());
+            commentVO.setUserPhoto(userInfoEntity.getUserBackup2());
+            commentVO.setUsername(userInfoEntity.getUsername());
+            /*添加是否有照片判断*/
+            if (c.getCommentPhoto()!=null){
+                commentVO.setIsPhoto(true);
+            }else {
+                commentVO.setIsPhoto(false);
+            }
+            commentVOS.add(commentVO);
+            fenshu+=c.getCommentPower();
+            num++;
+        }
+        if (num!=0) {
+            nums = fenshu / num;
+        }
+        CommentListVO commentListVO = new CommentListVO();
+        commentListVO.setCommentVO(commentVOS);//评论
+//        commentListVO.setReplayVO(replayVOs);//回复
+//        commentListVO.setIsData();//是否有数据
+        commentListVO.setCount(nums);//平均分
+        commentListVO.setIndexPage(infoEntityIPage.getCurrent());
+        commentListVO.setTotalPage(infoEntityIPage.getPages());
+        return commentListVO;
+    }
+
+    @ApiOperation(value = "查看订单回复", notes = "查看评论回复",httpMethod = "GET")
+    @RequestMapping("/getCommentReplay")
+    public List<CommentVO> getCommentReplay(Long commentId){
+        List<CommentEntity> commentEntityList = commentService.commentReplayList(commentId);
+        List<CommentVO> commentVOS = new ArrayList<>();//回复
+        for (CommentEntity c:commentEntityList) {
+            CommentVO commentVO = new CommentVO();
+            BeanUtil.copyProperties(c, commentVO);
+            commentVO.setCommentId(c.getCommentId()+"");
+            /*查询对应用户*/
+            UserInfoEntity userInfoEntity = userInfoService.getUserById(c.getUserId());
+            commentVO.setUserPhoto(userInfoEntity.getUserBackup2());
+            commentVO.setUsername(userInfoEntity.getUsername());
+            /*添加是否有照片判断*/
+            if (c.getCommentPhoto()!=null){
+                commentVO.setIsPhoto(true);
+            }else {
+                commentVO.setIsPhoto(false);
+            }
+            commentVOS.add(commentVO);
+        }
+        return commentVOS;
+    }
     //
-//    @ApiOperation("删除")
-//    @DeleteMapping("{commentId}")
-//    public void delete(@ApiParam("评价编号") @PathVariable(name = "commentId") Long commentId) {
-//        commentService.delete(commentId);
-//    }
-//
-//    @ApiOperation("更新")
-//    @PutMapping("{commentId}")
-//    public CommentEntity update(@ApiParam("评价编号") @PathVariable("commentId") Long commentId,
-//                            @RequestBody @Valid CommentDTO dto) {
-//        return commentService.update(commentId, dto);
-//    }
+    @ApiOperation("删除")
+    @GetMapping("/delComent")
+    public String delComent(Long commentId) {
+        return commentService.deletUpdate(commentId);
+    }
 }

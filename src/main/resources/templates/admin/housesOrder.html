@@ -187,12 +187,12 @@
           <ul>
             <li ng-class="indexPage==1?'disabled':''" style="float: left"><a ng-click="selectOrder(indexPage -1)">上一页</a></li>
             <li ng-if="indexPage -3 >=1" style="float: left"><a ng-click="selectOrder(indexPage -3)" >{{indexPage -3}}</a></li>
-            <li ng-if="${indexPage -2 >=1}" style="float: left"><a ng-click="selectOrder(indexPage -2)">{{indexPage -2}}</a></li>
-            <li ng-if="${indexPage -1 >=1}" style="float: left"><a ng-click="selectOrder(indexPage -1)" >{{indexPage -1}}</a></li>
+            <li ng-if="indexPage -2 >=1" style="float: left"><a ng-click="selectOrder(indexPage -2)">{{indexPage -2}}</a></li>
+            <li ng-if="indexPage -1 >=1" style="float: left"><a ng-click="selectOrder(indexPage -1)" >{{indexPage -1}}</a></li>
             <li class="active" style="float: left;"><a href="#" style="background-color: #00aaee">{{indexPage}}</a></li>
-            <li ng-if="${indexPage+1 <=totalPage}" style="float: left"><a ng-click="selectOrder(indexPage +1)">{{indexPage +1}}</a></li>
-            <li ng-if="${indexPage+2 <=totalPage}" style="float: left"><a ng-click="selectOrder(indexPage +2)">{{indexPage +2}}</a></li>
-            <li ng-if="${indexPage+3 <=totalPage}" style="float: left"><a ng-click="selectOrder(indexPage +3)">{{indexPage +3}}</a></li>
+            <li ng-if="indexPage+1 <=totalPage" style="float: left"><a ng-click="selectOrder(indexPage +1)">{{indexPage +1}}</a></li>
+            <li ng-if="indexPage+2 <=totalPage" style="float: left"><a ng-click="selectOrder(indexPage +2)">{{indexPage +2}}</a></li>
+            <li ng-if="indexPage+3 <=totalPage" style="float: left"><a ng-click="selectOrder(indexPage +3)">{{indexPage +3}}</a></li>
             <li ng-class="indexPage==totalPage?'disabled':''" style="float: left"><a ng-click="selectOrder(indexPage +1)">下一页</a></li>
           </ul>
           <!--分页结束================================================================================================-->

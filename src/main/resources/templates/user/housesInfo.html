@@ -23,6 +23,12 @@
 		//定义控制器
 		app.controller('myController',function($scope,$http){
 			$scope.findAll=function(){
+				/*获取菜单*/
+				$http.get('/api/getMenuList').success(
+						function(response){
+							$scope.menuList=response;
+						}
+				)
 				/*查看房源其他信息*/
 				$http.get('/api/select/housesDetailsById?housesId='+housesId).success(
 						function(response){
@@ -160,14 +166,20 @@
 		<!--菜单-->
 		<div class="collapse navbar-collapse" id="navbarText">
 			<ul class="navbar-nav ml-auto">
-				<li class="nav-item">
-					<a class="nav-link" href="#Welcome">首页</a>
+				<li class="nav-item" th:if="${session.user}==null">
+					<a class="nav-link" href="/index">首页</a>
+				</li>
+				<li class="nav-item" th:if="${session.user}!=null">
+					<a class="nav-link" th:href="'/api/success?users=user&username='+${session.user.username}">首页</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="#Menu">民宿预定</a>
+					<a class="nav-link" href="/api/select/houserlease">民宿</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="#Restaurant">最新动态</a>
+					<a class="nav-link" href="/api/select/userDynamic">动态</a>
+				</li>
+				<li class="nav-item" ng-repeat="menu in menuList">
+					<a class="nav-link" href="{{menu.menuRequest}}">{{menu.menuProcince}}</a>
 				</li>
 				<!--<li class="nav-item">-->
 					<!--<a class="nav-link" href="#aboutUs">关于我们</a>-->

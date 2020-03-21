@@ -31,6 +31,5 @@ public interface SysDictService {
     SysDictEntity update(Long dictId, SysDictDTO dto);
 
     List<SysDictEntity> selectDictson(Long dictId);
-//
-//    List<SysDictEntity> page(SysDictDTO dto, IPage<SysDictEntity> page);
+
 }

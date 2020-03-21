@@ -338,12 +338,26 @@ public class HousesController {
         List<HousesDTO> houses = housesService.getAllHousesByNow();
         return houses;
     }
+    @ApiOperation("前台查看所有在线房源")
+    @GetMapping(path = "/select/findAllHousesNow")
+    public List<HousesDTO> findAllHousesNow(){
+        log.info("前台查看所有在线房源：");
+        List<HousesDTO> houses = housesService.getAllHousesByNow();
+        return houses;
+    }
     @ApiOperation("查看所有房源列表")
     @GetMapping(path = "/getAllHouses")
     public List<HousesDTO> getAllHouses(){
         log.info("查看所有在线房源：");
         List<HousesDTO> houses = housesService.getAllHouses();
         return houses;
+    }
+    @ApiOperation(value = "查询预定页面跳转", notes = "查询我的房源",httpMethod = "GET")
+    @RequestMapping("/select/houserlease")
+    public ModelAndView houserlease(){
+        ModelAndView model_html = new ModelAndView();
+        model_html.setViewName("user/houserlease");
+        return model_html;
     }
 
 

@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="/css/pintuer.css">
+	<link rel="stylesheet" href="/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="/css/style.css">
+	<link href='https://fonts.googleapis.com/css?family=Merienda' rel='stylesheet'>
+	<link href="/css/aos.css" rel="stylesheet">
+
+	<!--<script src="../js/jquery.js"></script>-->
+	<title>小智民宿</title>
+	<link rel="icon" href="/images/logo.png">
+	<script src="/js/jquery.min.js"></script>
+	<script src="/js/upload.js"></script><!--图片上传-->
+	<script src="/js/my/show.js"></script><!--自编弹出显示-->
+	<script src="/js/angular.min.js"></script>
+	<script>
+		var app=angular.module('myApp',[]); //定义了一个叫myApp的模块
+		//定义控制器
+		app.controller('myController',function($scope,$http){
+			$scope.findAll=function(){
+				/*全部动态*/
+				$http.get('/api/select/allArticleList').success(
+						function(response){
+							$scope.articleList=response.articleEntities;
+							$scope.num=response.articleEntities.length;
+							$scope.indexPage=response.indexPage;
+							$scope.totalPage=response.totalPage;
+						})
+				/*查询菜单*/
+				/*获取菜单*/
+				$http.get('/api/getMenuList').success(
+						function(response){
+							$scope.menuList=response;
+						})
+				/*获取菜单*/
+				$http.get('/api/getUser').success(
+						function(response){
+							$scope.username=response.username;
+						}
+				)
+			};
+			/*分页查询*/
+			$scope.selectArticle=function(page) {
+					$scope.show=false;
+					if ($scope.article != undefined) {
+						$http.post('/api/select/allArticleListBytime?page=' + page, $scope.article).success(
+								function (response) {
+									$scope.articleList = response.articleEntities;
+									$scope.num=response.articleEntities.length;
+									$scope.indexPage = response.indexPage;
+									$scope.totalPage = response.totalPage;
+								}
+						)
+					} else {
+						$http.get('/api/select/allArticleList?page=' + page).success(
+								function (response) {
+									$scope.articleList = response.articleEntities;
+									$scope.num=response.articleEntities.length;
+									$scope.indexPage = response.indexPage;
+									$scope.totalPage = response.totalPage;
+								}
+						)}
+			};
+			$scope.show=false;
+			$scope.selectMyArticle=function(page) {
+			$scope.show=true;
+			$http.get('/api/getMyArticleList?page=' + page).success(
+					function (response) {
+						$scope.articleList = response.articleEntities;
+						$scope.num=response.articleEntities.length;
+						$scope.indexPage = response.indexPage;
+						$scope.totalPage = response.totalPage;
+					}
+			)};
+			/*删除动态*/
+			$scope.delArtice=function(id) {
+				$http.get('/api/delArtice?articleId=' + id).success(
+						function (response) {
+							func(response,"#999999");
+							/*删除成功后刷新我的动态页面*/
+							$scope.selectMyArticle(1);
+						}
+				)
+			};
+			/*添加动态*/
+			$scope.addArticle=function() {
+				location.href="/api/addArticleList";
+			};
+			var dragImgUpload = new DragImgUpload("#drop_area",{
+				callback:function (files) {
+					//回调函数，可以传递给后台等等
+					var file = files[0];
+					$scope.file=file;
+					$scope.imgshow=false;
+					// alert("fd:"+$scope.file.name);
+					console.log(file.name);
+				}
+			});
+			/*添加动态*/
+			$scope.addArticlePost=function() {
+				var form = new FormData();
+				var file = $scope.file;
+				var dto =JSON.stringify($scope.article);
+				form.append('file', file);
+				form.append('dto',dto);
+				$http({
+					method:'POST',
+					url:"/api/addArticleList",
+					data: form,
+					headers: {'Content-Type':undefined},
+					transformRequest: angular.identity
+				}).success( function ( response ){
+					//上传成功的操作
+					func("添加成功","#999999");
+					$scope.selectMyArticle(1);
+				}).error(function (data) {
+					func("添加失败","#999999");
+				});
+			}
+		});
+	</script>
+	<!--自动消失的弹出提示信息-->
+	<script th:inline="javascript">
+		var results = [[${msg}]];
+		if (results!=null) {
+			//alert(results)
+			func(results,"#999999");
+		}
+	</script>
+</head>
+<body ng-app="myApp" ng-controller="myController" ng-init="findAll()">
+<div id="Welcome">
+	<!--Start navigation Bar-->
+	<nav class="navbar navbar-expand-lg navbar fixed-top navbar-light bg-light">
+		<a class="navbar-brand" href="#Welcome">
+			<img src="/images/logo.jpeg" width="50" height="50" class="d-inline-block" alt=""> 小智民宿
+		</a>
+		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		<!--动态操作-->
+		<div class="select">
+			此发布时间之后:<input type="date" ng-model="article.createTime">
+			<button ng-click="selectArticle(1)">搜索</button>
+			<button ng-click="addArticle()" th:if="${session.user}==null" style="margin-left: 10px;">我的动态</button>
+			<button ng-click="selectMyArticle(1)" th:if="${session.user}!=null" style="margin-left: 10px;">我的动态</button>
+			<button style="margin-left: 10px;" ng-click="addArticle()" th:if="${session.user}==null">发布动态</button>
+			<button style="margin-left: 10px;" data-toggle="modal" data-target="#myModal" th:if="${session.user}!=null">发布动态</button>
+
+		</div>
+		<!--菜单-->
+		<div class="collapse navbar-collapse" id="navbarText">
+			<ul class="navbar-nav ml-auto">
+				<li class="nav-item" th:if="${session.user}==null">
+					<a class="nav-link" href="/index">首页</a>
+				</li>
+				<li class="nav-item" th:if="${session.user}!=null">
+					<a class="nav-link" th:href="'/api/success?users=user&username='+${session.user.username}">首页</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="/api/select/houserlease">民宿</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="/api/select/userDynamic">动态</a>
+				</li>
+				<li class="nav-item" ng-repeat="menu in menuList">
+					<a class="nav-link" href="{{menu.menuRequest}}">{{menu.menuProcince}}</a>
+				</li>
+				<!--<li class="nav-item">-->
+				<!--<a class="nav-link" href="#OurLocation">联系我们</a>-->
+				<!--</li>-->
+				<li class="nav-item" th:if="${session.user}==null">
+					<a href="/api/indexToLogin"  class="nav-link">登录</a>
+				</li>
+				<li class="nav-item" th:if="${session.user}==null">
+					<a href="/api/indexToRegister" class="nav-link">注册</a>
+				</li>
+				<li class="nav-item" style="width: 150px" th:if="${session.user}!=null">
+					<ul class="nav nav-pills">
+						<li role="presentation" class="dropdown">
+							<a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true"  aria-expanded="false" style="text-decoration: none; width: 160px" >
+								<!--<img src="/images/y.jpg" class="radius-circle rotate-hover" height="15" alt="" />-->
+								<img th:if="${session.user.getUserBackup2()}!=null" th:src="${session.user.getUserBackup2()}" class="radius-circle rotate-hover" height="15" alt="">
+								<img th:if="${session.user.getUserBackup2()}==null" src="/images/y.jpg" class="radius-circle rotate-hover" height="15" alt="">
+								<span th:text="${session.user.getRealName()}" style="width: 150px"></span>
+							</a>
+							<ul class="dropdown-menu" style="display:none; min-width: 80px; left: 10px;">
+								<li><a style="text-decoration: none;" th:href="'../myself?users=user&userId='+${session.user.getUserId()}">个人中心</a></li>
+								<li><a href="/api/loginOut" style="color: #ff5500;text-decoration: none;">退出</a></li>
+							</ul>
+						</li>
+					</ul>
+				</li>
+			</ul>
+		</div>
+	</nav>
+	<!-- End Navigation Bar -->
+</div>
+<div style="margin-top: 100px;"></div>
+<!--End of Carousel-->
+<div class="container" style="width: 70%;margin-top: 20px;" ng-repeat="art in articleList">
+
+	<!--Restaurant-->
+	<div>
+		<div  >
+			<div class="row bg-light"><br></div>
+			<div class="row bg-light">
+				<div class="col-md-6 order-md-1 order-2" data-aos="fade-up">
+					<img class="img-fluid " src="{{art.articeUrl}}" style="width: 400px;height: 250px;padding: 3em;">
+				</div>
+				<div class="col-md-6 order-md-12 order-1">
+					<p style="float: left">{{art.articeTitle}}</p><button style="float: right;border: red;" ng-if="username==art.createUser" ng-click="delArtice(art.articleId)">删除</button>
+					<br><br>
+					<p>作者:{{art.createUser}}&nbsp&nbsp&nbsp创作时间:{{art.createTime}}</p>
+
+					<hr/>
+					<p>{{art.articleInfo}}</p>
+				</div>
+			</div>
+			<!--End of Restaurant-->
+		</div>
+	</div>
+</div>
+<div class="pagelist" style="margin-left: 40%;height: 20px;width: 50%;margin-top: 20px;font-size: 10px;" ng-if="!show" ng-show="num!=0">
+	<!--分页===============================================-->
+	<ul>
+		<li ng-class="indexPage==1?'disabled':''" style="float: left"><button ng-click="selectArticle(indexPage -1)" style="border:none;border:none;margin-left:10px;padding: 6px;border-radius:4%;background-color: #00aaee">上一页</button></li>
+		<li ng-if="indexPage -3 >=1" style="float: left"><button ng-click="selectArticle(indexPage -3)" style="border:none;margin-left:10px;padding: 6px;border-radius:4%;background-color: silver">{{indexPage -3}}</button></li>
+		<li ng-if="indexPage -2 >=1" style="float: left"><button ng-click="selectArticle(indexPage -2)" style="border:none;margin-left:10px;padding: 6px;border-radius:4%;background-color: silver">{{indexPage -2}}</button></li>
+		<li ng-if="indexPage -1 >=1" style="float: left"><button ng-click="selectArticle(indexPage -1)" style="border:none;margin-left:10px;padding: 6px;border-radius:4%;background-color: silver">{{indexPage -1}}</button></li>
+		<li class="active" style="float: left;"><button href="#" style="border:none;margin-left:10px;padding: 6px;border-radius:4%;background-color: #00aaee">{{indexPage}}</button></li>
+		<li ng-if="indexPage+1 <=totalPage" style="float: left"><button ng-click="selectArticle(indexPage +1)" style="border:none;margin-left:10px;padding: 6px;border-radius:4%;background-color: silver">{{indexPage +1}}</button></li>
+		<li ng-if="indexPage+2 <=totalPage" style="float: left"><button ng-click="selectArticle(indexPage +2)" style="border:none;margin-left:10px;padding: 6px;border-radius:4%;background-color: silver">{{indexPage +2}}</button></li>
+		<li ng-if="indexPage+3 <=totalPage" style="float: left"><button ng-click="selectArticle(indexPage +3)" style="border:none;margin-left:10px;padding: 6px;border-radius:4%;background-color: silver">{{indexPage +3}}</button></li>
+		<li ng-class="indexPage==totalPage?'disabled':''" style="float: left"><button ng-click="selectArticle(indexPage +1)" style="border:none;margin-left:10px;padding: 6px;border-radius:4%;background-color: #00aaee">下一页</button></li>
+	</ul>
+	<!--分页结束================================================================================================-->
+</div>
+<div class="pagelist" style="margin-left: 40%;height: 20px;width: 50%;margin-top: 20px;font-size: 10px;" ng-if="show" ng-show="num!=0">
+	<!--分页===============================================-->
+	<ul>
+		<li ng-class="indexPage==1?'disabled':''" style="float: left"><button ng-click="selectMyArticle(indexPage -1)" style="border:none;border:none;margin-left:10px;padding: 6px;border-radius:4%;background-color: #00aaee">上一页</button></li>
+		<li ng-if="indexPage -3 >=1" style="float: left"><button ng-click="selectMyArticle(indexPage -3)" style="border:none;margin-left:10px;padding: 6px;border-radius:4%;background-color: silver">{{indexPage -3}}</button></li>
+		<li ng-if="indexPage -2 >=1" style="float: left"><button ng-click="selectMyArticle(indexPage -2)" style="border:none;margin-left:10px;padding: 6px;border-radius:4%;background-color: silver">{{indexPage -2}}</button></li>
+		<li ng-if="indexPage -1 >=1" style="float: left"><button ng-click="selectMyArticle(indexPage -1)" style="border:none;margin-left:10px;padding: 6px;border-radius:4%;background-color: silver">{{indexPage -1}}</button></li>
+		<li class="active" style="float: left;"><button href="#" style="border:none;margin-left:10px;padding: 6px;border-radius:4%;background-color: #00aaee">{{indexPage}}</button></li>
+		<li ng-if="indexPage+1 <=totalPage" style="float: left"><button ng-click="selectMyArticle(indexPage +1)" style="border:none;margin-left:10px;padding: 6px;border-radius:4%;background-color: silver">{{indexPage +1}}</button></li>
+		<li ng-if="indexPage+2 <=totalPage" style="float: left"><button ng-click="selectMyArticle(indexPage +2)" style="border:none;margin-left:10px;padding: 6px;border-radius:4%;background-color: silver">{{indexPage +2}}</button></li>
+		<li ng-if="indexPage+3 <=totalPage" style="float: left"><button ng-click="selectMyArticle(indexPage +3)" style="border:none;margin-left:10px;padding: 6px;border-radius:4%;background-color: silver">{{indexPage +3}}</button></li>
+		<li ng-class="indexPage==totalPage?'disabled':''" style="float: left"><button ng-click="selectMyArticle(indexPage +1)" style="border:none;margin-left:10px;padding: 6px;border-radius:4%;background-color: #00aaee">下一页</button></li>
+	</ul>
+	<!--分页结束================================================================================================-->
+</div>
+<div style="margin-left: 40%;height: 20px;width: 50%;margin-top: 20px;font-size: 10px;" ng-show="num==0">
+	<label>暂无动态！！</label>
+</div>
+<!--占位-->
+<div style="margin-top: 100px;width: 20px;"></div>
+<script>
+	$('#myModal').on('shown.bs.modal', function () {
+		$('#myInput').focus()
+	})
+
+</script>
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	   <div class="modal-dialog">
+	       <div class="modal-content">
+	           <div class="modal-header">
+							<h5 class="modal-title" id="myModalLabel">动态发布</h5>
+	               <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+	           </div>
+	<!--       <div class="modal-body">-->
+	<div>
+		<div class="form-group" style="padding: 1em;">
+			<div class="label">
+				<label>标题：</label>
+			</div>
+			<div class="field">
+				<input type="text" class="input w50" name="title" data-validate="required:请输入标题" ng-model="article.articeTitle" />
+				<div class="tips"></div>
+			</div>
+		</div>
+		<div class="form-group" style="padding: 1em;">
+			<div class="label">
+				<label>内容：</label>
+			</div>
+			<div class="field">
+				<textarea type="text" class="input" name="note" style="height:120px;" ng-model="article.articleInfo"></textarea>
+				<div class="tips"></div>
+			</div>
+		</div>
+		<div class="form-group" style="padding: 1em;">
+			<div class="label">
+				<label>图片：</label>
+			</div>
+			<div class="field">
+				<div id="drop_area"></div>
+			</div>
+		</div>
+		<div class="price">
+			<!-- data-toggle="modal" data-target="#myModal"  -->
+			<input type="submit" ng-click="addArticlePost()" value="发布" data-dismiss="modal">
+		</div>
+	</div>
+	    </div>
+	  </div>
+</div>
+<!--model end-->
+<script src="/js/jquery-3.3.1.min.js"></script>
+<script src="/js/popper.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script defer src="/js/all.js"></script>
+<script type="text/javascript" src="/js/map.js"></script>
+<script type="text/javascript" src="/js/smooth-scroll.js"></script>
+<script src="/js/aos.js"></script>
+<script type="text/javascript" src="/js/image-effect.js"></script>
+<!--轮播图js-->
+<link href="/css/base.css" rel="stylesheet">
+<script src="/js/lunbo.js"></script>
+</body>
+</html>
+

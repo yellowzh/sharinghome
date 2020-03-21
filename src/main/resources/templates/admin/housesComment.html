@@ -21,12 +21,13 @@
     app.controller('myController',function($scope,$http){
       $scope.findAll=function(){
         /*查询订单*/
-        $http.get('/api/getHouserOrderPage?housesId='+housesId).success(
+        $http.get('/api/getHousesCommentPage?housesId='+housesId).success(
                 function(response){
-                  $scope.houserOrder=response.orderListDTOS;
-                  $scope.num=response.length;
+                  $scope.houserComment=response.commentVO;
+                  $scope.num=response.commentVO.length;
                   $scope.indexPage=response.indexPage;
                   $scope.totalPage=response.totalPage;
+                  $scope.count=response.count;
                 });
         /*查询所有房源*/
         $http.get('/api/getAllHouses').success(
@@ -36,88 +37,50 @@
 
       };
       /*搜索房源订单*/
-      $scope.selectOrder=function(page){
+      $scope.selectComment=function(page){
         if ($scope.houses.housesId!=null){
           housesId=$scope.houses.housesId;
         }
-        $http.get('/api/getHouserOrderPage?housesId='+housesId+'&page='+page).success(
+        $http.get('/api/getHousesCommentPage?housesId='+housesId+'&page='+page).success(
                 function(response){
-                  $scope.houserOrder=response.orderListDTOS;
-                  $scope.num=response.orderListDTOS.length;
+                  $scope.houserComment=response.commentVO;
+                  $scope.num=response.commentVO.length;
                   $scope.indexPage=response.indexPage;
                   $scope.totalPage=response.totalPage;
+                  $scope.count=response.count;
                 }
         )};
-      $scope.delOrder=function(id){
-        $http.get('/api/delOrder?orderId='+id).success(
+      $scope.delComent=function(id){
+        $http.get('/api/delComent?commentId='+id).success(
                 function(response){
                   func(response,"#999999");
                   /*刷新列表*/
-                  $http.get('/api/getHouserOrderPage?housesId='+housesId+'&page='+$scope.indexPage).success(
+                  $http.get('/api/getHousesCommentPage?housesId='+housesId+'&page='+$scope.indexPage).success(
                           function(response){
-                            $scope.houserOrder=response.orderListDTOS;
-                            $scope.num=response.orderListDTOS.length;
+                            $scope.houserComment=response.commentVO;
+                            $scope.num=response.commentVO.length;
                             $scope.indexPage=response.indexPage;
                             $scope.totalPage=response.totalPage;
+                            $scope.count=response.count;
                           });
+                  $http.get('/api/getCommentReplay?commentId='+$scope.repId).success(
+                          function(response){
+                            $scope.commentReplay=response;
+                            $scope.repnum=response.length;
+                          }
+                  )
                 }
         )};
-
-
-      /*点击修改的时候查询单条数据*/
-      // $scope.findSlide=function(id){
-      //   $scope.oneSlideId=id;
-      //   $scope.showAdd=true;
-      //   $http.get('/api/getSlideById?slideId='+id).success(
-      //           function(response){
-      //             $scope.oneSlide=response;
-      //             $scope.imgshow=true;
-      //             $scope.oneSlideTilte=response.housesTilte;
-      //           }
-      //
-      //   )};
-
-      /*保存修改*/
-      // $scope.updateSlide=function(){
-      //   var form = new FormData();
-      //   var url;
-      //   /*判断修改的时候有没有修改图片*/
-      //   if ($scope.file!=undefined) {
-      //   var file = $scope.file;
-      //   form.append('file', file);
-      //   url="/api/updateSlide";
-      //   }else {
-      //     var file=$scope.oneSlide.slideUrl;
-      //     url="/api/updateSlide2";
-      //   }
-      //   var dto =JSON.stringify($scope.oneSlide);
-      //   form.append('dto',dto);
-      //   $http({
-      //     method:'POST',
-      //     url:url,
-      //     data: form,
-      //     headers: {'Content-Type':undefined},
-      //     transformRequest: angular.identity
-      //   }).success( function ( response ){
-      //     //上传成功的操作
-      //     func("修改成功","#999999");
-      //     $scope.reloadSlide();
-      //   }).error(function (data) {
-      //     func("修改失败","#999999");
-      //   }
-      //   )};
-      // $scope.showAdd=false;
-      // /*点击添加按钮变会添加*/
-      // $scope.clear=function(){
-      //   // 点击添加清空
-      //   $scope.oneSlideId=null;
-      //   $scope.oneSlide={};
-      //   $scope.showAdd=true;
-      // };
-      // $scope.removeadd=function(){
-      //   /*隐藏*/
-      //   $scope.showAdd=false;
-      // };
+      $scope.showAdd=false;
+      $scope.getReplay=function(id){
+        $scope.showAdd=true;
+        $scope.repId = id;
+        $http.get('/api/getCommentReplay?commentId='+id).success(
+                function(response){
+                  $scope.commentReplay=response;
+                  $scope.repnum=response.length;
+                }
+        )};
     });
   </script>
 </head>
@@ -134,49 +97,38 @@
         <option ng-value="houses.housesId" ng-repeat="houses in housesList">{{houses.housesTitle}}</option>
       </select>
       <div class="tips"></div>
-      <button type="button" class="button border-yellow" ng-click="selectOrder(1)" style="margin-left: 10px;"><span class="icon-search"></span>搜索</button>
+      <button type="button" class="button border-yellow" ng-click="selectComment(1)" style="margin-left: 10px;"><span class="icon-search"></span>搜索</button>
     </div>
 
   </div>
 
 </div>
 <div class="panel admin-panel">
-  <div class="panel-head"><strong class="icon-reorder"> 订单列表</strong></div>
+  <div class="panel-head"><strong class="icon-reorder"> 评价列表(平均{{count}}分)</strong></div>
   <table class="table table-hover text-center">
     <tr>
-      <th width="10%">订单编号</th>
-      <th width="10%">房源图片</th>
-      <th width="10%">房源标题</th>
-      <th width="5%">入住人数</th>
-      <th width="10%">入住时间</th>
-      <th width="10%">退租时间</th>
-      <th width="5%">总价</th>
-      <th width="10%">下单时间</th>
-      <th width="5%">订单用户</th>
-      <th width="5%">支付状态</th>
-      <th width="5%">入住状态</th>
+      <th width="10%">评价编号</th>
+      <th width="10%">用户头像</th>
+      <th width="10%">用户名称</th>
+      <th width="20%">评价内容</th>
+      <th width="10%">评价图片</th>
+      <th width="10%">评价时间</th>
+      <th width="10%">分数</th>
       <th width="15%">操作</th>
     </tr>
 
-    <tr ng-repeat="order in houserOrder">
-      <td>{{order.orderId}}</td>
-      <td><img src="{{order.housesDTO.housesPhoto}}" alt="" width="120" height="50" /></td>
-      <td>{{order.housesDTO.housesTitle}}</td>
-      <td>{{order.pepoleNum}}</td>
-      <td>{{order.startTime}}</td>
-      <td>{{order.endTime}}</td>
-      <td>{{order.orderPrices}}</td>
-      <td>{{order.createTime}}</td>
-      <td>{{order.userInfo.username}}</td>
-      <td ng-if="order.orderPay=='已退款'" style="color: red">{{order.orderPay}}</td>
-      <td ng-if="order.orderPay=='已支付'" style="color: green">{{order.orderPay}}</td>
-      <td ng-if="order.orderPay=='未支付'" style="color: orange">{{order.orderPay}}</td>
-      <td ng-if="order.orderPay=='已退款'" style="color: red">{{order.housesIn}}</td>
-      <td ng-if="order.housesIn=='已入住'" ng-show="order.orderPay=='已支付'" style="color: green">{{order.housesIn}}</td>
-      <td ng-if="order.housesIn=='未入住'" ng-show="order.orderPay!='已退款'" style="color: orange">{{order.housesIn}}</td>
+    <tr ng-repeat="comment in houserComment">
+      <td>{{comment.commentId}}</td>
+      <td><img src="{{comment.userPhoto}}" alt="" width="50" height="50" /></td>
+      <td>{{comment.username}}</td>
+      <td>{{comment.commentContent}}</td>
+      <td><img src="{{comment.commentPhoto}}" alt="" width="120" height="50" /></td>
+      <td>{{comment.createTime}}</td>
+      <td ng-if="comment.commentPower>3" style="color: green">{{comment.commentPower}}</td>
+      <td ng-if="comment.commentPower<=3" style="color: red">{{comment.commentPower}}</td>
       <td><div class="button-group">
-        <!--<a class="button border-main" ng-click="findSlide(slide.slideId)"><span class="icon-edit"></span> 修改</a>-->
-        <a class="button border-red" ng-click="delOrder(order.orderId)"><span class="icon-trash-o"></span> 删除</a>
+        <a class="button border-main" ng-click="getReplay(comment.commentId)"><span class="icon-search"></span> 查看回复</a>
+        <a class="button border-red" ng-click="delComent(comment.commentId)"><span class="icon-trash-o"></span> 删除</a>
       </div></td>
     </tr>
     <tr ng-if="num!=0">
@@ -185,87 +137,49 @@
           <!--分页===============================================-->
           <!--<ul class="pagination pagination-lg" >-->
           <ul>
-            <li ng-class="indexPage==1?'disabled':''" style="float: left"><a ng-click="selectOrder(indexPage -1)">上一页</a></li>
-            <li ng-if="indexPage -3 >=1" style="float: left"><a ng-click="selectOrder(indexPage -3)" >{{indexPage -3}}</a></li>
-            <li ng-if="${indexPage -2 >=1}" style="float: left"><a ng-click="selectOrder(indexPage -2)">{{indexPage -2}}</a></li>
-            <li ng-if="${indexPage -1 >=1}" style="float: left"><a ng-click="selectOrder(indexPage -1)" >{{indexPage -1}}</a></li>
+            <li ng-class="indexPage==1?'disabled':''" style="float: left"><a ng-click="selectComment(indexPage -1)">上一页</a></li>
+            <li ng-if="indexPage -3 >=1" style="float: left"><a ng-click="selectComment(indexPage -3)" >{{indexPage -3}}</a></li>
+            <li ng-if="indexPage -2 >=1" style="float: left"><a ng-click="selectComment(indexPage -2)">{{indexPage -2}}</a></li>
+            <li ng-if="indexPage -1 >=1" style="float: left"><a ng-click="selectComment(indexPage -1)" >{{indexPage -1}}</a></li>
             <li class="active" style="float: left;"><a href="#" style="background-color: #00aaee">{{indexPage}}</a></li>
-            <li ng-if="${indexPage+1 <=totalPage}" style="float: left"><a ng-click="selectOrder(indexPage +1)">{{indexPage +1}}</a></li>
-            <li ng-if="${indexPage+2 <=totalPage}" style="float: left"><a ng-click="selectOrder(indexPage +2)">{{indexPage +2}}</a></li>
-            <li ng-if="${indexPage+3 <=totalPage}" style="float: left"><a ng-click="selectOrder(indexPage +3)">{{indexPage +3}}</a></li>
-            <li ng-class="indexPage==totalPage?'disabled':''" style="float: left"><a ng-click="selectOrder(indexPage +1)">下一页</a></li>
+            <li ng-if="indexPage+1 <=totalPage" style="float: left"><a ng-click="selectComment(indexPage +1)">{{indexPage +1}}</a></li>
+            <li ng-if="indexPage+2 <=totalPage" style="float: left"><a ng-click="selectComment(indexPage +2)">{{indexPage +2}}</a></li>
+            <li ng-if="indexPage+3 <=totalPage" style="float: left"><a ng-click="selectComment(indexPage +3)">{{indexPage +3}}</a></li>
+            <li ng-class="indexPage==totalPage?'disabled':''" style="float: left"><a ng-click="selectComment(indexPage +1)">下一页</a></li>
           </ul>
           <!--分页结束================================================================================================-->
         </div>
       </td>
     </tr>
-    <!--<tr ng-if="">暂无订单!!!</tr>-->
   </table>
-  <div style="width:100%;height: 50px;"  ng-if="num==0"><h1 style="text-align: center">暂无订单!!</h1></div>
+  <div style="width:100%;height: 50px;"  ng-if="num==0"><h1 style="text-align: center">暂无评价!!</h1></div>
 </div>
 <div class="panel admin-panel margin-top" ng-show="showAdd">
-  <div class="panel-head"><strong><span class="icon-pencil-square-o"></span> 修改内容</strong></div>
-  <div class="body-content">
-    <form method="post" class="form-x" action="">
-      <div class="form-group">
-        <div class="label">
-          <label>标题：</label>
-        </div>
-        <div class="field">
-          <input type="text" class="input w50" name="title" data-validate="required:请输入标题" ng-model="oneSlide.houseTilte" />
-          <div class="tips"></div>
-        </div>
-      </div>
-      <div class="form-group">
-        <div class="label">
-          <label>房源选择：</label>
-        </div>
-        <div class="field">
-          <select name="cid" class="input w50" ng-model="oneSlide.houseId">
-            <option ng-value="oneSlide.houseId" selected="selected">{{oneSlideTilte}}</option>
-            <option ng-value="hou.housesId" ng-repeat="hou in HousesNow">{{hou.housesTitle}}</option>
-          </select>
-          <div class="tips"></div>
-        </div>
-      </div>
-      <div class="form-group">
-        <div class="label">
-          <label>图片：</label>
-        </div>
-        <div class="field">
-          <img src="{{oneSlide.slideUrl}}" class="img-responsive"  style="width: 25%;height: auto;" ng-show="imgshow">
-          <div id="drop_area"></div>
-        </div>
-      </div>
-      <div class="form-group">
-        <div class="label">
-          <label>描述：</label>
-        </div>
-        <div class="field">
-          <textarea type="text" class="input" name="note" style="height:120px;" ng-model="oneSlide.houseDista"></textarea>
-          <div class="tips"></div>
-        </div>
-      </div>
-      <div class="form-group">
-        <div class="label">
-          <label>排序：</label>
-        </div>
-        <div class="field">
-          <input type="text" class="input w50" name="sort"  data-validate="required:,number:排序必须为数字" ng-model="oneSlide.slideOrder" />
-          <div class="tips"></div>
-        </div>
-      </div>
-      <div class="form-group">
-        <div class="label">
-          <label></label>
-        </div>
-        <div class="field">
-          <button class="button bg-main icon-check-square-o" ng-click="createSlide()" type="submit" ng-show="oneSlideId==null"> 提交</button>
-          <button class="button bg-main icon-check-square-o" ng-click="updateSlide()" type="submit" ng-show="oneSlideId!=null"> 保存修改</button>
-          <button class="button bg-red icon-check-circle-o" ng-click="removeadd()" type="submit"> 取消</button>
-        </div>
-      </div>
-    </form>
+  <div class="panel admin-panel">
+    <div class="panel-head"><strong class="icon-reorder"> 回复列表</strong></div>
+    <table class="table table-hover text-center">
+      <tr>
+        <th width="10%">回复编号</th>
+        <th width="10%">商家头像</th>
+        <th width="10%">商家名称</th>
+        <th width="20%">回复内容</th>
+        <th width="10%">回复图片</th>
+        <th width="10%">回复时间</th>
+        <th width="15%">操作</th>
+      </tr>
+      <tr ng-repeat="replay in commentReplay">
+        <td>{{replay.commentId}}</td>
+        <td><img src="{{replay.userPhoto}}" alt="" width="50" height="50" /></td>
+        <td>{{replay.username}}</td>
+        <td>{{replay.commentContent}}</td>
+        <td><img src="{{replay.commentPhoto}}" alt="" width="120" height="50" /></td>
+        <td>{{replay.createTime}}</td>
+        <td><div class="button-group">
+          <a class="button border-red" ng-click="delComent(replay.commentId)"><span class="icon-trash-o"></span> 删除</a>
+        </div></td>
+      </tr>
+    </table>
+    <div style="width:100%;height: 50px;"  ng-if="repnum==0"><h1 style="text-align: center">暂无回复!!</h1></div>
   </div>
 </div>
 

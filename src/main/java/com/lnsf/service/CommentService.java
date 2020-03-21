@@ -22,9 +22,12 @@ public interface CommentService {
 
     CommentEntity create(CommentDTO dto);
 
-    void delete(Long commentId);
+    String deletUpdate(Long commentId);
 
     CommentEntity update(Long commentId, CommentDTO dto);
+    /*评价管理分页*/
+    IPage<CommentEntity> getHousesCommentPage(Integer housesId, Integer page);
 
-    List<CommentEntity> page(CommentDTO dto, IPage<CommentEntity> page);
+    /*查看评论的回复*/
+    List<CommentEntity> commentReplayList(Long commentId);
 }

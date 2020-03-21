@@ -201,14 +201,17 @@
 		<!--菜单-->
 		<div class="collapse navbar-collapse" id="navbarText">
 			<ul class="navbar-nav ml-auto">
-				<li class="nav-item">
-					<a class="nav-link" href="#Welcome">首页</a>
+				<li class="nav-item" th:if="${user}==null">
+					<a class="nav-link" href="/index">首页</a>
+				</li>
+				<li class="nav-item" th:if="${user}!=null">
+					<a class="nav-link" th:href="'/api/success?users=user&username='+${user.username}">首页</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="#Menu">民宿预定</a>
+					<a class="nav-link" href="/api/select/houserlease">民宿</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="#Restaurant">最新动态</a>
+					<a class="nav-link" href="/api/select/userDynamic">动态</a>
 				</li>
 				<li class="nav-item" ng-repeat="menu in menuList">
 					<a class="nav-link" href="{{menu.menuRequest}}">{{menu.menuProcince}}</a>
@@ -225,7 +228,7 @@
 				<li class="nav-item" style="width: 150px" th:if="${user}!=null">
 					<ul class="nav nav-pills">
 						<li role="presentation" class="dropdown">
-							<a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true"  aria-expanded="false" style="text-decoration: none; width: 160px" >
+							<a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true"  aria-expanded="false" style="text-decoration: none; width: 130px" >
 								<!--<img src="/images/y.jpg" class="radius-circle rotate-hover" height="15" alt="" />-->
 								<img th:if="${user.getUserBackup2()}!=null" th:src="${user.getUserBackup2()}" class="radius-circle rotate-hover" height="15" alt="">
 								<img th:if="${user.getUserBackup2()}==null" src="/images/y.jpg" class="radius-circle rotate-hover" height="15" alt="">
@@ -322,7 +325,8 @@
 			<img class="img-fluid " src="{{art.articeUrl}}">
 		</div>
 		<div class="col-md-6 order-md-12 order-1">
-			<h5>{{art.articeTitle}}</h5>
+			<p>{{art.articeTitle}}</p>
+			<br>
 			<p>作者:{{art.createUser}}&nbsp&nbsp&nbsp创作时间:{{art.createTime}}</p>
 			<hr/>
 			<p>{{art.articleInfo}}</p>

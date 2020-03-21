@@ -121,8 +121,8 @@
           <td th:text="${user.getUserTel()}"></td>
           <td th:text="${user.getUserEmil()}"></td>
           <td th:text="${user.getUserBackup1()}"></td>
-          <td th:text="${user.getUserLogintime()}"></td>
-          <td th:text="${user.getUserLoginouttime()}"></td>
+          <td th:text="${#dates.format(user.getUserLogintime(), 'yyyy/MM/dd HH:mm:ss')}"></td>
+          <td th:text="${#dates.format(user.getUserLoginouttime(), 'yyyy/MM/dd HH:mm:ss')}"></td>
           <td th:if="${user.getUserStatus()}==1" style="color: red">锁定</td>
           <td th:if="${user.getUserStatus()}==2" style="color: orange">冻结</td>
           <td th:if="${user.getUserStatus()}==0" style="color: #00aa00">正常</td>

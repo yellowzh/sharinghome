@@ -38,15 +38,17 @@
 		</button>
 		<div class="collapse navbar-collapse" id="navbarText">
 			<ul class="navbar-nav ml-auto">
-				<li class="nav-item">
-					<a class="nav-link" href="#">首页</a>
+				<li class="nav-item" th:if="${session.user}==null">
+					<a class="nav-link" href="/index">首页</a>
 				</li>
-
-				<li class="nav-item">
-					<a class="nav-link" href="#">民宿服务</a>
+				<li class="nav-item" th:if="${session.user}!=null">
+					<a class="nav-link" th:href="'/api/success?users=user&username='+${session.user.username}">首页</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="#">最新动态</a>
+					<a class="nav-link" href="/api/select/houserlease">民宿</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="/api/select/userDynamic">动态</a>
 				</li>
 				<li class="nav-item" ng-repeat="menu in menuList">
 					<a class="nav-link" href="{{menu.menuRequest}}">{{menu.menuProcince}}</a>

@@ -14,12 +14,14 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.log4j.Logger;
+import org.apache.shiro.session.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Map;
 
@@ -294,33 +296,14 @@ public class UserController {
            return model_html;
        }
     }
+    //获取当前用户
+    @ApiOperation(value = "修改个人信息", notes = "修改个人信息",httpMethod = "GET")
+    @RequestMapping("/getUser")
+    public UserInfoEntity updateUserInfo(HttpSession session){
+        UserInfoEntity user = (UserInfoEntity) session.getAttribute("user");
+        return user;
+    }
 
-//    @ApiOperation("分页查询")
-//    @ApiImplicitParams({
-//            @ApiImplicitParam(paramType = "query", dataType = "String", name = "username", value = "用户昵称"),
-//            @ApiImplicitParam(paramType = "query", dataType = "String", name = "realName", value = "真实姓名"),
-//            @ApiImplicitParam(paramType = "query", dataType = "String", name = "userTel", value = "用户电话"),
-//            @ApiImplicitParam(paramType = "query", dataType = "String", name = "userEmil", value = "用户邮箱"),
-//            @ApiImplicitParam(paramType = "query", dataType = "String", name = "password", value = "密码"),
-//            @ApiImplicitParam(paramType = "query", dataType = "String", name = "userPower", value = "权限：0普通用户、1管理员、2商家"),
-//            @ApiImplicitParam(paramType = "query", dataType = "String", name = "userStatus", value = "状态：1锁定、2冻结、0正常"),
-//            @ApiImplicitParam(paramType = "query", dataType = "Date", name = "userLogintime", value = "登录时间"),
-//            @ApiImplicitParam(paramType = "query", dataType = "Date", name = "userLoginouttime", value = "登出时间"),
-//            @ApiImplicitParam(paramType = "query", dataType = "Integer", name = "userNum", value = "密码错误次数"),
-//            @ApiImplicitParam(paramType = "query", dataType = "String", name = "userBackup1", value = "扩展字段1--地址"),
-//            @ApiImplicitParam(paramType = "query", dataType = "String", name = "userBackup2", value = "扩展字段2--头像"),
-//            @ApiImplicitParam(paramType = "query", dataType = "Integer", name = "points", value = "积分"),
-//            @ApiImplicitParam(paramType = "query", dataType = "Integer", name = "page", value = "分页页码"),
-//            @ApiImplicitParam(paramType = "query", dataType = "Integer", name = "size", value = "每页数量"),
-//            @ApiImplicitParam(paramType = "query", dataType = "String", name = "ascs", value = "升序字段，多个用逗号隔开"),
-//            @ApiImplicitParam(paramType = "query", dataType = "String", name = "descs", value = "降序字段，多个用逗号隔开")
-//    })
-//    @GetMapping(path = "/page")
-//    public PageResult page(UserInfoDTO dto) {
-//        IPage<UserInfoEntity> page = PageFactory.convertPageByParameters();
-//        List<UserInfoEntity> list = userInfoService.page(dto, page);
-//        return PageFactory.buildPageResult(page, list);
-//    }
 
 
 }

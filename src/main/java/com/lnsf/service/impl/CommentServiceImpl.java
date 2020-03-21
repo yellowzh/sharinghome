@@ -1,6 +1,7 @@
 package com.lnsf.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lnsf.entity.CommentEntity;
 import com.lnsf.dto.CommentDTO;
 import com.lnsf.dao.CommentMapper;
@@ -126,11 +127,16 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public void delete(Long commentId) {
-        if (null == commentId) {
-            return;
-        }
-        commentMapper.deleteById(commentId);
+    public String deletUpdate(Long commentId) {
+        CommentEntity commentEntity = new CommentEntity();
+        commentEntity.setCommentId(commentId);
+        commentEntity.setIsDel(true);
+       int num = commentMapper.updateById(commentEntity);
+       if (num>0){
+           return "删除成功";
+       }else {
+           return "删除失败";
+       }
     }
 
     @Override
@@ -148,8 +154,31 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public List<CommentEntity> page(CommentDTO dto, IPage<CommentEntity> page) {
-        return commentMapper.page(dto, page);
+    public IPage<CommentEntity> getHousesCommentPage(Integer housesId,Integer page) {
+        IPage<CommentEntity> ipage = new Page<>(page, 8);
+        CommentEntity commentEntity = new CommentEntity();
+        QueryWrapper<CommentEntity> wrapper = new QueryWrapper<>(commentEntity);
+        IPage<CommentEntity> pages =null;
+        if (housesId==-1){
+            wrapper.eq("is_del",false);
+            wrapper.isNull("reply_id");
+            wrapper.orderByDesc("create_time");
+            pages= commentMapper.selectPage(ipage,wrapper);
+        }else {
+            wrapper.eq("is_del",false);
+            wrapper.eq("house_id",housesId);
+            wrapper.isNull("reply_id");
+            wrapper.orderByDesc("create_time");
+            pages=commentMapper.selectPage(ipage,wrapper);
+        }
+        return pages;
+    }
+    /*查看评论的回复*/
+    public List<CommentEntity> commentReplayList(Long commentId){
+        QueryWrapper wrapper = new QueryWrapper();
+        wrapper.eq("reply_id",commentId);
+        wrapper.eq("is_del",false);
+       return  commentMapper.selectList(wrapper);
     }
 
 }

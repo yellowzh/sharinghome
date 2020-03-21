@@ -10,6 +10,7 @@ import com.lnsf.service.UserInfoService;
 import com.lnsf.vo.MyOrderVO;
 import com.lnsf.vo.OrderListPageVO;
 import org.apache.log4j.Logger;
+import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.lnsf.entity.OrderListEntity;
@@ -56,8 +57,12 @@ public class OrderListController {
 
     @ApiOperation("查看单条订单")
     @GetMapping("/selectOrderById")
-    public OrderListEntity view(Long orderId){
-        return orderListService.getOrderList(orderId);
+    public OrderListDTO view(Long orderId){
+        OrderListEntity orderListEntity = orderListService.getOrderList(orderId);
+        OrderListDTO orderListDTO = new OrderListDTO();
+        BeanUtils.copyProperties(orderListEntity,orderListDTO);
+        orderListDTO.setOrderId(orderListEntity.getOrderId()+"");
+        return orderListDTO;
     }
 
 //    @ApiOperation("列表")

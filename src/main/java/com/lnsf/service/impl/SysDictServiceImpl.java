@@ -117,10 +117,5 @@ public class SysDictServiceImpl implements SysDictService{
         wrapper.eq("is_del",false);
         return sysDictMapper.selectList(wrapper);
     }
-//
-//    @Override
-//    public List<SysDictEntity> page(SysDictDTO dto, IPage<SysDictEntity> page) {
-//        return sysDictMapper.page(dto, page);
-//    }
 
 }

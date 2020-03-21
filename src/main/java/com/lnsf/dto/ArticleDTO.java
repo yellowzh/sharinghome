@@ -1,6 +1,7 @@
 package com.lnsf.dto;
 
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -15,6 +16,8 @@ import java.util.Date;
 @ApiModel
 public class ArticleDTO{
 
+    @ApiModelProperty(value = "资讯编号")
+    private String articleId;
     @ApiModelProperty(value = "资讯内容")
     private String articleInfo;
     @ApiModelProperty(value = "标题")

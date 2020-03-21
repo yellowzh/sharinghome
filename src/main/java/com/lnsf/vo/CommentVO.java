@@ -11,6 +11,9 @@ import java.util.Date;
 @Data
 public class CommentVO {
 
+    @ApiModelProperty(value = "评价编号")
+    private String commentId;
+
     @ApiModelProperty(value = "用户头像")
     private String userPhoto;
 

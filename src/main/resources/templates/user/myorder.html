@@ -15,6 +15,7 @@
 <script src="/js/bootstrap.min.js"></script>
 <script defer src="/js/all.js"></script>
 <!--<script type="text/javascript" src="/js/smooth-scroll.js"></script>-->
+	<script src="/js/upload.js"></script><!--图片上传-->
 <script src="/js/jquery.min.js"></script>
 <script src="/js/my/show.js"></script><!--自编弹出显示-->
 <script src="/js/angular.min.js"></script>
@@ -27,6 +28,12 @@
 		//定义控制器
 		app.controller('myController',function($scope,$http){
 			$scope.findAll=function(){
+				/*获取菜单*/
+				$http.get('/api/getMenuList').success(
+						function (response) {
+							$scope.menuList = response;
+						}
+				);
 				/*查看房源其他信息*/
 				$http.get('/api/myOrderByUserId?userId='+userId).success(
 						function(response){
@@ -100,10 +107,27 @@
 							// $scope.findAll();
 							location.href = "/api/myorder";
 						}
-				)
-
-
-			}
+				)}
+			/*图片上传*/
+			var dragImgUpload = new DragImgUpload("#drop_area",{
+				callback:function (files) {
+					//回调函数，可以传递给后台等等
+					var file = files[0];
+					var form = new FormData();
+					form.append('file', file);
+					$http({
+						method:'POST',
+						url:"/api/addPhoto",
+						data: form,
+						headers: {'Content-Type':undefined},
+						transformRequest: angular.identity
+					}).success( function ( response ){
+						$scope.comment.commentPhoto=response;
+					}).error(function (data) {
+						func("添加失败","#999999");
+					});
+				}
+			});
 
 		});
 	</script>
@@ -128,15 +152,20 @@
 		</button>
 		<div class="collapse navbar-collapse" id="navbarText">
 			<ul class="navbar-nav ml-auto">
-				<li class="nav-item">
-					<a class="nav-link" href="#">首页</a>
+				<li class="nav-item" th:if="${session.user}==null">
+					<a class="nav-link" href="/index">首页</a>
 				</li>
-
-				<li class="nav-item">
-					<a class="nav-link" href="#">民宿服务</a>
+				<li class="nav-item" th:if="${session.user}!=null">
+					<a class="nav-link" th:href="'/api/success?users=user&username='+${session.user.username}">首页</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="#">最新动态</a>
+					<a class="nav-link" href="/api/select/houserlease">民宿</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="/api/select/userDynamic">动态</a>
+				</li>
+				<li class="nav-item" ng-repeat="menu in menuList">
+					<a class="nav-link" href="{{menu.menuRequest}}">{{menu.menuProcince}}</a>
 				</li>
 				<li class="nav-item" style="width: 150px">
 					<ul class="nav nav-pills">
@@ -179,7 +208,7 @@
 						<div style="width: 80%;float: left;">
 						<h5>入住时间:{{all.startTime}}</h5>
 						<h5>退租时间:{{all.endTime}}</h5>
-						<h5>单价:{{all.onlyPrices}}/天&nbsp&nbsp&nbsp需支付:{{all.orderPrices}}</h5>
+						<h5>单价:{{all.onlyPrices}}元/天&nbsp&nbsp&nbsp需支付:{{all.orderPrices}}元</h5>
 						<h5>入住:{{all.pepoleNum}}人</h5>
 						<h5>支付状态:{{all.orderPay}}&nbsp&nbsp&nbsp入住状态:{{all.housesIn}}</h5>
 						</div>
@@ -202,11 +231,11 @@
 						<div style="width: 80%;float: left;">
 							<h5>入住时间:{{notPay.startTime}}</h5>
 							<h5>退租时间:{{notPay.endTime}}</h5>
-							<h5>单价:{{notPay.onlyPrices}}/天&nbsp&nbsp&nbsp需支付:{{notPay.orderPrices}}</h5>
+							<h5>单价:{{notPay.onlyPrices}}元/天&nbsp&nbsp&nbsp需支付:{{notPay.orderPrices}}元</h5>
 							<h5>入住:{{notPay.pepoleNum}}人</h5>
 							<h5>支付状态:{{notPay.orderPay}}&nbsp&nbsp&nbsp入住状态:{{notPay.housesIn}}</h5>
 						</div>
-						<button ng-click="goDel(all.orderId)" style="border: none;border-radius: 4%;color: white;width: 60px;height: 20px;">删除订单</button>
+						<button ng-click="goDel(notPay.orderId)" style="border: none;border-radius: 4%;color: white;width: 60px;height: 20px;">删除订单</button>
 						<button style="border: none;border-radius: 4%;color: white;width: 60px;height: 20px;" ng-click="removePay(notPay.orderId)">取消订单</button>
 						<button ng-click="goPay(notPay.orderId)" style="border: none;border-radius: 4%;color: white;background-color: red;width: 60px;height: 20px;">去支付</button>
 					</div>
@@ -224,11 +253,11 @@
 						<div style="width: 80%;float: left;">
 							<h5>入住时间:{{notIn.startTime}}</h5>
 							<h5>退租时间:{{notIn.endTime}}</h5>
-							<h5>单价:{{notPay.onlyPrices}}&nbsp&nbsp&nbsp需支付:{{notIn.orderPrices}}</h5>
+							<h5>单价:{{notIn.onlyPrices}}元/天&nbsp&nbsp&nbsp需支付:{{notIn.orderPrices}}元</h5>
 							<h5>入住:{{notIn.pepoleNum}}人</h5>
 							<h5>支付状态:{{notIn.orderPay}}&nbsp&nbsp&nbsp入住状态:{{notIn.housesIn}}</h5>
 						</div>
-						<button ng-click="goDel(all.orderId)" style="border: none;border-radius: 4%;color: white;width: 60px;height: 20px;">删除订单</button>
+						<button ng-click="goDel(notIn.orderId)" style="border: none;border-radius: 4%;color: white;width: 60px;height: 20px;">删除订单</button>
 						<button style="border: none;border-radius: 4%;color: white;width: 60px;height: 20px;" ng-click="removePay(notIn.orderId)">取消订单</button>
 						<!--<button style="border: none;border-radius: 4%;color: white;background-color: orange">入住民宿</button>-->
 					</div>
@@ -246,12 +275,12 @@
 						<div style="width: 80%;float: left;">
 							<h5>入住时间:{{comment.startTime}}</h5>
 							<h5>退租时间:{{comment.endTime}}</h5>
-							<h5>单价:{{comment.onlyPrices}}/天&nbsp&nbsp&nbsp需支付:{{comment.orderPrices}}</h5>
+							<h5>单价:{{comment.onlyPrices}}元/天&nbsp&nbsp&nbsp需支付:{{comment.orderPrices}}元</h5>
 							<h5>入住:{{comment.pepoleNum}}人</h5>
 							<h5>支付状态:{{comment.orderPay}}&nbsp&nbsp&nbsp入住状态:{{comment.housesIn}}</h5>
 						</div>
-						<button ng-click="goDel(all.orderId)" style="border: none;border-radius: 4%;color: white;width: 60px;height: 20px;">删除订单</button>
-						<button style="border: none;border-radius: 4%;color: white;background-color: orange;width: 60px;height: 20px;" data-toggle="modal" data-target="#myModal">去评价</button>
+						<button ng-click="goDel(comment.orderId)" style="border: none;border-radius: 4%;color: white;width: 60px;height: 20px;">删除订单</button>
+						<button style="border: none;border-radius: 4%;color: white;background-color: orange;width: 60px;height: 20px;" ng-click="goSelect(comment.orderId)" data-toggle="modal" data-target="#myModal">去评价</button>
 					</div>
 				</div>
 			</div>
@@ -302,13 +331,14 @@
 					<div style="margin-top: 10px;padding: 1em;">
 					<form action="" >
 						<div style="padding: 1em;">评价图片</div>
-						<div onclick="clickfile()" class="file_box1" style="float: left;">
-							+
-							<input type="file" id="file_input1" onchange="changefile(files)">
+						<div class="field">
+							<div id="drop_area"></div>
 						</div>
-						<div style="padding: 1em; margin-left: 10%;">
-							<img src="/images/logo.jpeg" width="50" height="50" class="d-inline-block" alt="">
-						</div>
+						<!--<div onclick="clickfile()" class="file_box1" style="float: left;">-->
+							<!--+-->
+							<!--<input type="file" id="file_input1" onchange="changefile(files)">-->
+						<!--</div>-->
+
 						<!--<input type="file" class="button border-main icon-plus-square-o" value="上传评价照片"/>-->
 					</form>
 					</div>
@@ -323,14 +353,14 @@
 	  </div>
 </div>
 <!--自定义上传图片样式-->
-<script>
-	function clickfile() {
-		document.getElementById('file_input1').click();
-	}
-	function changefile(files) {
-		console.log(files);
-	}
-</script>
+<!--<script>-->
+	<!--function clickfile() {-->
+		<!--document.getElementById('file_input1').click();-->
+	<!--}-->
+	<!--function changefile(files) {-->
+		<!--console.log(files);-->
+	<!--}-->
+<!--</script>-->
 <!--星星评分js-->
 <script src='/js/star.js'></script>
 </body>
