@@ -25,7 +25,7 @@ import lombok.experimental.Accessors;
 public class HousesDetailsEntity{
 
 
-    @TableId(value = "houses_id", type = IdType.AUTO)
+    @TableId(value = "houses_id")
     private Integer housesId;
 
     @ApiModelProperty(value = "类型编号")

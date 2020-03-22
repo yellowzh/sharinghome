@@ -17,9 +17,11 @@ public interface PhotoListService {
 
     List<PhotoListEntity> list(Integer housesId);
 
-//    PhotoListEntity create(PhotoListDTO dto);
-//
-//    void delete(String photoId);
+    PhotoListEntity addHousesPhoto(PhotoListEntity dto);
+
+    void delete(String photoId);
+
+    PhotoListEntity getPhotoById(String photoId);
 
 //    PhotoListEntity update(String photoId, PhotoListDTO dto);
 

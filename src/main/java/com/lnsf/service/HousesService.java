@@ -42,5 +42,9 @@ public interface HousesService {
     List<HousesDTO> getAllHousesByNow();
     /*查看所有房源*/
     List<HousesDTO> getAllHouses();
+    /*用户申请房源出租*/
+    HousesEntity createHousesByUser(HousesDTO housesDTO);
+    /*申请时更新*/
+    HousesEntity updateHousesByUser(Integer housesId, HousesDTO dto);
 
 }

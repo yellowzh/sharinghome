@@ -80,8 +80,6 @@ DragImgUpload.prototype = {
         dp.addEventListener("drop", function(e) {
             self.onDrop(e);
         });
-
-
     },
     onChangeUploadFile:function () {
         var fileInput = this.fileInput;

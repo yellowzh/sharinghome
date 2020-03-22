@@ -1,5 +1,7 @@
 package com.lnsf.controller;
 
+import com.lnsf.entity.UserInfoEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.lnsf.entity.PhotoListEntity;
@@ -9,6 +11,8 @@ import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import com.lnsf.dto.PhotoListDTO;
+
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 
@@ -35,11 +39,27 @@ public class PhotoListController {
         return photoListService.list(housesId);
     }
 
-//    @ApiOperation("删除")
-//    @DeleteMapping("{photoId}")
-//    public void delete(@ApiParam("") @PathVariable(name = "photoId") String photoId) {
-//        photoListService.delete(photoId);
-//    }
+    /*添加房源图片*/
+    @ApiOperation("添加房源图片")
+    @PostMapping(path ="/addHousesPhoto" )
+    @Transactional
+    public List<PhotoListEntity> addHousesPhoto(@RequestBody PhotoListEntity photoListEntity, HttpSession session){
+        /*添加*/
+        UserInfoEntity user = (UserInfoEntity) session.getAttribute("user");
+        System.out.println("添加房源图片:"+photoListEntity.getHousesId());
+        photoListEntity.setCreateUser(user.getUsername());
+        photoListService.addHousesPhoto(photoListEntity);
+       return photoListService.list(photoListEntity.getHousesId());
+    }
+
+
+    @ApiOperation("删除")
+    @GetMapping("/delPhoto")
+    public List<PhotoListEntity> delete(String photoId) {
+        PhotoListEntity photoListEntity = photoListService.getPhotoById(photoId);
+        photoListService.delete(photoId);
+        return photoListService.list(photoListEntity.getHousesId());
+    }
 //
 //    @ApiOperation("更新")
 //    @PutMapping("{photoId}")

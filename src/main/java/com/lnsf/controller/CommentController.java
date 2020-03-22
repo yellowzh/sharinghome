@@ -74,7 +74,6 @@ public class CommentController {
     }
 
     /*后台管理*/
-
     @ApiOperation(value = "评论管理以及查看房源评论", notes = "评论查询",httpMethod = "GET")
     @RequestMapping("/selectHousesComment")
     public ModelAndView selectHousesComment(Integer housesId, Map<String, Object> map){
@@ -86,6 +85,7 @@ public class CommentController {
         model_html.setViewName("admin/housesComment");
         return model_html;
     }
+
     @ApiOperation(value = "订单管理以及查看我的订单", notes = "我的订单查询",httpMethod = "GET")
     @RequestMapping("/getHousesCommentPage")
     public CommentListVO getHousesCommentPage(Integer housesId, Integer page){

@@ -7,13 +7,11 @@
         <id column="photo_id" property="photoId" />
         <result column="create_user" property="createUser" />
         <result column="create_time" property="createTime" />
-        <result column="delete_tag" property="deleteTag" />
         <result column="photo_name" property="photoName" />
         <result column="photo_path" property="photoPath" />
         <result column="size" property="size" />
         <result column="content_type" property="contentType" />
-        <result column="backerup1" property="backerup1" />
-        <result column="backerup2" property="backerup2" />
+        <result column="is_del" property="isDel" />
         <result column="housesId" property="housesId" />
     </resultMap>
 
@@ -21,10 +19,8 @@
     <sql id="BaseColumnList">
         create_user,
         create_time,
-        delete_tag,
-        photo_id, photo_name, photo_path, size, content_type, backerup1, backerup2, housesId
+        photo_id, photo_name, photo_path, size, content_type, is_del, housesId
     </sql>
-
 
     <select id="page" resultType="com.lnsf.entity.PhotoListEntity">
         select * from photo_list t where t.delete_tag=0
@@ -41,11 +37,8 @@
         <if test="dto.contentType !=null and dto.contentType != ''">
             and t.content_type like CONCAT('%',#{dto.contentType},'%')
         </if>
-        <if test="dto.backerup1 !=null and dto.backerup1 != ''">
-            and t.backerup1 like CONCAT('%',#{dto.backerup1},'%')
-        </if>
-        <if test="dto.backerup2 !=null and dto.backerup2 != ''">
-            and t.backerup2 like CONCAT('%',#{dto.backerup2},'%')
+        <if test="dto.isDel !=null">
+            and t.is_del = #{dto.isDel}
         </if>
         <if test="dto.housesId !=null">
             and t.housesId = #{dto.housesId}

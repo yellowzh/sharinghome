@@ -77,7 +77,7 @@ public class HousesEntity{
     @TableField("is_recommend")
     private Boolean isRecommend;
 
-    @ApiModelProperty(value = "标志位--0为在线·出租，1为下架修整，2为删除")
+    @ApiModelProperty(value = "标志位--0为在线·出租，1为下架修整，2为删除，3为待审核")
     @TableField("houses_falgs")
     private String housesFalgs;
 

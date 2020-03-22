@@ -38,6 +38,10 @@
                   $scope.findAll();
                 }
         )}};
+      /*点击查看*/
+      $scope.selectDictson=function(id){
+        location.href="/api/selectDictson?dictId="+id;
+      };
       $scope.del=function(id){
         $http.get('/api/deleteDict?dictId='+id).success(
                   function(response){
@@ -152,6 +156,7 @@
 	      <div class="button-group">
             <!--data-toggle="modal" data-target="#myModal"-->
 		      <a class="button border-main"  ng-click="findDict(dict.dictId)" ><span class="icon-edit"></span> 修改</a>
+              <a class="button border-blue" ng-click="selectDictson(dict.dictId)" style="color: orange;"><span class="icon-search"></span> 查看</a>
 		      <a class="button border-blue" ng-click="del(dict.dictId)" style="color: red;"><span class="icon-trash-o"></span> 删除</a>
 	      </div>
       </td>

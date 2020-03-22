@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -338,6 +339,7 @@ public class HousesController {
         List<HousesDTO> houses = housesService.getAllHousesByNow();
         return houses;
     }
+
     @ApiOperation("前台查看所有在线房源")
     @GetMapping(path = "/select/findAllHousesNow")
     public List<HousesDTO> findAllHousesNow(){
@@ -345,6 +347,7 @@ public class HousesController {
         List<HousesDTO> houses = housesService.getAllHousesByNow();
         return houses;
     }
+
     @ApiOperation("查看所有房源列表")
     @GetMapping(path = "/getAllHouses")
     public List<HousesDTO> getAllHouses(){
@@ -352,11 +355,43 @@ public class HousesController {
         List<HousesDTO> houses = housesService.getAllHouses();
         return houses;
     }
+
     @ApiOperation(value = "查询预定页面跳转", notes = "查询我的房源",httpMethod = "GET")
     @RequestMapping("/select/houserlease")
     public ModelAndView houserlease(){
         ModelAndView model_html = new ModelAndView();
         model_html.setViewName("user/houserlease");
+        return model_html;
+    }
+
+    @ApiOperation(value = "我要出租房源认证页面跳转", notes = "出租房源认证",httpMethod = "GET")
+    @RequestMapping("/rentalHousing")
+    public ModelAndView rentalHousing(){
+        ModelAndView model_html = new ModelAndView();
+        model_html.setViewName("user/rentalHousing");
+        return model_html;
+    }
+
+
+    @ApiOperation(value = "我要出租房源认证", notes = "出租房源认证",httpMethod = "POST")
+    @RequestMapping("/addHousesByUser")
+    public HousesEntity addHousesByUser(@RequestBody HousesDTO housesDTO,HttpSession session){
+        UserInfoEntity user = (UserInfoEntity) session.getAttribute("user");
+        housesDTO.setBusinessId(user.getUserId());
+        housesDTO.setHousesFalgs(3+"");
+        return housesService.createHousesByUser(housesDTO);
+    }
+    @ApiOperation("更新")
+    @PostMapping("/updateHousesByUser")
+    public HousesEntity updateHousesByUser(Integer housesId,@RequestBody HousesDTO dto) {
+        return housesService.updateHousesByUser(housesId, dto);
+    }
+
+    /*后台管理商家审核*/
+    @RequestMapping("/housesExamine")
+    public ModelAndView housesExamine(){
+        ModelAndView model_html = new ModelAndView();
+        model_html.setViewName("admin/housesExamine");
         return model_html;
     }
 

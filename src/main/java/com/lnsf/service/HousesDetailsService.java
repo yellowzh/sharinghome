@@ -17,13 +17,16 @@ public interface HousesDetailsService {
 
     HousesDetailsEntity getHousesDetails(Integer housesId);
 
+    HousesDetailsEntity create(HousesDetailsEntity housesDetailsEntity);
+
+    HousesDetailsEntity updateHousesDeByUser(Integer housesId, HousesDetailsDTO dto);
 //    List<String> list(HousesDetailsEntity housesDetailsEntity);
 //
-//    HousesDetailsEntity create(HousesDetailsDTO dto);
+
 //
 //    void delete(Integer housesId);
 //
-//    HousesDetailsEntity update(Integer housesId, HousesDetailsDTO dto);
+
 //
 //    List<HousesDetailsEntity> page(HousesDetailsDTO dto, IPage<HousesDetailsEntity> page);
 }

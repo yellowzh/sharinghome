@@ -23,10 +23,17 @@ import lombok.experimental.Accessors;
 @ApiModel(value="PhotoListEntity对象", description="")
 public class PhotoListEntity{
 
-
     @TableId("photo_id")
     private String photoId;
 
+    @ApiModelProperty(value = "创建用户")
+    @TableField("create_user")
+    private String createUser;
+
+//    @ApiModelProperty(value = "创建时间")
+//    @TableField("create_time")
+//    private Data createTime;
+//
     @TableField("photo_name")
     private String photoName;
 

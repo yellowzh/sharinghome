@@ -125,10 +125,10 @@
         <th>剩余房间数量</th>
         <th>收藏量</th>
         <th>预览量</th>
-        <th width="10%">出租价格</th>
-        <th width="10%">地址</th>
+        <th>出租价格</th>
+        <th>地址</th>
         <th>状态</th>
-        <th width="30%">操作</th>
+        <th>操作</th>
       </tr>
         <volist name="list" id="vo">
         <tr th:each="house:${houses}">
@@ -169,13 +169,13 @@
         <td style="text-align:left; padding:19px 0;padding-left:20px;">
             <input type="checkbox" id="checkall"/>
           全选 </td>
-        <td colspan="10" style="text-align:left;padding-left:20px;  ">
+        <td colspan="13" style="text-align:left;padding-left:20px;  ">
             <a href="javascript:void(0)" class="button border-red icon-trash-o" style="padding:5px 15px;" onclick="DelSelect()"> 删除</a>
             <a href="javascript:void(0)" style="padding:5px 15px; margin:0 10px;" class="button border-blue icon-edit" onclick="sorts()"> 排序</a>
          </td>
       </tr>
       <tr th:if="${houses.size()}!=0">
-            <td colspan="10">
+            <td colspan="13">
                 <div class="pagelist">
                     <!--分页===============================================-->
                     <!--<ul class="pagination pagination-lg" >-->

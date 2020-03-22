@@ -1,0 +1,128 @@
+/*整体固定框框*/
+body{
+    font-family: 'Merienda';font-size: 15px;
+    background-color: #e9ecef;
+}
+.hu_lc{
+    width: 25%;
+    background: #e9ecef;
+    position: fixed;
+    float: left;
+    margin-top:90px;
+    top: 0;
+    height: 100%;
+}
+.h_right{
+    width: 65%;
+    margin-top:90px;
+    margin-left: 28%;
+    position: absolute;
+}
+.quxiao input[type=submit]{
+    border: none;
+    color: white;
+    width: 80%;
+    margin-left: 10%;
+    font-size: 15px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+.price input[type=submit]{
+    border: none;
+    background: #ec7e70;
+    color: white;
+    width: 80%;
+    margin-left: 10%;
+    font-size: 15px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+/*流程样式*/
+/*流程固定*/
+.h_lc{
+    width: 80%;
+    float: right;
+    border: #9fcdff;
+}
+.h_lc table{
+    margin-top: 20px;
+}
+.h_lc tr{
+    width: 100%;
+    height: 40px;
+    color: darkgray;
+    font-size: 15px;
+    margin-top: 1em;
+}
+
+
+/*房屋详情页面的固定*/
+
+.prices{
+    float: left;
+    margin-left: 10px;
+    width: 100%;
+    margin-top: 20px;
+    font-size: 28px;
+}
+
+.inp{
+    float: left;
+    margin-left: 20px;
+    width: 110px;
+    padding: 1em;
+}
+.inp label{
+    width: 80px;
+    text-align: center;
+}
+.inp input[type=date]{
+    width: 120px;
+    height: 30px;
+    border: none;
+    text-align: center;
+}
+.inp select{
+    width: 80px;
+    height: 30px;
+    border: none;
+    text-align: center;
+}
+.inp select option{
+    width: 80px;
+    height: 30px;
+    border: none;
+    text-align: center;
+}
+/*房东详情固定*/
+.u_top{
+    width: 100%;
+    background: #e9ecef;
+    float: right;
+    margin-top:20px;
+    border: #bee5eb;
+    border-top-width: 10px;
+}
+.u_top input[type=submit]{
+    border-style: solid;
+    border-width: 1px;
+    background: white;
+    color: black;
+    width: 80%;
+    margin-left: 10%;
+    font-size: 20px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+.u_top label{
+    margin-left: 10px;
+    margin-top: 10px;
+}
+
+.u_top img{
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-left: 10%;
+    margin-top: 10px;
+}

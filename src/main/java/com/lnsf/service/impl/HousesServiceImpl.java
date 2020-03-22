@@ -15,10 +15,12 @@ import com.lnsf.service.HousesDetailsService;
 import com.lnsf.service.HousesService;
 import com.lnsf.service.UserInfoService;
 import com.lnsf.vo.HousesVO;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 @Service
@@ -34,8 +36,10 @@ public class HousesServiceImpl implements HousesService {
     /*查询所有房屋*/
     @Override
     public IPage<HousesEntity> getAllHomeShowPage(Integer page) {
-        IPage<HousesEntity> ipage = new Page<>(page, 8);
-        IPage<HousesEntity> pages = housesMapper.selectPage(ipage,null);
+        IPage<HousesEntity> ipage = new Page<>(page, 7);
+        QueryWrapper wrapper = new QueryWrapper();
+        wrapper.ne("houses_falgs",3);
+        IPage<HousesEntity> pages = housesMapper.selectPage(ipage,wrapper);
         return pages;
     }
 
@@ -79,10 +83,11 @@ public class HousesServiceImpl implements HousesService {
     /*模糊查询，加状态查询*/
     @Override
     public IPage<HousesEntity> getAllHousesShowLikeTitle(HousesEntity houses,Integer page) {
-        IPage<HousesEntity> ipage = new Page<>(page, 8);
+        IPage<HousesEntity> ipage = new Page<>(page, 7);
         HousesEntity housesEntity = new HousesEntity();
         QueryWrapper<HousesEntity> wrapper = new QueryWrapper<>(housesEntity);
         wrapper.like("houses_title",houses.getHousesTitle());
+        wrapper.ne("houses_falgs",3);
         IPage<HousesEntity> pages = housesMapper.selectPage(ipage,wrapper);
         return pages;
     }
@@ -225,6 +230,32 @@ public class HousesServiceImpl implements HousesService {
         List<HousesEntity> houses = housesMapper.selectList(wrapper);
         List<HousesDTO> housesDTOS = getUserByHId(houses);
         return housesDTOS;
+    }
+
+    /*用户申请房源出租*/
+    public HousesEntity createHousesByUser(HousesDTO housesDTO){
+
+        if (null==housesDTO){
+            return null;
+        }
+        HousesEntity housesEntity = new HousesEntity();
+        BeanUtils.copyProperties(housesDTO,housesEntity);
+        housesMapper.insert(housesEntity);
+        return housesEntity;
+    }
+    /*认证时更新*/
+    @Override
+    public HousesEntity updateHousesByUser(Integer housesId, HousesDTO dto) {
+        if (null == housesId) {
+            return null;
+        }
+        HousesEntity existEntity = housesMapper.selectById(housesId);
+        if (null == existEntity) {
+            return null;
+        }
+        BeanUtil.copyProperties(dto, existEntity);
+        housesMapper.updateById(existEntity);
+        return existEntity;
     }
 
 

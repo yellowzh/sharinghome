@@ -1,5 +1,6 @@
 package com.lnsf.dto;
 
+import com.baomidou.mybatisplus.annotation.TableId;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -11,7 +12,8 @@ import lombok.Data;
 @Data
 @ApiModel
 public class HousesDetailsDTO{
-
+    @TableId(value = "houses_id")
+    private Integer housesId;
     @ApiModelProperty(value = "类型编号")
     private Long dictId;
     @ApiModelProperty(value = "房间规格类：三室一厅")

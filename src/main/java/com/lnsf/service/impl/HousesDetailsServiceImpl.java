@@ -30,6 +30,28 @@ public class HousesDetailsServiceImpl implements HousesDetailsService {
     public HousesDetailsEntity getHousesDetails(Integer housesId){
         return housesDetailsMapper.selectById(housesId);
     }
+
+    @Override
+    public HousesDetailsEntity create(HousesDetailsEntity housesDetailsEntity) {
+        if (null == housesDetailsEntity) {
+            throw new ServiceException("参数为空!");
+        }
+        housesDetailsMapper.insert(housesDetailsEntity);
+        return housesDetailsEntity;
+    }
+    @Override
+    public HousesDetailsEntity updateHousesDeByUser(Integer housesId, HousesDetailsDTO dto) {
+        if (null == housesId) {
+            return null;
+        }
+        HousesDetailsEntity existEntity = housesDetailsMapper.selectById(housesId);
+        if (null == existEntity) {
+            return null;
+        }
+        BeanUtil.copyProperties(dto, existEntity);
+        housesDetailsMapper.updateById(existEntity);
+        return existEntity;
+    }
 //    /*首页搜索查询列表*/
 //    @Override
 //    public List<String> list(HousesDetailsEntity housesDetailsEntity){
@@ -52,16 +74,7 @@ public class HousesDetailsServiceImpl implements HousesDetailsService {
 //        }
 //    }
 
-//    @Override
-//    public HousesDetailsEntity create(HousesDetailsDTO dto) {
-//        if (null == dto) {
-//            throw new ServiceException("参数为空!");
-//        }
-//        HousesDetailsEntity entity = new HousesDetailsEntity();
-//        BeanUtil.copyProperties(dto, entity);
-//        housesDetailsMapper.insert(entity);
-//        return entity;
-//    }
+
 //
 //    @Override
 //    public void delete(Integer housesId) {
@@ -71,19 +84,7 @@ public class HousesDetailsServiceImpl implements HousesDetailsService {
 //        housesDetailsMapper.deleteById(housesId);
 //    }
 //
-//    @Override
-//    public HousesDetailsEntity update(Integer housesId, HousesDetailsDTO dto) {
-//        if (null == housesId) {
-//            return null;
-//        }
-//        HousesDetailsEntity existEntity = housesDetailsMapper.selectById(housesId);
-//        if (null == existEntity) {
-//            return null;
-//        }
-//        BeanUtil.copyProperties(dto, existEntity);
-//        housesDetailsMapper.updateById(existEntity);
-//        return existEntity;
-//    }
+
 //
 //    @Override
 //    public List<HousesDetailsEntity> page(HousesDetailsDTO dto, IPage<HousesDetailsEntity> page) {

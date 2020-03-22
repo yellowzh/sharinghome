@@ -35,17 +35,24 @@ public class HousesDetailsController {
         return housesDetailsService.getHousesDetails(housesId);
     }
 
+    @ApiOperation("新增")
+    @PostMapping("/addHousesDeByUser")
+    public HousesDetailsEntity create(@RequestBody HousesDetailsEntity photoDto){
+        System.out.println(photoDto.getHousesId());
+        return housesDetailsService.create(photoDto);
+    }
+    @ApiOperation("更新")
+    @PostMapping("/updateHousesDeByUser")
+    public HousesDetailsEntity updateHousesDeByUser(Integer housesId,@RequestBody HousesDetailsDTO dto) {
+        return housesDetailsService.updateHousesDeByUser(housesId, dto);
+    }
 //    @ApiOperation("列表")
 //    @GetMapping
 //    public List<HousesDetailsEntity> list(){
 //        return housesDetailsService.list();
 //    }
 //
-//    @ApiOperation("新增")
-//    @PostMapping(path = "createHousesDetails")
-//    public HousesDetailsEntity create(@RequestBody @Valid HousesDetailsDTO dto){
-//        return housesDetailsService.create(dto);
-//    }
+
 //
 //    @ApiOperation("删除")
 //    @DeleteMapping("{housesId}")
@@ -53,11 +60,6 @@ public class HousesDetailsController {
 //        housesDetailsService.delete(housesId);
 //    }
 //
-//    @ApiOperation("更新")
-//    @PutMapping("{housesId}")
-//    public HousesDetailsEntity update(@ApiParam("") @PathVariable("housesId") Integer housesId,
-//                            @RequestBody @Valid HousesDetailsDTO dto) {
-//        return housesDetailsService.update(housesId, dto);
-//    }
+
 
 }
