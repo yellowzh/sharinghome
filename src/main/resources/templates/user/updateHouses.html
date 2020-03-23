@@ -18,8 +18,9 @@
 	<script src="/js/my/show.js"></script><!--自编弹出显示-->
 	<script src="/js/angular.min.js"></script>
 
-	<script>
-		var housesId=-1;
+	<script th:inline="javascript">
+		// var housesId = [[${housesId}]];
+		var housesId=12;
 		var app=angular.module('myApp',[]); //定义了一个叫myApp的模块
 		//定义控制器
 		app.controller('myController',function($scope,$http){
@@ -31,6 +32,55 @@
 							$scope.menuList=response;
 						}
 				);
+				$http.get('/api/getHomeShowById?houserId='+housesId).success(
+					function(response){
+						$scope.houses=response;
+						var str = response.housesAddress;
+						var str1 = str.split(".");
+						$scope.addressF=str1[0];
+						var str2 = str1[1].split("-");
+						$scope.addressS=str2[0];
+						$scope.addressT=str2[1];
+						$http.get('/api/select/getHousesType?name='+str1[0]).success(
+								function(response){
+									$scope.addressType=response;
+								}
+						)
+
+					}
+				);
+				/*查看房源图片*/
+				$http.get('/api/select/photoList?housesId='+housesId).success(
+						function(response){
+							$scope.photoList=response;
+							$scope.imgshow=response.length;
+						}
+				);
+				/*查看房源详细信息*/
+
+				$http.get('/api/gethousesExamineInfo?housesId='+housesId).success(
+						function(response){
+							$scope.houserDe=response;
+							$scope.dictType=response.dictType;
+							$scope.dictTypeT=response.dictType;
+							document.getElementById("isTowel").checked=response.isTowel;
+							document.getElementById("isWash").checked=response.isWash;
+							document.getElementById("isClothesHanger").checked=response.isClothesHanger;
+							document.getElementById("isTowel").checked=response.isTowel;
+							document.getElementById("isSlipper").checked=response.isSlipper;
+							document.getElementById("isAir").checked=response.isAir;
+							document.getElementById("isWifi").checked=response.isWifi;
+							document.getElementById("isHotWater").checked=response.isHotWater;
+							var str = response.housesSpecs;
+							var str1 = str.split(".");
+							$scope.WXf=str1[0];
+							var str2 = str1[1].split("-");
+							$scope.WXt=str2[0];
+							$scope.WXy=str2[1];
+							// alert(document.getElementById("isWifi").checked)
+						}
+				);
+
 				/*查看地址类型*/
 				$http.get('/api/select/getHousesType?name=地址').success(
 						function(response){
@@ -51,66 +101,61 @@
 				)
 
 			};
+			$scope.isDepositF=0;
+			$scope.isDepositS=0;
 			$scope.oneNum=0;
-			$scope.housesId=-1;
 			$scope.addNext=function(){
 				$scope.oneNum++;
 				if($scope.oneNum==1){
-					if ($scope.address.name!=undefined) {
-						$scope.houses.housesAddress=$scope.address.name;
+					if ($scope.addressF!=undefined) {
+						$scope.houses.housesAddress=$scope.addressF;
 					}
-					if($scope.ad.name!=undefined){
-						$scope.houses.housesAddress+="."+$scope.ad.name;
+					if($scope.addressS!=undefined){
+						$scope.houses.housesAddress+="."+$scope.addressS;
 					}
-					if($scope.addressIn.name!=undefined){
-						$scope.houses.housesAddress+="-"+$scope.addressIn.name;
+					if($scope.addressT!=undefined){
+						$scope.houses.housesAddress+="-"+$scope.addressT;
 					}
-					if ($scope.addHouses1==undefined) {
-						$http.post('/api/addHousesByUser',$scope.houses).success(
-								function(response){
-									housesId=response.housesId;
-									$scope.addHouses1=true;
+					$http.post('/api/updateHousesByUser?housesId='+housesId,$scope.houses).success(
+							function(response){
+								document.getElementById("d1").checked=response.isDeposit;
+								if(response.isDeposit==0){
+									$scope.isDepositF=1;
+								}else {
+									$scope.isDepositS=1;
 								}
-						)
-					}else {
-						$scope.houses.housesId=housesId;
-						$http.post('/api/updateHousesByUser?housesId='+housesId,$scope.houses).success(
-								function(response){
-									// $scope.housesId=response.housesId;
-									$scope.addHouses1=true;
-								}
-						)
-					}
-
+								$scope.houserDe.isDeposit=response.isDeposit;
+								// $scope.housesId=response.housesId;
+								// $scope.addHouses1=true;
+							}
+					)
 				}
 				if($scope.oneNum==3){
-					if ($scope.WX.f!=undefined) {
-						$scope.houserDe.housesSpecs=$scope.WX.f;
+					if ($scope.WXf!=undefined) {
+						$scope.houserDe.housesSpecs=$scope.WXf;
 					}
-					if($scope.WX.t!=undefined){
-						$scope.houserDe.housesSpecs+="."+$scope.WX.t;
+					if($scope.WXt!=undefined){
+						$scope.houserDe.housesSpecs+="."+$scope.WXt;
 					}
-					if($scope.WX.y!=undefined){
-						$scope.houserDe.housesSpecs+="-"+$scope.WX.y;
+					if($scope.WXy!=undefined){
+						$scope.houserDe.housesSpecs+="-"+$scope.WXy;
 					}
 					$scope.houserDe.housesId=housesId;
+					if($scope.dictType!=$scope.dictTypeT){
+						$scope.houserDe.dictId=$scope.dictType;
+					}
+					if ($scope.houserDe.isDeposit==0){
+						$scope.houserDe.isDeposit=false;
+					}
+					if ($scope.houserDe.isDeposit==1) {
+						$scope.houserDe.isDeposit=true;
+					}
 					// $scope.houserDe.housesId=9;
-					if ($scope.addHouses==undefined){
-						$http.post('/api/addHousesDeByUser',$scope.houserDe).success(
+						$http.post('/api/updateHousesDeByUser?housesId='+$scope.houserDe.housesId,$scope.houserDe).success(
 								function(response){
 									$scope.housesId=response.housesId;
-									$scope.addHouses=true;
 								}
 						)
-					}else {
-						$scope.houserDe.housesId=housesId;
-						$http.post('/api/updateHousesDeByUser?housesId='+housesId,$scope.houserDe).success(
-								function(response){
-									housesId=response.housesId;
-								}
-						)
-					}
-
 				}
 				$scope.houserUpD={};
 				if($scope.oneNum==4){
@@ -124,10 +169,9 @@
 					$scope.houserUpD.isAir = document.getElementById("isAir").checked;
 					$scope.houserUpD.isWifi = document.getElementById("isWifi").checked;
 					$scope.houserUpD.isHotWater =document.getElementById("isHotWater").checked;
-					$http.post('/api/updateHousesDeByUser?housesId='+housesId,$scope.houserUpD).success(
+					$http.post('/api/updateHousesDeByUser?housesId='+$scope.houserUpD.housesId,$scope.houserUpD).success(
 						function(response){
 							location.href="/api/myHouse";
-							// $scope.housesId=response.housesId;
 						}
 					)
 				}
@@ -209,23 +253,13 @@
 				/*验证限制提交订单前算出总价显示*/
 				/*地址级联*/
 				$("select[name=cid]").blur(function () {
-					$http.get('/api/select/getHousesType?name='+$scope.address.name).success(
+					$http.get('/api/select/getHousesType?name='+$scope.addressF).success(
 							function(response){
 								$scope.addressType=response;
 							}
 					)
 				});
-				/*判断押金是否选择*/
-				$("input[type='radio']").click(function(){
-					var id= $(this).attr("id");
-					if (id=='d1'){
-						$scope.houserDe.isDeposit=1;
-					}else {
-						$scope.houserDe.isDeposit=0;
-					}
-				});
 			});
-
 		});
 	</script>
 </head>
@@ -325,7 +359,7 @@
 	<hr style="margin-top: 30%">
 	<div class="price">
 		<!-- data-toggle="modal" data-target="#myModal"  -->
-		<input type="submit" ng-click="addNext()" ng-if="oneNum==3" value="提交房源审核">
+		<input type="submit" ng-click="addNext()" ng-if="oneNum==3" value="保存">
 	</div>
 	<div class="price">
 		<input type="submit" ng-click="addNext()" ng-if="oneNum<3" value="保存并下一步">
@@ -333,9 +367,6 @@
 	<div class="price">
 		<input type="submit" ng-click="addReturn()" ng-if="oneNum>0" value="上一步">
 	</div>
-	<!--<div class="quxiao">-->
-		<!--<input type="submit" value="取消房源认证">-->
-	<!--</div>-->
 </div>
 <!--leaf end-->
 <!--End of Carousel-->
@@ -348,24 +379,24 @@
 				<div class="body-content" style="padding: 1em;">
 						<div class="form-group">
 							<div class="label">
-								<label>房源地址：</label>
+								<label>房源地址：{{houses.housesAddress}}</label>
 							</div>
 							<div class="field" style="width: 20%;float: left">
 								市区:
-								<select name="cid" class="input w50" ng-model="address.name">
+								<select name="cid" class="input w50" ng-model="addressF">
 									<option ng-value="address.name" ng-repeat="address in addressTypeF">{{address.name}}</option>
 								</select>
 								<div class="tips"></div>
 							</div>
 							<div class="field" style="width: 20%;float: left;margin-left: 5%;">
 								乡镇:
-								<select name="cid2" class="input w50" ng-model="ad.name">
+								<select name="cid2" class="input w50" ng-model="addressS">
 									<option ng-value="ad.name" ng-repeat="ad in addressType">{{ad.name}}</option>
 								</select>
 								<div class="tips"></div>
 							</div>
 							<div class="field" style="width: 50%;float: left;margin-left: 5%;">
-								详细地址:<input type="text" class="input w50" name="title" data-validate="required:请输入详细地址" ng-model="addressIn.name" />
+								详细地址:<input type="text" class="input w50" name="title" data-validate="required:请输入详细地址" ng-model="addressT" />
 								<div class="tips"></div>
 							</div>
 						</div>
@@ -384,6 +415,9 @@
 								<label>房源主图片：</label>
 							</div>
 							<div class="field">
+								<img src="{{houses.housesPhoto}}">
+							</div>
+							<div class="field">
 								<div id="drop_area"></div>
 							</div>
 						</div>
@@ -398,7 +432,7 @@
 						</div>
 						<div class="form-group">
 							<div class="label">
-								<label>价格：以天计算</label>
+								<label>价格：以天计算/元</label>
 							</div>
 							<div class="field">
 								<input type="text" class="input w50" name="sort"  data-validate="required:,number:排序必须为数字" ng-model="houses.housesPrices" />
@@ -413,8 +447,8 @@
 				<div class="panel-head"><strong><span class="icon-pencil-square-o"></span> 房源照片</strong></div>
 				<div class="body-content" style="padding: 1em;">
 					<div class="form-group">
-						<div style="width: 100%;" ng-repeat="img in photoList">
-							<img src="{{img.photoPath}}" style="height: 100px;width: auto;padding: 1em;float: left;" >
+						<div style="width: 100%;float: left;" ng-repeat="img in photoList">
+							<img src="{{img.photoPath}}" style="height: 100px;width: auto;padding: 1em;" >
 							<button style="border: none" ng-click="delPhoto(img.photoId)">删除</button>
 						</div>
 					</div>
@@ -436,43 +470,43 @@
 				<div class="body-content" style="padding: 1em;">
 					<div class="form-group">
 						<div class="label">
-							<label>房型设置：</label>
+							<label>房型设置：{{houserDe.dictType}} -- {{houserDe.housesSpecs}}</label>
 						</div>
 						<div class="field" style="width: 20%;float: left;">
 							类型:
-							<select name="cid2" class="input w50" ng-model="houserDe.dictId">
+							<select name="cid2" class="input w50" ng-model="dictType">
 								<option ng-value="dict.dictId" ng-repeat="dict in housesType" >{{dict.name}}</option>
 							</select>
 							<div class="tips"></div>
 						</div>
 						<div class="field" style="width: 20%;float: left;margin-left: 10%;">
 							卧室:
-							<select class="input w50" ng-model="WX.f">
-								<option ng-value="1室">1室</option>
-								<option ng-value="2室">2室</option>
-								<option ng-value="3室">3室</option>
-								<option ng-value="4室">4室</option>
-								<option ng-value="5室">5室</option>
-								<option ng-value="6室">6室</option>
+							<select class="input w50" ng-model="WXf">
+								<option value="1室">1室</option>
+								<option value="2室">2室</option>
+								<option value="3室">3室</option>
+								<option value="4室">4室</option>
+								<option value="5室">5室</option>
+								<option value="6室">6室</option>
 							</select>
 							<div class="tips"></div>
 						</div>
 						<div class="field" style="width: 20%;float: left;margin-left: 5%;">
 							客厅:
-							<select class="input w50" ng-model="WX.t">
-								<option ng-value="1厅">1厅</option>
-								<option ng-value="2厅">2厅</option>
-								<option ng-value="3厅">3厅</option>
-								<option ng-value="4厅">4厅</option>
+							<select class="input w50" ng-model="WXt">
+								<option value="1厅">1厅</option>
+								<option value="2厅">2厅</option>
+								<option value="3厅">3厅</option>
+								<option value="4厅">4厅</option>
 							</select>
 							<div class="tips"></div>
 						</div>
 						<div class="field" style="width: 20%;float: left;margin-left: 5%;">
 							阳台:
-							<select class="input w50" ng-model="WX.y">
-								<option ng-value="1阳">1阳</option>
-								<option ng-value="2阳">2阳</option>
-								<option ng-value="3阳">3阳</option>
+							<select class="input w50" ng-model="WXy">
+								<option value="1阳">1阳</option>
+								<option value="2阳">2阳</option>
+								<option value="3阳">3阳</option>
 							</select>
 							<div class="tips"></div>
 						</div>
@@ -483,10 +517,10 @@
 						</div>
 						<div class="field" style="width: 20%;">
 							<select name="cid2" class="input w50" ng-model="houserDe.iwc">
-								<option ng-value="1">1</option>
-								<option ng-value="2">2</option>
-								<option ng-value="3">3</option>
-								<option ng-value="4">4</option>
+								<option value="1">1</option>
+								<option value="2">2</option>
+								<option value="3">3</option>
+								<option value="4">4</option>
 							</select>
 							<div class="tips"></div>
 						</div>
@@ -497,15 +531,17 @@
 						</div>
 						<div class="field">
 							是否收取押金:
-							<input type="radio" id="d1" name="radiobutton" value="radiobutton">收取
-							<input type="radio" id="d2" name="radiobutton" value="radiobutton" checked="checked">不收取
+							<!--<input type="radio" id="d1" name="radiobutton" value="1">收取-->
+							<!--<input type="radio" id="d2" name="radiobutton" value="2">不收取-->
+							<input type="radio" ng-model="houserDe.isDeposit" ng-checked="isDepositF" value="1">收取
+							<input type="radio" ng-model="houserDe.isDeposit" ng-checked="isDepositS" value="0">不收取
 							<input type="text" class="input w50" name="title" data-validate="required:请输入标题" ng-model="houserDe.deposit" />
 							<div class="tips"></div>
 						</div>
 					</div>
 					<div class="form-group">
 						<div class="label">
-							<label>可入住人数:</label>
+							<label>可入住人数:/人</label>
 						</div>
 						<div class="field" style="width: 10%;">
 							<select class="input w50" ng-model="houserDe.inNum">
@@ -515,7 +551,7 @@
 						</div>
 						<div class="field" style="width: 10%;">
 							<div class="label">
-							<label>清洁费用</label>
+							<label>清洁费用:/元</label>
 							</div>
 							<input type="text" class="input w50" name="title" data-validate="required:请输入标题" ng-model="houserDe.cleanPrices" />
 							<div class="tips"></div>
@@ -540,7 +576,7 @@
 								<tr style="height: 50px;">
 									<!--ng-checked="selectAll"-->
 									<td style="width: 20%"><input type="checkbox" id="isWash" ng-checked="selectAll">洗衣机</td>
-									<td style="width: 20%"><input type="checkbox" id="isClothesHanger" ng-checked="selectAll" >晾衣架</td>
+									<td style="width: 20%"><input type="checkbox" id="isClothesHanger" ng-checked="selectAll">晾衣架</td>
 									<td style="width: 20%"><input type="checkbox" id="isTowel"  ng-checked="selectAll">毛巾</td>
 								</tr>
 								<tr style="height: 50px;">

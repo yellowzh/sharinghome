@@ -220,7 +220,7 @@ public class HousesController {
     }
 
     /*首页查看房源详情*/
-    @ApiOperation(value = "查看所有房源详情", notes = "记录",httpMethod = "POST")
+    @ApiOperation(value = "查看房源详情", notes = "记录",httpMethod = "POST")
     @RequestMapping("/getHomeShowById")
     public HousesDTO getHomeShowById(Integer houserId){
         return housesService.getHomeShowById(houserId);
@@ -415,11 +415,16 @@ public class HousesController {
         /*注入类型*/
         SysDictEntity sysDictEntity = sysDictService.getSysDict(housesDetailsEntity.getDictId());
         housesDetailsVO.setDictType(sysDictEntity.getName());
-//        /*查询商家编号*/
-//       HousesDTO housesDTO = housesService.getIndexHomeShowById(housesId);
-//        UserInfoEntity userInfo = userInfoService.getUserById(housesDTO.getBusinessId());
-//        housesDetailsVO.setUserInfo(userInfo);
         return housesDetailsVO;
+    }
+    /*前台用户修改页面跳转*/
+
+    @RequestMapping("/updateHouseByUser")
+    public ModelAndView updateHouseByUser(Integer housesId,Map<String,Object> map){
+        map.put("housesId",housesId);
+        ModelAndView model_html = new ModelAndView();
+        model_html.setViewName("user/updateHouses");
+        return model_html;
     }
 
 

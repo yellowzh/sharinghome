@@ -5,9 +5,8 @@ import com.lnsf.entity.HousesDetailsEntity;
 import com.lnsf.dto.HousesDetailsDTO;
 import com.lnsf.dao.HousesDetailsMapper;
 import com.lnsf.service.HousesDetailsService;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import cn.hutool.core.bean.BeanUtil;
 import org.hibernate.service.spi.ServiceException;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -48,7 +47,7 @@ public class HousesDetailsServiceImpl implements HousesDetailsService {
         if (null == existEntity) {
             return null;
         }
-        BeanUtil.copyProperties(dto, existEntity);
+        BeanUtils.copyProperties(dto, existEntity);
         housesDetailsMapper.updateById(existEntity);
         return existEntity;
     }

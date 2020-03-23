@@ -7,9 +7,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lnsf.dao.HousesMapper;
 import com.lnsf.dto.HousesDTO;
-import com.lnsf.entity.HousesDetailsEntity;
 import com.lnsf.entity.HousesEntity;
-import com.lnsf.entity.SysDictEntity;
 import com.lnsf.entity.UserInfoEntity;
 import com.lnsf.service.HousesDetailsService;
 import com.lnsf.service.HousesService;
@@ -262,7 +260,7 @@ public class HousesServiceImpl implements HousesService {
         if (null == existEntity) {
             return null;
         }
-        BeanUtil.copyProperties(dto, existEntity);
+        BeanUtils.copyProperties(dto, existEntity);
         housesMapper.updateById(existEntity);
         return existEntity;
     }

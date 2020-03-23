@@ -47,7 +47,8 @@ public class PhotoListController {
         /*添加*/
         UserInfoEntity user = (UserInfoEntity) session.getAttribute("user");
         System.out.println("添加房源图片:"+photoListEntity.getHousesId());
-        photoListEntity.setCreateUser(user.getUsername());
+        photoListEntity.setCreateUser("huang");
+//        photoListEntity.setCreateUser(user.getUsername());
         photoListService.addHousesPhoto(photoListEntity);
        return photoListService.list(photoListEntity.getHousesId());
     }

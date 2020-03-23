@@ -1,19 +1,16 @@
 package com.lnsf.controller;
 
 
-import cn.hutool.core.bean.BeanUtil;
+
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.lnsf.dto.CommentDTO;
-import com.lnsf.dto.HousesDTO;
-import com.lnsf.dto.OrderListDTO;
-import com.lnsf.entity.OrderListEntity;
 import com.lnsf.entity.UserInfoEntity;
 import com.lnsf.service.UserInfoService;
 import com.lnsf.util.UploadImgUtil;
 import com.lnsf.vo.CommentListVO;
 import com.lnsf.vo.CommentVO;
-import com.lnsf.vo.OrderListPageVO;
 import org.apache.log4j.Logger;
+import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.lnsf.entity.CommentEntity;
@@ -104,7 +101,7 @@ public class CommentController {
         double nums=0;
         for (CommentEntity c:infoEntityIPage.getRecords()) {
             CommentVO commentVO = new CommentVO();
-            BeanUtil.copyProperties(c, commentVO);
+            BeanUtils.copyProperties(c, commentVO);
             commentVO.setCommentId(c.getCommentId()+"");
             /*查询对应用户*/
             UserInfoEntity userInfoEntity = userInfoService.getUserById(c.getUserId());
@@ -140,7 +137,7 @@ public class CommentController {
         List<CommentVO> commentVOS = new ArrayList<>();//回复
         for (CommentEntity c:commentEntityList) {
             CommentVO commentVO = new CommentVO();
-            BeanUtil.copyProperties(c, commentVO);
+            BeanUtils.copyProperties(c, commentVO);
             commentVO.setCommentId(c.getCommentId()+"");
             /*查询对应用户*/
             UserInfoEntity userInfoEntity = userInfoService.getUserById(c.getUserId());
