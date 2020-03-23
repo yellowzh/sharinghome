@@ -42,6 +42,15 @@ public class HousesServiceImpl implements HousesService {
         IPage<HousesEntity> pages = housesMapper.selectPage(ipage,wrapper);
         return pages;
     }
+    /*查询房源审核列表*/
+    @Override
+    public IPage<HousesEntity> gethousesExamineList(Integer page){
+        IPage<HousesEntity> ipage = new Page<>(page, 7);
+        QueryWrapper wrapper = new QueryWrapper();
+        wrapper.eq("houses_falgs",3);
+        IPage<HousesEntity> pages = housesMapper.selectPage(ipage,wrapper);
+        return pages;
+    }
 
     @Override
     public List<HousesDTO> getIndexHomeShow() {

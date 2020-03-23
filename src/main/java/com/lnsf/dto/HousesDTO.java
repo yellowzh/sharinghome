@@ -45,4 +45,5 @@ public class HousesDTO{
     private String housesFalgs;
     @ApiModelProperty(value = "对应的房主")
     private UserInfoEntity userInfo;
+
 }

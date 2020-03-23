@@ -15,7 +15,8 @@ public interface HousesService {
     List<HousesDTO> getIndexHomeSelect(HousesVO housesVO);
     /*后台查询所有*/
     IPage<HousesEntity> getAllHomeShowPage(Integer page);
-
+    /*房源审核*/
+    IPage<HousesEntity> gethousesExamineList(Integer page);
     //模糊查询，后期添加状态查询
     IPage<HousesEntity> getAllHousesShowLikeTitle(HousesEntity houses,Integer page);
 

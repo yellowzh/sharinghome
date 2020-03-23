@@ -4,15 +4,22 @@ package com.lnsf.controller;
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.lnsf.dto.HousesDTO;
+import com.lnsf.entity.HousesDetailsEntity;
 import com.lnsf.entity.HousesEntity;
+import com.lnsf.entity.SysDictEntity;
 import com.lnsf.entity.UserInfoEntity;
+import com.lnsf.service.HousesDetailsService;
 import com.lnsf.service.HousesService;
+import com.lnsf.service.SysDictService;
 import com.lnsf.service.UserInfoService;
 import com.lnsf.util.UploadImgUtil;
+import com.lnsf.vo.HousesDetailsVO;
+import com.lnsf.vo.HousesExamineVO;
 import com.lnsf.vo.HousesVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.log4j.Logger;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,6 +38,10 @@ public class HousesController {
     private HousesService housesService;
     @Autowired
     private UserInfoService userInfoService;
+    @Autowired
+    private HousesDetailsService housesDetailsService;
+    @Autowired
+    private SysDictService sysDictService;
 
     private static Logger log = Logger.getLogger(LoginController.class);
     /*查看所有房源*/
@@ -208,35 +219,6 @@ public class HousesController {
         return model_html;
     }
 
-    /*查看房源详情*/
-    /*@ApiOperation(value = "查看所有房源详情", notes = "记录",httpMethod = "POST")
-    @RequestMapping("/getHomeShow")
-    public Houses getAllHomeShow(Integer homeId){
-        return homeShowService.getHomeShowById(homeId);
-    }
-    @ApiOperation(value = "查看所有房源详情", notes = "记录",httpMethod = "DELETE")
-    @RequestMapping("/deleteHome")
-    public int deleteHome(Integer homeId){
-        return 0;
-    }*/
-    /*上传房源*/
-   /* String path1=null;
-    @ApiOperation(value = "发布房源", notes = "记录",httpMethod = "PUT")
-    @RequestMapping("/upload")
-    public String upload(String localPath,MultipartFile file){
-        String path = FileSave.fileSave(file,localPath);
-        System.out.println(localPath+"----"+file.getName());
-        path1=path;
-        return path;
-    }*/
-    /*@ApiOperation(value = "上传图片", notes = "记录", httpMethod = "GET")
-    @RequestMapping("uploadHome")
-    public Map<String,String> uploadHome(Integer count,String title){
-        Map<String,String> res = new HashMap<>();
-        System.out.println(count+"----"+title+"----"+path1);
-        res.put("msg",title);
-        return res;
-    }*/
     /*首页查看房源详情*/
     @ApiOperation(value = "查看所有房源详情", notes = "记录",httpMethod = "POST")
     @RequestMapping("/getHomeShowById")
@@ -393,6 +375,51 @@ public class HousesController {
         ModelAndView model_html = new ModelAndView();
         model_html.setViewName("admin/housesExamine");
         return model_html;
+    }
+    /*商家审核*/
+    @ApiOperation("商家审核列表分页显示")
+    @GetMapping("/gethousesExamineList")
+    public HousesExamineVO gethousesExamineList(Integer page){
+        if (page==null)
+        {page=1;}
+        IPage<HousesEntity> EntityIPage = housesService.gethousesExamineList(page);
+        /*如果为最后一页则返回最后一页数据*/
+        if(EntityIPage.getCurrent()>EntityIPage.getPages()){
+            page=Integer.parseInt(String.valueOf(EntityIPage.getPages()));
+            EntityIPage = housesService.gethousesExamineList(page);
+        }
+        List<HousesDTO> houses = new ArrayList<>();
+        for (HousesEntity h:EntityIPage.getRecords()) {
+            HousesDTO housesDTO = new HousesDTO();
+            UserInfoEntity userInfo =userInfoService.getUserById(h.getBusinessId());
+            BeanUtil.copyProperties(h, housesDTO);
+            housesDTO.setUserInfo(userInfo);
+            houses.add(housesDTO);
+        }
+        HousesExamineVO housesExamineVO = new HousesExamineVO();
+        housesExamineVO.setHousesDTOS(houses);
+        housesExamineVO.setIndexPage(EntityIPage.getCurrent());
+        housesExamineVO.setTotalPage(EntityIPage.getPages());
+        return housesExamineVO;
+    }
+    @ApiOperation("获取商家审核详细信息")
+    @GetMapping("/gethousesExamineInfo")
+    public HousesDetailsVO gethousesExamineInfo(Integer housesId){
+        HousesDetailsVO housesDetailsVO = new HousesDetailsVO();
+        HousesDetailsEntity housesDetailsEntity = housesDetailsService.getHousesDetails(housesId);
+        if (null==housesDetailsEntity){
+            return null;
+        }else {
+            BeanUtils.copyProperties(housesDetailsEntity,housesDetailsVO);
+        }
+        /*注入类型*/
+        SysDictEntity sysDictEntity = sysDictService.getSysDict(housesDetailsEntity.getDictId());
+        housesDetailsVO.setDictType(sysDictEntity.getName());
+//        /*查询商家编号*/
+//       HousesDTO housesDTO = housesService.getIndexHomeShowById(housesId);
+//        UserInfoEntity userInfo = userInfoService.getUserById(housesDTO.getBusinessId());
+//        housesDetailsVO.setUserInfo(userInfo);
+        return housesDetailsVO;
     }
 
 
