@@ -47,5 +47,11 @@ public interface HousesService {
     HousesEntity createHousesByUser(HousesDTO housesDTO);
     /*申请时更新*/
     HousesEntity updateHousesByUser(Integer housesId, HousesDTO dto);
+    /*查询全部待审核数目*/
+    Integer notRental();
+
+    /*定时任务查看所有在线房源*/
+    List<HousesDTO> getAllHousesByNowSch();
+
 
 }

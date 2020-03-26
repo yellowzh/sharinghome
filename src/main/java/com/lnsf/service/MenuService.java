@@ -18,6 +18,8 @@ public interface MenuService {
     List<MenuEntity> getMenuList(String userPower);
     /*查询所有菜单*/
     List<MenuEntity> getAllMenuList();
+    /*管理员菜单*/
+    List<MenuEntity> getAdminMenuList();
     /*删除更新*/
     String deleteUpdate(Integer menuId);
     /*创建菜单*/
@@ -34,4 +36,5 @@ public interface MenuService {
     MenuEntity update(Integer menuId, MenuDTO dto);
 
     List<MenuEntity> page(MenuDTO dto, IPage<MenuEntity> page);
+
 }

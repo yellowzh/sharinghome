@@ -34,11 +34,11 @@
            <div class="modal-dialog">
                <div class="modal-content">
                    <div class="modal-header">
-                                <h4 class="modal-title" id="myModalLabel">添加商家</h4>
+                                <h4 class="modal-title" id="myModalLabel">添加旅客</h4>
                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
                    </div>
                    <div class="modal-body">
-                        <form action="/api/addUser?falg=2" class="fm" method="post" onsubmit="return doTable()">
+                        <form action="/api/addUser?falg=1" class="fm" method="post" onsubmit="return doTable()">
                             <table align="center">
                                 <tr style="height: 60px;">
                                     <td style="width: 20%">登 录 名：</td>
@@ -87,7 +87,7 @@
   <div class="panel admin-panel">
     <div class="padding border-bottom">
       <ul class="search" style="padding-left:10px;">
-        <!--<li> <a class="button border-main icon-plus-square-o" data-toggle="modal" data-target="#myModal">添加商家</a> </li>-->
+        <li> <a class="button border-main icon-plus-square-o" data-toggle="modal" data-target="#myModal">添加管理员</a> </li>
         <li>搜索：</li>
         <li>
           <input type="text" placeholder="请输入姓名关键字" name="keywords" class="input" style="width:250px; line-height:17px;display:inline-block" />
@@ -110,19 +110,19 @@
         <th width="310">操作</th>
       </tr>
         <volist name="list" id="vo">
-        <tr th:each="user:${users}">
+        <tr th:each="user:${users}" th:if="${user.getUsername()}!='admin'">
           <td style="text-align:left; padding-left:20px;">
               <input type="checkbox" name="id[]" th:value="${user.getUserId()}"/>
            </td>
           <td th:text="${user.getUsername()}"></td>
           <td th:text="${user.getRealName()}"></td>
-          <td width="10%" th:if="${user.getUserBackup2()!=null}"><img th:src="${user.getUserBackup2()}" alt="" width="70" height="50" /></td>
-          <td width="10%" th:if="${user.getUserBackup2()==null}"><img src="../images/11.jpg" alt="" width="70" height="50" /></td>
+            <td width="10%" th:if="${user.getUserBackup2()!=null}"><img th:src="${user.getUserBackup2()}" alt="" width="70" height="50" /></td>
+            <td width="10%" th:if="${user.getUserBackup2()==null}"><img src="../images/11.jpg" alt="" width="70" height="50" /></td>
           <td th:text="${user.getUserTel()}"></td>
           <td th:text="${user.getUserEmil()}"></td>
           <td th:text="${user.getUserBackup1()}"></td>
-          <td th:text="${#dates.format(user.getUserLogintime(), 'yyyy/MM/dd HH:mm:ss')}"></td>
-          <td th:text="${#dates.format(user.getUserLoginouttime(), 'yyyy/MM/dd HH:mm:ss')}"></td>
+            <td th:text="${#dates.format(user.getUserLogintime(), 'yyyy/MM/dd HH:mm:ss')}"></td>
+            <td th:text="${#dates.format(user.getUserLoginouttime(), 'yyyy/MM/dd HH:mm:ss')}"></td>
           <td th:if="${user.getUserStatus()}==1" style="color: red">锁定</td>
           <td th:if="${user.getUserStatus()}==2" style="color: orange">冻结</td>
           <td th:if="${user.getUserStatus()}==0" style="color: #00aa00">正常</td>
@@ -153,15 +153,15 @@
                     <!--分页===============================================-->
                     <!--<ul class="pagination pagination-lg" >-->
                     <ul>
-                        <li th:class="${indexPage==1}?'disabled':''" style="float: left"><a th:href="@{${business}+'?power=2&page=' + ${indexPage -1}}">上一页</a></li>
-                        <li th:if="${indexPage -3 >=1}" style="float: left"><a th:href="@{${business}+'?power=2&page=' + ${indexPage -3}}" th:text="${indexPage -3}" >1</a></li>
-                        <li th:if="${indexPage -2 >=1}" style="float: left"><a th:href="@{${business}+'?power=2&page=' + ${indexPage -2}}" th:text="${indexPage -2}" >1</a></li>
-                        <li th:if="${indexPage -1 >=1}" style="float: left"><a th:href="@{${business}+'?power=2&page='+ ${indexPage -1}}" th:text="${indexPage -1}" >1</a></li>
+                        <li th:class="${indexPage==1}?'disabled':''" style="float: left"><a th:href="@{${business}+'?power=1&page=' + ${indexPage -1}}">上一页</a></li>
+                        <li th:if="${indexPage -3 >=1}" style="float: left"><a th:href="@{${business}+'?power=1&page=' + ${indexPage -3}}" th:text="${indexPage -3}" >1</a></li>
+                        <li th:if="${indexPage -2 >=1}" style="float: left"><a th:href="@{${business}+'?power=1&page=' + ${indexPage -2}}" th:text="${indexPage -2}" >1</a></li>
+                        <li th:if="${indexPage -1 >=1}" style="float: left"><a th:href="@{${business}+'?power=1&page='+ ${indexPage -1}}" th:text="${indexPage -1}" >1</a></li>
                         <li class="active" style="float: left;"><a href="#" th:text="${indexPage}" style="background-color: #00aaee">1</a></li>
-                        <li th:if="${indexPage+1 <=totalPage}" style="float: left"><a th:href="@{${business}+'?power=2&page=' + ${indexPage+1}}" th:text="${indexPage +1}" >1</a></li>
-                        <li th:if="${indexPage+2 <=totalPage}" style="float: left"><a th:href="@{${business}+'?power=2&page=' + ${indexPage+2}}" th:text="${indexPage +2}" >1</a></li>
-                        <li th:if="${indexPage+3 <=totalPage}" style="float: left"><a th:href="@{${business}+'?power=2&page=' + ${indexPage+3}}" th:text="${indexPage +3}" >1</a></li>
-                        <li th:class="${indexPage==totalPage}?'disabled':''" style="float: left"><a th:href="@{${business}+'?power=2&page=' + ${indexPage+1}}">下一页</a></li>
+                        <li th:if="${indexPage+1 <=totalPage}" style="float: left"><a th:href="@{${business}+'?power=1&page=' + ${indexPage+1}}" th:text="${indexPage +1}" >1</a></li>
+                        <li th:if="${indexPage+2 <=totalPage}" style="float: left"><a th:href="@{${business}+'?power=1&page=' + ${indexPage+2}}" th:text="${indexPage +2}" >1</a></li>
+                        <li th:if="${indexPage+3 <=totalPage}" style="float: left"><a th:href="@{${business}+'?power=1&page=' + ${indexPage+3}}" th:text="${indexPage +3}" >1</a></li>
+                        <li th:class="${indexPage==totalPage}?'disabled':''" style="float: left"><a th:href="@{${business}+'?power=1&page=' + ${indexPage+1}}">下一页</a></li>
                     </ul>
                     <!--分页结束================================================================================================-->
                 </div>
@@ -273,13 +273,13 @@
     //搜索
     function changesearch(){
         var name = $("input[name=keywords]");
-        location.href="getBusinessLikeName?power=2&name="+name.val();
+        location.href="getBusinessLikeName?power=1&name="+name.val();
     }
 
     //单个删除
     function del(id){
         if(confirm("您确定要删除吗?")){
-            location.href="/api/deleteUser?falg=2&uid="+id;
+            location.href="/api/deleteUser?falg=1&uid="+id;
         }
     }
 
@@ -316,7 +316,7 @@
                         checkedID += this.value + ",";
                     }
                 });
-                window.location.replace("/api/deleteUsers?falg=2&checkedID="+checkedID);
+                window.location.replace("/api/deleteUsers?falg=1&checkedID="+checkedID);
             }
         }
         else{

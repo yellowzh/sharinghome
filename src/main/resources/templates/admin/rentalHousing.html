@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="/css/pintuer.css">
+	<link rel="stylesheet" href="/css/normalize.css">
+	<link rel="stylesheet" href="/css/styleTab.css" media="screen" type="text/css" />
+	<link rel="stylesheet" href="/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="/css/rentalHousing.css">
+	<!--<link rel="stylesheet" type="text/css" href="/css/style.css">-->
+	<!--<link href='https://fonts.googleapis.com/css?family=Merienda' rel='stylesheet'>-->
+	<link href="/css/aos.css" rel="stylesheet">
+	<title>小智民宿</title>
+	<link rel="icon" href="/images/logo.png">
+	<script src="/js/jquery.min.js"></script>
+	<script src="/js/upload.js"></script><!--图片上传-->
+	<script src="/js/my/show.js"></script><!--自编弹出显示-->
+	<script src="/js/angular.min.js"></script>
+
+	<script>
+		var housesId=-1;
+		var app=angular.module('myApp',[]); //定义了一个叫myApp的模块
+		//定义控制器
+		app.controller('myController',function($scope,$http){
+
+			$scope.findAll=function(){
+				/*查看地址类型*/
+				$http.get('/api/select/getHousesType?name=地址').success(
+						function(response){
+							$scope.addressTypeF=response;
+						}
+				);
+				/*查看入住人数*/
+				$http.get('/api/select/getHousesType?name=入住房客数').success(
+						function(response){
+							$scope.peopleType=response;
+						}
+				);
+				/*查看房源类型*/
+				$http.get('/api/select/getHousesType?name=房源类型').success(
+						function(response){
+							$scope.housesType=response;
+						}
+				)
+
+			};
+			$scope.oneNum=0;
+			$scope.housesId=-1;
+			$scope.addNext=function(){
+				$scope.oneNum++;
+				if($scope.oneNum==1){
+					if ($scope.address.name!=undefined) {
+						$scope.houses.housesAddress=$scope.address.name;
+					}
+					if($scope.ad.name!=undefined){
+						$scope.houses.housesAddress+="."+$scope.ad.name;
+					}
+					if($scope.addressIn.name!=undefined){
+						$scope.houses.housesAddress+="-"+$scope.addressIn.name;
+					}
+					if ($scope.addHouses1==undefined) {
+						$http.post('/api/addHousesByUser',$scope.houses).success(
+								function(response){
+									housesId=response.housesId;
+									$scope.addHouses1=true;
+								}
+						)
+					}else {
+						$scope.houses.housesId=housesId;
+						$http.post('/api/updateHousesByUser?housesId='+housesId,$scope.houses).success(
+								function(response){
+									// $scope.housesId=response.housesId;
+									$scope.addHouses1=true;
+								}
+						)
+					}
+
+				}
+				if($scope.oneNum==3){
+					if ($scope.WX.f!=undefined) {
+						$scope.houserDe.housesSpecs=$scope.WX.f;
+					}
+					if($scope.WX.t!=undefined){
+						$scope.houserDe.housesSpecs+="."+$scope.WX.t;
+					}
+					if($scope.WX.y!=undefined){
+						$scope.houserDe.housesSpecs+="-"+$scope.WX.y;
+					}
+					$scope.houserDe.housesId=housesId;
+					// $scope.houserDe.housesId=9;
+					if ($scope.addHouses==undefined){
+						$http.post('/api/addHousesDeByUser',$scope.houserDe).success(
+								function(response){
+									$scope.housesId=response.housesId;
+									$scope.addHouses=true;
+								}
+						)
+					}else {
+						$scope.houserDe.housesId=housesId;
+						$http.post('/api/updateHousesDeByUser?housesId='+housesId,$scope.houserDe).success(
+								function(response){
+									housesId=response.housesId;
+								}
+						)
+					}
+
+				}
+				$scope.houserUpD={};
+				if($scope.oneNum==4){
+					$scope.houserUpD.housesId=housesId;
+					// $scope.houserUpD.housesId=9;
+					$scope.houserUpD.isTowel=document.getElementsByName('isTowel').checked;
+					$scope.houserUpD.isWash =document.getElementById("isWash").checked;
+					$scope.houserUpD.isClothesHanger = document.getElementById("isClothesHanger").checked;
+					$scope.houserUpD.isTowel = document.getElementById("isTowel").checked;
+					$scope.houserUpD.isSlipper = document.getElementById("isSlipper").checked;
+					$scope.houserUpD.isAir = document.getElementById("isAir").checked;
+					$scope.houserUpD.isWifi = document.getElementById("isWifi").checked;
+					$scope.houserUpD.isHotWater =document.getElementById("isHotWater").checked;
+					$http.post('/api/updateHousesDeByUser?housesId='+housesId,$scope.houserUpD).success(
+						function(response){
+							location.href="/api/getAllHomeShow";
+							// $scope.housesId=response.housesId;
+						}
+					)
+				}
+
+			};
+			$scope.addReturn=function(){
+				$scope.oneNum--;
+			}
+			$scope.delPhoto=function(id){
+				$http.get('/api/delPhoto?photoId='+id).success(
+						function(response){
+							$scope.photoList=response;
+							$scope.imgshow--;
+						}
+				)
+			}
+			var dragImgUpload = new DragImgUpload("#drop_area",{
+				callback:function (files) {
+					//回调函数，可以传递给后台等等
+					var file = files[0];
+					var form = new FormData();
+					form.append('file', file);
+					$http({
+						method:'POST',
+						url:"/api/addPhoto",
+						data: form,
+						headers: {'Content-Type':undefined},
+						transformRequest: angular.identity
+					}).success( function ( response ){
+						$scope.houses.housesPhoto=response;
+					}).error(function (data) {
+						func("添加失败","#999999");
+					});
+				}
+			});
+			/*多张图片上传*/
+			$scope.imgshow=0;
+			$scope.photoDto={};
+
+			var dragImgUpload2 = new DragImgUpload("#drop_area2", {
+				callback: function (files) {
+					//回调函数，可以传递给后台等等
+					var file = files[0];
+					var form = new FormData();
+					form.append('file', file);
+					$http({
+						method: 'POST',
+						url: "/api/addPhoto",
+						data: form,
+						headers: {'Content-Type': undefined},
+						transformRequest: angular.identity
+					}).success(function (response) {
+						// alert("图片添加成功1");
+						/*添加图片成功后添加到图片表*/
+						var size = file.size;
+						var name = file.name;
+						$scope.photoDto.size = size;
+						$scope.photoDto.photoName = name;
+						$scope.photoDto.photoPath = response;
+						$scope.photoDto.housesId = housesId;
+						// $scope.photoDto.housesId=9;
+						// alert("size:"+$scope.photoDto.size+"photoName:"+$scope.photoDto.photoName+"photoPath:"+$scope.photoDto.photoPath)
+						$http.post('/api/addHousesPhoto', $scope.photoDto).success(
+								function (response) {
+									$scope.photoList = response;
+									$scope.imgshow++;
+									// alert("图片路径"+response.photoPath);
+								}
+						)
+					}).error(function (data) {
+						func("添加失败", "#999999");
+					});
+				}
+			});
+			$scope.priceShow=false;
+
+			/*校验预定*/
+			$(function() {
+				/*验证限制提交订单前算出总价显示*/
+				/*地址级联*/
+				$("select[name=cid]").blur(function () {
+					$http.get('/api/select/getHousesType?name='+$scope.address.name).success(
+							function(response){
+								$scope.addressType=response;
+							}
+					)
+				});
+				/*判断押金是否选择*/
+				$("input[type='radio']").click(function(){
+					var id= $(this).attr("id");
+					if (id=='d1'){
+						$scope.houserDe.isDeposit=1;
+					}else {
+						$scope.houserDe.isDeposit=0;
+					}
+				});
+			});
+
+		});
+	</script>
+</head>
+<body ng-app="myApp" ng-controller="myController" ng-init="findAll()">
+<!--leaf-->
+<div class="hu_lc" >
+	<!--订购金额计算-->
+	<div class="h_lc">
+		<table>
+			<tr>
+				<td>房源基本</td>
+				<td style="width: 30%"></td>
+				<td ng-if="oneNum>=1"><img src="/icon/right_1.png" style="float: right"></td>
+				<td ng-if="oneNum<1"><img src="/icon/right_h.png" style="float: right"></td>
+			</tr>
+			<tr>
+				<td>房源照片</td>
+				<td style="width: 30%"></td>
+				<td ng-if="oneNum>=2"><img src="/icon/right_1.png"></td>
+				<td ng-if="oneNum<2"><img src="/icon/right_h.png"></td>
+			</tr>
+			<tr>
+				<td>房源详细信息</td>
+				<td style="width: 30%"></td>
+				<td ng-if="oneNum>=3"><img src="/icon/right_1.png"></td>
+				<td ng-if="oneNum<3"><img src="/icon/right_h.png"></td>
+			</tr>
+			<tr>
+				<td>配套设施</td>
+				<td style="width: 30%"></td>
+				<td ng-if="oneNum>=4"><img src="/icon/right_1.png"></td>
+				<td ng-if="oneNum<4"><img src="/icon/right_h.png"></td>
+			</tr>
+		</table>
+	</div>
+	<hr style="margin-top: 30%">
+	<div class="price">
+		<!-- data-toggle="modal" data-target="#myModal"  -->
+		<input type="submit" ng-click="addNext()" ng-if="oneNum==3" value="提交房源审核">
+	</div>
+	<div class="price">
+		<input type="submit" ng-click="addNext()" ng-if="oneNum<3" value="保存并下一步">
+	</div>
+	<div class="price">
+		<input type="submit" ng-click="addReturn()" ng-if="oneNum>0" value="上一步">
+	</div>
+	<!--<div class="quxiao">-->
+		<!--<input type="submit" value="取消房源认证">-->
+	<!--</div>-->
+</div>
+<!--leaf end-->
+<!--End of Carousel-->
+
+<div class="h_right">
+		<div class="panel admin-panel margin-top">
+			<!--房源信息认证-->
+			<div ng-show="oneNum==0">
+				<div class="panel-head"><strong><span class="icon-pencil-square-o"></span> 房源信息</strong></div>
+				<div class="body-content" style="padding: 1em;">
+						<div class="form-group">
+							<div class="label">
+								<label>房源地址：</label>
+							</div>
+							<div class="field" style="width: 20%;float: left">
+								市区:
+								<select name="cid" class="input w50" ng-model="address.name">
+									<option ng-value="address.name" ng-repeat="address in addressTypeF">{{address.name}}</option>
+								</select>
+								<div class="tips"></div>
+							</div>
+							<div class="field" style="width: 20%;float: left;margin-left: 5%;">
+								乡镇:
+								<select name="cid2" class="input w50" ng-model="ad.name">
+									<option ng-value="ad.name" ng-repeat="ad in addressType">{{ad.name}}</option>
+								</select>
+								<div class="tips"></div>
+							</div>
+							<div class="field" style="width: 50%;float: left;margin-left: 5%;">
+								详细地址:<input type="text" class="input w50" name="title" data-validate="required:请输入详细地址" ng-model="addressIn.name" />
+								<div class="tips"></div>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="label">
+								<label>标题：</label>
+							</div>
+							<div class="field">
+								<input type="text" class="input w50" name="title" data-validate="required:请输入标题" ng-model="houses.housesTitle" />
+								<div class="tips"></div>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<div class="label">
+								<label>房源主图片：</label>
+							</div>
+							<div class="field">
+								<div id="drop_area"></div>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="label">
+								<label>描述：</label>
+							</div>
+							<div class="field">
+								<textarea type="text" class="input" name="note" style="height:120px;" ng-model="houses.housesDescribe"></textarea>
+								<div class="tips"></div>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="label">
+								<label>价格：以天计算</label>
+							</div>
+							<div class="field">
+								<input type="text" class="input w50" name="sort"  data-validate="required:,number:排序必须为数字" ng-model="houses.housesPrices" />
+								<div class="tips"></div>
+							</div>
+						</div>
+				</div>
+			</div>
+			<!--房源信息认证-->
+			<!--房源照片认证-->
+			<div ng-show="oneNum==1">
+				<div class="panel-head"><strong><span class="icon-pencil-square-o"></span> 房源照片</strong></div>
+				<div class="body-content" style="padding: 1em;">
+					<div class="form-group">
+						<div style="float: left;" ng-repeat="img in photoList">
+							<img src="{{img.photoPath}}" style="height: 100px;width: auto;padding: 1em;" >
+							<button style="border: none" ng-click="delPhoto(img.photoId)">删除</button>
+						</div>
+					</div>
+					<br><br>
+					<div class="form-group">
+						<div class="label">
+							<label>{{imgshow}}/5</label>
+						</div>
+						<div class="field" ng-show="imgshow<5">
+							<div id="drop_area2"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--房源照片认证-->
+			<!--房源详细信息认证-->
+			<div ng-show="oneNum==2">
+				<div class="panel-head"><strong><span class="icon-pencil-square-o"></span> 房源详细信息</strong></div>
+				<div class="body-content" style="padding: 1em;">
+					<div class="form-group">
+						<div class="label">
+							<label>房型设置：</label>
+						</div>
+						<div class="field" style="width: 20%;float: left;">
+							类型:
+							<select name="cid2" class="input w50" ng-model="houserDe.dictId">
+								<option ng-value="dict.dictId" ng-repeat="dict in housesType" >{{dict.name}}</option>
+							</select>
+							<div class="tips"></div>
+						</div>
+						<div class="field" style="width: 20%;float: left;margin-left: 10%;">
+							卧室:
+							<select class="input w50" ng-model="WX.f">
+								<option ng-value="1室">1室</option>
+								<option ng-value="2室">2室</option>
+								<option ng-value="3室">3室</option>
+								<option ng-value="4室">4室</option>
+								<option ng-value="5室">5室</option>
+								<option ng-value="6室">6室</option>
+							</select>
+							<div class="tips"></div>
+						</div>
+						<div class="field" style="width: 20%;float: left;margin-left: 5%;">
+							客厅:
+							<select class="input w50" ng-model="WX.t">
+								<option ng-value="1厅">1厅</option>
+								<option ng-value="2厅">2厅</option>
+								<option ng-value="3厅">3厅</option>
+								<option ng-value="4厅">4厅</option>
+							</select>
+							<div class="tips"></div>
+						</div>
+						<div class="field" style="width: 20%;float: left;margin-left: 5%;">
+							阳台:
+							<select class="input w50" ng-model="WX.y">
+								<option ng-value="1阳">1阳</option>
+								<option ng-value="2阳">2阳</option>
+								<option ng-value="3阳">3阳</option>
+							</select>
+							<div class="tips"></div>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="label">
+							<label>独立卫生间数：</label>
+						</div>
+						<div class="field" style="width: 20%;">
+							<select name="cid2" class="input w50" ng-model="houserDe.iwc">
+								<option ng-value="1">1</option>
+								<option ng-value="2">2</option>
+								<option ng-value="3">3</option>
+								<option ng-value="4">4</option>
+							</select>
+							<div class="tips"></div>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="label">
+							<label>押金：</label>
+						</div>
+						<div class="field">
+							是否收取押金:
+							<input type="radio" id="d1" name="radiobutton" value="radiobutton">收取
+							<input type="radio" id="d2" name="radiobutton" value="radiobutton" checked="checked">不收取
+							<input type="text" class="input w50" name="title" data-validate="required:请输入标题" ng-model="houserDe.deposit" />
+							<div class="tips"></div>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="label">
+							<label>可入住人数:</label>
+						</div>
+						<div class="field" style="width: 10%;">
+							<select class="input w50" ng-model="houserDe.inNum">
+								<option ng-value="dictp.name" ng-repeat="dictp in peopleType">{{dictp.name}}</option>
+							</select>
+							<div class="tips"></div>
+						</div>
+						<div class="field" style="width: 10%;">
+							<div class="label">
+							<label>清洁费用</label>
+							</div>
+							<input type="text" class="input w50" name="title" data-validate="required:请输入标题" ng-model="houserDe.cleanPrices" />
+							<div class="tips"></div>
+						</div>
+
+					</div>
+				</div>
+			</div>
+			<!--房源信息认证-->
+			<!--配套设备信息认证-->
+			<div ng-show="oneNum==3">
+				<div class="panel-head"><strong><span class="icon-pencil-square-o"></span> 配套设备</strong></div>
+				<div class="body-content" style="padding: 1em;">
+					<div class="form-group">
+						<div class="label">
+							<label>设备：</label>
+						</div>
+						<label>全选<input type="checkbox" ng-model="selectAll"></label><br/>
+						<br><br>
+						<div class="field">
+							<table>
+								<tr style="height: 50px;">
+									<!--ng-checked="selectAll"-->
+									<td style="width: 20%"><input type="checkbox" id="isWash" ng-checked="selectAll">洗衣机</td>
+									<td style="width: 20%"><input type="checkbox" id="isClothesHanger" ng-checked="selectAll" >晾衣架</td>
+									<td style="width: 20%"><input type="checkbox" id="isTowel"  ng-checked="selectAll">毛巾</td>
+								</tr>
+								<tr style="height: 50px;">
+									<td><input type="checkbox" id="isSlipper" ng-checked="selectAll">拖鞋</td>
+									<td><input type="checkbox" id="isAir" ng-checked="selectAll">空调</td>
+									<td><input type="checkbox" id="isWifi" ng-checked="selectAll">Wifi</td>
+								</tr>
+								<tr style="height: 50px;">
+									<td><input type="checkbox" id="isHotWater" ng-checked="selectAll">24热水</td>
+									<td></td>
+									<td></td>
+								</tr>
+							</table>
+							<div class="tips"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--房源信息认证-->
+			<!--出租资格认证信息认证-->
+			<!--<div ng-show="oneNum==4">
+				<div class="panel-head"><strong><span class="icon-pencil-square-o"></span> 出租资格认证</strong></div>
+				<div class="body-content" style="padding: 1em;">
+					<div class="form-group">
+						<div class="label">
+							<label>设备：</label>
+						</div>
+						<div class="field">
+							<input type="checkbox">洗衣机
+							<input type="checkbox">晾衣架
+							<div class="tips"></div>
+						</div>
+					</div>
+				</div>
+			</div>-->
+			<!--房源信息认证-->
+		</div>
+</div>
+
+
+
+
+<script src="/js/bootstrap.min.js"></script>
+<!--轮播图js-->
+<link href="/css/base.css" rel="stylesheet">
+<!--<script src="/js/lunbo.js"></script>-->
+<!--tab切换-->
+<script src="/js/jquery.js"></script>
+<script src="/js/index.js"></script>
+
+
+</body>
+</html>

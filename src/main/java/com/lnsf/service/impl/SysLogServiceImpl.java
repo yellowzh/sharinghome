@@ -1,6 +1,7 @@
 package com.lnsf.service.impl;
 
 import cn.hutool.core.date.DateUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.lnsf.entity.SysLogEntity;
 import com.lnsf.dto.SysLogDTO;
 import com.lnsf.dao.SysLogMapper;
@@ -48,6 +49,15 @@ public class SysLogServiceImpl implements SysLogService {
         entity.setLogId(path+radom);
         sysLogMapper.insert(entity);
         return entity;
+    }
+
+    /*查询近五天登录人数*/
+    public Integer loginNum(){
+        QueryWrapper wrapper = new QueryWrapper();
+        String day = DateUtil.today();
+        wrapper.ge("start_time",day);
+        wrapper.eq("method","login");
+        return sysLogMapper.selectCount(wrapper);
     }
 
 }

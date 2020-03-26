@@ -49,6 +49,12 @@ public class MenuController {
         }
 
     }
+    @ApiOperation("获取菜单列表")
+    @GetMapping(path = "/getAdminMenuList")
+    public List<MenuEntity> getAdminMenuList(){
+        return menuService.getAdminMenuList();
+    }
+
     @ApiOperation("管理员端页面跳转")
     @GetMapping(path = "/getMenu")
     public ModelAndView getMenu(){

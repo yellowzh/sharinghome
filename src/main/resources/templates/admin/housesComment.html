@@ -27,7 +27,8 @@
                   $scope.num=response.commentVO.length;
                   $scope.indexPage=response.indexPage;
                   $scope.totalPage=response.totalPage;
-                  $scope.count=response.count;
+                  var f = parseFloat(response.count).toFixed(3);
+                  $scope.count=f.substring(0, f.toString().length - 1);
                 });
         /*查询所有房源*/
         $http.get('/api/getAllHouses').success(
@@ -48,7 +49,8 @@
                   $scope.num=response.commentVO.length;
                   $scope.indexPage=response.indexPage;
                   $scope.totalPage=response.totalPage;
-                  $scope.count=response.count;
+                  var f = parseFloat(response.count).toFixed(3);
+                  $scope.count=f.substring(0, f.toString().length - 1);
                 }
         )};
       $scope.delComent=function(id){
@@ -59,10 +61,11 @@
                   $http.get('/api/getHousesCommentPage?housesId='+housesId+'&page='+$scope.indexPage).success(
                           function(response){
                             $scope.houserComment=response.commentVO;
+                            var f = parseFloat(response.count).toFixed(3);
+                            $scope.count=f.substring(0, f.toString().length - 1);
                             $scope.num=response.commentVO.length;
                             $scope.indexPage=response.indexPage;
                             $scope.totalPage=response.totalPage;
-                            $scope.count=response.count;
                           });
                   $http.get('/api/getCommentReplay?commentId='+$scope.repId).success(
                           function(response){

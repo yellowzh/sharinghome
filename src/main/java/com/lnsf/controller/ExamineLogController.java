@@ -103,38 +103,4 @@ public class ExamineLogController {
         return "简单邮件已经发送。";
     }
 
-
-
-//
-//    @ApiOperation("查看")
-//    @GetMapping("{examineId}")
-//    public ExamineLogEntity view(@ApiParam("") @PathVariable(name = "examineId") Long examineId){
-//        return examineLogService.getExamineLog(examineId);
-//    }
-//
-//    @ApiOperation("列表")
-//    @GetMapping
-//    public List<ExamineLogEntity> list(){
-//        return examineLogService.list();
-//    }
-//
-//    @ApiOperation("新增")
-//    @PostMapping
-//    public ExamineLogEntity create(@RequestBody @Valid ExamineLogDTO dto){
-//        return examineLogService.create(dto);
-//    }
-//
-//    @ApiOperation("删除")
-//    @DeleteMapping("{examineId}")
-//    public void delete(@ApiParam("") @PathVariable(name = "examineId") Long examineId) {
-//        examineLogService.delete(examineId);
-//    }
-//
-//    @ApiOperation("更新")
-//    @PutMapping("{examineId}")
-//    public ExamineLogEntity update(@ApiParam("") @PathVariable("examineId") Long examineId,
-//                            @RequestBody @Valid ExamineLogDTO dto) {
-//        return examineLogService.update(examineId, dto);
-//    }
-
 }

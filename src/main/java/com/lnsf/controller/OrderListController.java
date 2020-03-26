@@ -5,8 +5,8 @@ import cn.hutool.db.PageResult;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.lnsf.dto.HousesDTO;
 import com.lnsf.entity.UserInfoEntity;
-import com.lnsf.service.HousesService;
-import com.lnsf.service.UserInfoService;
+import com.lnsf.service.*;
+import com.lnsf.vo.CountListVO;
 import com.lnsf.vo.MyOrderVO;
 import com.lnsf.vo.OrderListPageVO;
 import org.apache.log4j.Logger;
@@ -14,7 +14,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.lnsf.entity.OrderListEntity;
-import com.lnsf.service.OrderListService;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -52,6 +51,12 @@ public class OrderListController {
     private HousesService housesService;
     @Autowired
     private UserInfoService userInfoService;
+
+    @Autowired
+    private SysLogService sysLogService;
+
+    @Autowired
+    private ExamineLogService examineLogService;
 
     private static Logger log = Logger.getLogger(LoginController.class);
 
@@ -202,6 +207,34 @@ public class OrderListController {
     @RequestMapping("/updateOrderIn")
     public OrderListEntity updateOrderIn(@RequestBody OrderListEntity orderListEntity){
         return orderListService.updateById(orderListEntity);
+    }
+
+    /*后台管理首页统计模块*/
+    @ApiOperation(value = "商家查询自己的全部订单", notes = "订单查询",httpMethod = "GET")
+    @RequestMapping("/getSystemCount")
+    public CountListVO getSystemCount(){
+        /*查询本月出租金额*/
+        Integer wOrder=0;
+        wOrder= orderListService.wOrder();
+        double payNum=0;
+        payNum= orderListService.payNum();
+        /*查询今日登录系统人数*/
+        Integer loginNum=0;
+        loginNum= sysLogService.loginNum();
+        /*查询待审核人数*/
+        Integer notRental=0;
+        notRental=   housesService.notRental();
+        /*查询已经审核数*/
+        Integer rental=0;
+        rental= examineLogService.list();
+        System.out.println(payNum+"-"+"-"+notRental+"-"+wOrder+"-"+rental);
+        CountListVO countListVO = new CountListVO();
+        countListVO.setRental(rental);
+        countListVO.setLoginNum(loginNum);
+        countListVO.setNotRental(notRental);
+        countListVO.setPayNum(payNum);
+        countListVO.setWOrder(wOrder);
+        return countListVO;
     }
 
 

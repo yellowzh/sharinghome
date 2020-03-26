@@ -5,7 +5,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <meta name="renderer" content="webkit">
+    <!--上面的css-->
+    <link href="/css/bootstrap.css" rel='stylesheet' type='text/css' />
+    <!-- Custom CSS -->
+    <link href="/css/styleIndex.css" rel='stylesheet' type='text/css' />
+    <!-- font-awesome icons CSS -->
+    <link href="/css/font-awesome.css" rel="stylesheet">
     <title>echarts-多折线图</title>
+    <script src="../js/angular.min.js"></script>
     <script type="text/javascript" src="../js/jquery.js"></script>
     <script type="text/javascript" src="../js/echarts.min.js"></script>
     <style>
@@ -15,83 +22,200 @@
             font-family: "微软雅黑";
             font-size: 12px;
         }
-
         #someline {
             width: 100%;
             height: 99%;
         }
     </style>
+
     <script>
-      $(document).ready(function(){
-        var chart = document.getElementById("someline");
-        var echart = echarts.init(chart);
-        option = {
-            title: {
-                text: '各大商家出租报表对比图'
-            },
-            tooltip: {
-                trigger: 'axis'
-            },
-            legend: {
-                data: ['商家1', '商家2', '商家3', '商家4', '商家5']
-            },
-            grid: {
-                left: '3%',
-                right: '4%',
-                bottom: '3%',
-                containLabel: true
-            },
-            toolbox: {
-                feature: {
-                    saveAsImage: {}
-                }
-            },
-            xAxis: {
-                type: 'category',
-                boundaryGap: false,
-                data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
-            },
-            yAxis: {
-                type: 'value'
-            },
-            series: [
-                {
-                    name: '邮件营销',
-                    type: 'line',
-                    stack: '总量',
-                    data: [120, 132, 101, 134, 90, 230, 210]
-                },
-                {
-                    name: '联盟广告',
-                    type: 'line',
-                    stack: '总量',
-                    data: [220, 182, 191, 234, 290, 330, 310]
-                },
-                {
-                    name: '视频广告',
-                    type: 'line',
-                    stack: '总量',
-                    data: [150, 232, 201, 154, 190, 330, 410]
-                },
-                {
-                    name: '直接访问',
-                    type: 'line',
-                    stack: '总量',
-                    data: [320, 332, 301, 334, 390, 330, 320]
-                },
-                {
-                    name: '搜索引擎',
-                    type: 'line',
-                    stack: '总量',
-                    data: [820, 932, 901, 934, 1290, 1330, 1320]
-                }
-            ]
-        };
-        echart.setOption(option);
-      });
+        var a = [];
+        var b = [];
+        var app=angular.module('myApp',[]); //定义了一个叫myApp的模块
+        //定义控制器
+        app.controller('myController',function($scope,$http){
+            $scope.findAll=function(){
+                /*查询订单*/
+                $http.get('/api/getSystemCount').success(
+                    function(response){
+                        $scope.countList=response;
+                    });
+                $http.get('/api/SeeVo').success(
+                    function(response){
+                        a=response.seeVos;
+                        b=response.dates;
+                        $(document).ready(function(){
+                            var chart = document.getElementById("someline");
+                            var echart = echarts.init(chart);
+                            option = {
+                                title: {
+                                    text: '各大民宿预览报表近五天对比'
+                                },
+                                tooltip: {
+                                    trigger: 'axis'
+                                },
+                                legend: {
+                                    data: ['商家1', '商家2', '商家3', '商家4', '商家5']
+                                },
+                                grid: {
+                                    left: '3%',
+                                    right: '4%',
+                                    bottom: '3%',
+                                    containLabel: true
+                                },
+                                toolbox: {
+                                    feature: {
+                                        saveAsImage: {}
+                                    }
+                                },
+                                xAxis: {
+                                    type: 'category',
+                                    boundaryGap: false,
+                                    data: b
+                                },
+                                yAxis: {
+                                    type: 'value'
+                                },
+                                series:a
+                            };
+                            echart.setOption(option);
+                        });
+                    });
+            };
+
+
+        });
+
     </script>
+
 </head>
-<body>
-    <div id="someline"></div>
+<body ng-app="myApp" ng-controller="myController" ng-init="findAll()">
+    <div style="height: 30%;width: 100%;">
+        <div id="page-wrapper">
+            <div class="main-page">
+                <div class="col_3">
+                    <div class="col-md-3 widget widget1">
+                        <div class="r3_counter_box">
+                            <!--<i class="pull-left fa fa-dollar icon-rounded"><img src="/icon/star.png"></i>-->
+                            <i class="pull-left fa fa-dollar icon-rounded"></i>
+                            <div class="stats">
+                                <h5><strong>{{countList.payNum}}元</strong></h5>
+                                <span>本月出租总金额</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 widget widget1">
+                        <div class="r3_counter_box">
+                            <i class="pull-left fa fa-laptop user1 icon-rounded"></i>
+                            <div class="stats">
+                                <h5><strong>{{countList.notRental}}套</strong></h5>
+                                <span>待审核房源</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 widget widget1">
+                        <div class="r3_counter_box">
+                            <i class="pull-left fa fa-money user2 icon-rounded"></i>
+                            <div class="stats">
+                                <h5><strong>{{countList.worder}}单</strong></h5>
+                                <span>已完成订单</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 widget widget1">
+                        <div class="r3_counter_box">
+                            <i class="pull-left fa fa-pie-chart dollar1 icon-rounded"></i>
+                            <div class="stats">
+                                <h5><strong>{{countList.rental}}套</strong></h5>
+                                <span>本月已审核房源</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 widget">
+                        <div class="r3_counter_box">
+                            <i class="pull-left fa fa-users dollar2 icon-rounded"></i>
+                            <div class="stats">
+                                <h5><strong>{{countList.loginNum}}次</strong></h5>
+                                <span>近五日登录</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- <div class="clearfix"> </div> -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="width: 100%;height: 60%;">
+        <div id="someline"></div>
+    </div>
 </body>
+<!--<script>
+        $(document).ready(function(){
+            var chart = document.getElementById("someline");
+            var echart = echarts.init(chart);
+            option = {
+                title: {
+                    text: '各大商家出租报表对比图'
+                },
+                tooltip: {
+                    trigger: 'axis'
+                },
+                legend: {
+                    data: ['商家1', '商家2', '商家3', '商家4', '商家5']
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                toolbox: {
+                    feature: {
+                        saveAsImage: {}
+                    }
+                },
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
+                },
+                yAxis: {
+                    type: 'value'
+                },
+                series: [
+                    {
+                        name: '邮件营销',
+                        type: 'line',
+                        stack: '总量',
+                        data: [120, 132, 101, 134, 90, 230, 210]
+                    },
+                    {
+                        name: '联盟广告',
+                        type: 'line',
+                        stack: '总量',
+                        data: [220, 182, 191, 234, 290, 330, 310]
+                    },
+                    {
+                        name: '视频广告',
+                        type: 'line',
+                        stack: '总量',
+                        data: [150, 232, 201, 154, 190, 330, 410]
+                    },
+                    {
+                        name: '直接访问',
+                        type: 'line',
+                        stack: '总量',
+                        data: [320, 332, 301, 334, 390, 330, 320]
+                    },
+                    {
+                        name: '搜索引擎',
+                        type: 'line',
+                        stack: '总量',
+                        data: [820, 932, 901, 934, 1290, 1330, 1320]
+                    }
+                ]
+            };
+            echart.setOption(option);
+        });
+    </script>-->
 </html>

@@ -426,6 +426,14 @@ public class HousesController {
         model_html.setViewName("user/updateHouses");
         return model_html;
     }
+    @RequestMapping("/adminAddHouse")
+    public ModelAndView adminAddHouse(){
+        ModelAndView model_html = new ModelAndView();
+        model_html.setViewName("admin/rentalHousing");
+        return model_html;
+    }
+
+
 
 
 

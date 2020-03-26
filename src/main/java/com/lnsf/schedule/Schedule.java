@@ -1,12 +1,19 @@
 package com.lnsf.schedule;
 
 import com.lnsf.dto.CommentDTO;
+import com.lnsf.dto.HousesDTO;
+import com.lnsf.dto.SeeNoteDTO;
+import com.lnsf.entity.HousesEntity;
 import com.lnsf.entity.OrderListEntity;
 import com.lnsf.service.CommentService;
+import com.lnsf.service.HousesService;
 import com.lnsf.service.OrderListService;
+import com.lnsf.service.SeeNoteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+
+import java.util.Date;
 import java.util.List;
 
 @Component
@@ -15,8 +22,12 @@ public class Schedule {
     private OrderListService orderListService;
     @Autowired
     private CommentService commentService;
+    @Autowired
+    private HousesService housesService;
+    @Autowired
+    private SeeNoteService seeNoteService;
 
-//    @Scheduled(cron = "* 0/15 * * * ?")
+//    @Scheduled(cron = "0 0/15 * * * ?")
     public void ScheduleJob() {
         long begin = System.currentTimeMillis();
         double n = 0;
@@ -37,7 +48,7 @@ public class Schedule {
         long end = System.currentTimeMillis();
         System.out.println("定时任务1执行！！！！本次任务执行了"+(end-begin)+"秒");
     }
-    @Scheduled(cron = "* 30 9 * * ?")
+    @Scheduled(cron = "0 30 9 * * ?")
     public void ScheduleJob2() {
         long begin = System.currentTimeMillis();
         double n = 0;
@@ -64,5 +75,18 @@ public class Schedule {
 
         long end = System.currentTimeMillis();
         System.out.println("定时任务2执行！！！！本次任务执行了"+(end-begin)+"秒");
+    }
+    /*定时每天晚上12点执行*/
+    @Scheduled(cron = "0 59 23 * * ?")
+    public void ScheduleJob3() {
+       List<HousesDTO> housesEntities = housesService.getAllHousesByNowSch();
+        for (HousesDTO h:housesEntities) {
+            SeeNoteDTO seeNoteDTO = new SeeNoteDTO();
+            seeNoteDTO.setHousesTitle(h.getHousesTitle());
+            seeNoteDTO.setSeeNum(h.getHousesView());
+            seeNoteDTO.setHousesId(h.getHousesId());
+            seeNoteDTO.setCreateTime(new Date());
+            seeNoteService.create(seeNoteDTO);
+        }
     }
 }

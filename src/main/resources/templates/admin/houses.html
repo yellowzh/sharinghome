@@ -21,94 +21,13 @@
             text-decoration: none;
         }
     </style>
-<script>
-  $('#myModal').on('shown.bs.modal', function () {
-      $('#myInput').focus()
-     })
-
-</script>
-
-<!--模态框脚本end-->
-    <!-- 模态框（Modal） -->
-    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-           <div class="modal-dialog">
-               <div class="modal-content">
-                   <div class="modal-header">
-                                <h4 class="modal-title" id="myModalLabel">添加房源</h4>
-                       <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
-                   </div>
-                   <div class="modal-body">
-                        <form action="/api/addHouses" enctype="multipart/form-data" class="fm" method="post" onsubmit="return doTable()">
-                            <!--<input type="hidden" name="bussinid"/>-->
-                            <table align="center">
-                                <tr>
-                                    <td style="width: 20%">房源标题：</td>
-                                    <td class="wlIcon icon">
-                                        <s></s>
-                                        <input type="text" name="housesTitle" maxlength="20" class="input" style="width:250px; line-height:17px;display:inline-block"/>
-                                        <b>*</b>
-                                        <span></span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="width: 20%">房源照片：</td>
-                                    <td class="wlIcon icon">
-                                        <s class="mm"></s>
-                                        <input type="file" name="file" class="input" style="width:250px; line-height:17px;display:inline-block"/>
-                                        <b>*</b>
-                                        <span></span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="width: 20%">房间数量：</td>
-                                    <td class="wlIcon icon">
-                                        <s class="mm"></s>
-                                        <input type="number" name="housesCount" maxlength="18" class="input" style="width:250px; line-height:17px;display:inline-block"/>
-                                        <b>*</b>
-                                        <span></span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="width: 20%">出租价格：</td>
-                                    <td class="wlIcon icon">
-                                        <s class="mm"></s>
-                                        <input type="number" name="housesPrices" maxlength="18" class="input" style="width:250px; line-height:17px;display:inline-block"/>
-                                        <b>*</b>
-                                        <span></span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="width: 20%">地址：</td>
-                                    <td class="wlIcon icon">
-                                        <s class="mm"></s>
-                                        <input type="text" name="housesAddress" maxlength="18" class="input" style="width:250px; line-height:17px;display:inline-block"/>
-                                        <b>*</b>
-                                        <span></span>
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <hr/>
-                                    <td class="wlBtns" align="center" colspan="2">
-                                        <s></s>
-                                        <button type="button" class="button border-red" style="padding:5px 15px;" data-dismiss="modal">关闭</button>
-                                        <button type="submit"  class="button border-blue" style="padding:5px 15px;">保存</button>
-                                    </td>
-                                </tr>
-                            </table>
-                        </form>
-                        </div>
-               </div>
-           </div>
-    </div>
-    <!--model end-->
 </head>
 <body>
 <form method="post" action="" id="listform">
   <div class="panel admin-panel">
     <div class="padding border-bottom">
       <ul class="search" style="padding-left:10px;">
-        <li> <a class="button border-main icon-plus-square-o" data-toggle="modal" data-target="#myModal">添加房源</a> </li>
+        <li> <a class="button border-main icon-plus-square-o" href="/api/adminAddHouse">添加房源</a> </li>
         <li>搜索：</li>
         <li>
           <input type="text" placeholder="请输入标题关键字" name="keywords" class="input" style="width:250px; line-height:17px;display:inline-block" />
@@ -171,7 +90,7 @@
           全选 </td>
         <td colspan="13" style="text-align:left;padding-left:20px;  ">
             <a href="javascript:void(0)" class="button border-red icon-trash-o" style="padding:5px 15px;" onclick="DelSelect()"> 删除</a>
-            <a href="javascript:void(0)" style="padding:5px 15px; margin:0 10px;" class="button border-blue icon-edit" onclick="sorts()"> 排序</a>
+            <!--<a href="javascript:void(0)" style="padding:5px 15px; margin:0 10px;" class="button border-blue icon-edit" onclick="sorts()"> 排序</a>-->
          </td>
       </tr>
       <tr th:if="${houses.size()}!=0">
@@ -203,100 +122,6 @@
 </form>
 
 <script type="text/javascript">
-    /*表单验证*/
-    var gets = true;//是否让表单提交
-    $(function(){
-        // 提示信息===========================================
-        $("input[name=username]").focus(function(){
-            if($(this).val() == this.defaultValue){
-                $(this).val('');
-            }
-        }).blur(function(){
-            if($(this).val() == ''){
-                $(this).val(this.defaultValue);
-            }
-        });
-        //当输入框失去焦点的时候，需要执行的方法
-        $("input[name=username]").blur(function(){doLgname();});
-        $("input[name=password]").blur(function(){doPassword();});
-        $("input[name=repass]").blur(function(){doRepass();});
-    });
-    // 登陆名称的验证==========================
-    function doLgname(){
-        var t = $("input[name=username]");
-        var span = t.next();
-        if(/^\w{6,16}$/.test(t.val())){
-            /*span.html("填写正确").css({color:"green",fontSize:"12px"});*/
-            doOnlyname();
-            return true;
-        }else{
-            span.html("包含数字、字母、下划线，长度在6-16之间").css({color:"#ec4e4e",fontSize:"12px"});
-            return false;
-        }
-    }
-    // 登陆名称唯一性的验证==========================
-    function doOnlyname(){
-        var t = $("input[name=username]");
-        var span = t.next();
-        $.ajax({
-            type:"post",
-            //发送请求的地址1
-            url : "stu-exist",
-            data : {"username" :t.val()},
-            //服务器返回的数据类型
-            dataType : "json",
-            success : function(data) {
-                if(data==false){
-                    span.html("填写正确").css({color:"green",fontSize:"12px"});
-                    return true;
-                }else{
-                    span.html("用户名已被注册").css({color:"#ec4e4e",fontSize:"12px"});
-                    return false;
-                }
-            }
-        })
-    }
-
-    // 密码的验证==========================
-    function doPassword(){
-        var t = $("input[name=password]");
-        var span = t.next();
-        if(t.val() == ''){
-            span.html("密码不能为空").css({color:"#ec4e4e",fontSize:"12px"});
-            return false;
-        }else{
-            span.html('');
-            if(/.{15,}/.test(t.val())){
-                span.html("密码长度不合法");
-                return false;
-            }
-            return true;
-        }
-    }
-    // 确认密码的验证==========================
-    function doRepass(){
-        var t = $("input[name=repass]");
-        var span = t.next();
-        if(t.val() == $("input[name=password]").val() && t.val() != ''){
-            span.html("填写正确").css({color:"green",fontSize:"12px"});
-            return true;
-        }else{
-            span.html("两次密码不一致").css({color:"#ec4e4e",fontSize:"12px"});
-            return false;
-        }
-    }
-    // 数据提交的时候执行的方法
-    function doTable(){
-        var lg = doLgname();
-        // var lo = doOnlyname();
-        var pass = doPassword();
-        var repass = doRepass();
-        if(lg&&pass&&repass){
-            return true;
-        }else{
-            return false;
-        }
-    }
     //搜索
     function changesearch(){
         var name = $("input[name=keywords]");

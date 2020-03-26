@@ -44,6 +44,13 @@ public class MenuServiceImpl implements MenuService {
         wrapper.eq("is_del",false);
         return menuMapper.selectList(wrapper);
     }
+    /*管理员菜单*/
+    @Override
+    public List<MenuEntity> getAdminMenuList(){
+        QueryWrapper wrapper = new QueryWrapper();
+        wrapper.eq("user_power",3);
+        return menuMapper.selectList(wrapper);
+    }
     /*删除更新*/
     @Override
     public String deleteUpdate(Integer menuId){

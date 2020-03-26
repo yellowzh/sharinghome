@@ -5,16 +5,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.lnsf.entity.PhotoListEntity;
-import com.lnsf.service.PhotoListService;
+import com.lnsf.service.impl.PhotoListService;
 import java.util.List;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import com.lnsf.dto.PhotoListDTO;
 
 import javax.servlet.http.HttpSession;
-import javax.validation.Valid;
-
 
 
 /**

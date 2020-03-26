@@ -14,12 +14,15 @@ import com.lnsf.service.OrderListService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import cn.hutool.core.bean.BeanUtil;
 import com.lnsf.service.UserInfoService;
+import com.lnsf.util.DateUtil;
 import com.lnsf.vo.MyOrderVO;
 import org.hibernate.service.spi.ServiceException;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -295,6 +298,29 @@ public class OrderListServiceImpl implements OrderListService {
         wrapper.eq("is_comment",false);
         wrapper.eq("is_del",false);
         return orderListMapper.selectList(wrapper);
+    }
+    /*统计已完成的订单*/
+    public Integer wOrder(){
+        QueryWrapper wrapper = new QueryWrapper();
+        String preDay= DateUtil.dayago();
+        wrapper.ge("end_time",preDay);
+        wrapper.eq("houses_in","已退宿");
+        System.out.println(preDay);
+       return orderListMapper.selectCount(wrapper);
+    }
+    /*统计近五天准确收到的总金额*/
+    public double payNum(){
+        QueryWrapper wrapper = new QueryWrapper();
+        String preDay= DateUtil.dayago();
+        wrapper.ge("end_time",preDay);
+        wrapper.eq("houses_in","已退宿");
+       List<OrderListEntity> orderListEntities = orderListMapper.selectList(wrapper);
+       double num = 0;
+        for (OrderListEntity o:orderListEntities) {
+            num+=o.getOrderPrices();
+        }
+        System.out.println(preDay);
+        return num;
     }
 
 }

@@ -1,4 +1,4 @@
-package com.lnsf.service;
+package com.lnsf.service.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.lnsf.dto.PhotoListDTO;

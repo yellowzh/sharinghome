@@ -118,6 +118,7 @@
       <td ng-if="order.orderPay=='未支付'" style="color: orange">{{order.orderPay}}</td>
       <td ng-if="order.orderPay=='已退款'" style="color: red">{{order.housesIn}}</td>
       <td ng-if="order.housesIn=='已入住'" ng-show="order.orderPay=='已支付'" style="color: green">{{order.housesIn}}</td>
+      <td ng-if="order.housesIn=='已退宿'" ng-show="order.orderPay=='已支付'" style="color: green">{{order.housesIn}}</td>
       <td ng-if="order.housesIn=='未入住'" ng-show="order.orderPay!='已退款'" style="color: orange">{{order.housesIn}}</td>
       <td><div class="button-group">
       <!--<a class="button border-main" ng-click="findSlide(slide.slideId)"><span class="icon-edit"></span> 修改</a>-->

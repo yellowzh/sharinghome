@@ -20,10 +20,6 @@ public interface SysLogService {
     List<SysLogEntity> list();
 
     SysLogEntity create(SysLogDTO dto);
-//
-//    void delete(String logId);
-//
-//    SysLogEntity update(String logId, SysLogDTO dto);
-//
-//    List<SysLogEntity> page(SysLogDTO dto, IPage<SysLogEntity> page);
+    /*查询近五天登录人数*/
+    Integer loginNum();
 }

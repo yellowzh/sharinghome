@@ -137,6 +137,15 @@ public class ArticleController {
     public String delete(Long articleId) {
        return articleService.updateDelete(articleId);
     }
+
+    /*系统管理员*/
+    @ApiOperation("动态管理页面跳转")
+    @GetMapping(path = "/dynamicManagement")
+    public ModelAndView dynamicManagement() {
+        ModelAndView model_html = new ModelAndView();
+        model_html.setViewName("admin/dynamicManagement");
+        return model_html;
+    }
 //    @ApiOperation("查看")
 //    @GetMapping("{articleId}")
 //    public ArticleEntity view(@ApiParam("资讯编号") @PathVariable(name = "articleId") Long articleId){

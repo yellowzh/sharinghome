@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.lnsf.dto.OrderListDTO;
 import com.lnsf.entity.OrderListEntity;
 import com.lnsf.vo.MyOrderVO;
+import io.swagger.models.auth.In;
 
 import java.util.Date;
 import java.util.List;
@@ -44,5 +45,10 @@ public interface OrderListService {
     List<OrderListEntity> scheduleGetNotPayList();
     /*查询已退宿但未评价的订单*/
     List<OrderListEntity> scheduleGetNotCommentList();
+    /*统计已完成的订单*/
+    Integer wOrder();
+    /*统计近五天准确收到的总金额*/
+    double payNum();
+
 
 }

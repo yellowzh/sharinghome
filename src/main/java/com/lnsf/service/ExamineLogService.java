@@ -15,15 +15,10 @@ import java.util.List;
  */
 public interface ExamineLogService {
 
-    ExamineLogEntity getExamineLog(Long examineId);
 
-    List<ExamineLogEntity> list();
+
+    Integer list();
 
     ExamineLogEntity create(ExamineLogDTO dto);
 
-    void delete(Long examineId);
-
-    ExamineLogEntity update(Long examineId, ExamineLogDTO dto);
-
-    List<ExamineLogEntity> page(ExamineLogDTO dto, IPage<ExamineLogEntity> page);
 }

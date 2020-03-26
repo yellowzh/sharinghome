@@ -45,8 +45,8 @@
 			/*分页查询*/
 			$scope.selectArticle=function(page) {
 					$scope.show=false;
-					if ($scope.article != undefined) {
-						$http.post('/api/select/allArticleListBytime?page=' + page, $scope.article).success(
+					if ($scope.articleS != undefined) {
+						$http.post('/api/select/allArticleListBytime?page=' + page, $scope.articleS).success(
 								function (response) {
 									$scope.articleList = response.articleEntities;
 									$scope.num=response.articleEntities.length;
@@ -143,7 +143,7 @@
 		</button>
 		<!--动态操作-->
 		<div class="select">
-			此发布时间之后:<input type="date" ng-model="article.createTime">
+			此发布时间之后:<input type="date" ng-model="articleS.createTime">
 			<button ng-click="selectArticle(1)">搜索</button>
 			<button ng-click="addArticle()" th:if="${session.user}==null" style="margin-left: 10px;">我的动态</button>
 			<button ng-click="selectMyArticle(1)" th:if="${session.user}!=null" style="margin-left: 10px;">我的动态</button>

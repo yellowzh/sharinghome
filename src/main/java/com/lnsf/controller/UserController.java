@@ -40,9 +40,10 @@ public class UserController {
             model_html.setViewName("admin/business");/*redirect:重定向*/
         }else if (power.equals("0")) {
             model_html.setViewName("admin/passenger");/*redirect:重定向*/
+        }else if (power.equals("1")) {
+            model_html.setViewName("admin/adminS");/*redirect:重定向*/
         }else if (power.equals("f")){
             model_html.setViewName("/register");/*redirect:重定向*/
-
         }else {
             model_html.setViewName("/login");/*redirect:重定向*/
         }

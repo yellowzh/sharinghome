@@ -264,6 +264,22 @@ public class HousesServiceImpl implements HousesService {
         housesMapper.updateById(existEntity);
         return existEntity;
     }
+    /*查询全部待审核数目*/
+    public Integer notRental(){
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("houses_falgs",3);
+        return housesMapper.selectCount(queryWrapper);
+    }
+    /*定时任务查看所有在线房源*/
+    public List<HousesDTO> getAllHousesByNowSch(){
+        QueryWrapper wrapper = new QueryWrapper();
+        wrapper.eq("houses_falgs",0);
+        wrapper.orderByDesc("houses_view");
+        wrapper.last("limit 5");
+        List<HousesEntity> houses = housesMapper.selectList(wrapper);
+        List<HousesDTO> housesDTOS = getUserByHId(houses);
+        return housesDTOS;
+    }
 
 
 }

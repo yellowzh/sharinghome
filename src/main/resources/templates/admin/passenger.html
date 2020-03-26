@@ -40,7 +40,7 @@
                    <div class="modal-body">
                         <form action="/api/addUser?falg=0" class="fm" method="post" onsubmit="return doTable()">
                             <table align="center">
-                                <tr>
+                                <tr style="height: 60px;">
                                     <td style="width: 20%">登 录 名：</td>
                                     <td class="wlIcon icon">
                                         <s></s>
@@ -49,7 +49,7 @@
                                         <span></span>
                                     </td>
                                 </tr>
-                                <tr>
+                                <tr style="height: 60px;">
                                     <td style="width: 20%">密 码：</td>
                                     <td class="wlIcon icon">
                                         <s class="mm"></s>
@@ -58,7 +58,7 @@
                                         <span></span>
                                     </td>
                                 </tr>
-                                <tr>
+                                <tr style="height: 60px;">
                                     <td style="width: 20%">确 认 密 码：</td>
                                     <td class="wlIcon icon">
                                         <s class="mm"></s>
@@ -67,7 +67,7 @@
                                         <span></span>
                                     </td>
                                 </tr>
-                                <tr>
+                                <tr style="height: 60px;">
                                     <td class="wlBtns" align="center" colspan="2">
                                         <s></s>
                                         <button type="button" class="button border-red" style="padding:5px 15px;" data-dismiss="modal">关闭</button>
@@ -144,7 +144,7 @@
           全选 </td>
         <td colspan="10" style="text-align:left;padding-left:20px;  ">
             <a href="javascript:void(0)" class="button border-red icon-trash-o" style="padding:5px 15px;" onclick="DelSelect()"> 删除</a>
-            <a href="javascript:void(0)" style="padding:5px 15px; margin:0 10px;" class="button border-blue icon-edit" onclick="sorts()"> 排序</a>
+            <!--<a href="javascript:void(0)" style="padding:5px 15px; margin:0 10px;" class="button border-blue icon-edit" onclick="sorts()"> 排序</a>-->
          </td>
       </tr>
       <tr th:if="${users.size()}!=0">
