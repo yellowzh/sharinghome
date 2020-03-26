@@ -17,6 +17,7 @@ import com.lnsf.entity.OrderListEntity;
 import com.lnsf.service.OrderListService;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -64,19 +65,6 @@ public class OrderListController {
         orderListDTO.setOrderId(orderListEntity.getOrderId()+"");
         return orderListDTO;
     }
-
-//    @ApiOperation("列表")
-//    @GetMapping
-//    public List<OrderListEntity> list(){
-//        return orderListService.list();
-//    }
-
-//    @ApiOperation("新增")
-//    @PostMapping
-//    public OrderListEntity create(@RequestBody @Valid OrderListDTO dto){
-//        return orderListService.create(dto);
-//    }
-
     /**
      *@Description
      *@Author huangrunzhi
@@ -151,7 +139,7 @@ public class OrderListController {
     }
     /*后台管理*/
 
-    @ApiOperation(value = "订单管理以及查看我的订单", notes = "我的订单查询",httpMethod = "GET")
+    @ApiOperation(value = "页面跳转", notes = "订单查询",httpMethod = "GET")
     @RequestMapping("/selectHousesOrder")
     public ModelAndView selectHousesOrder(Integer housesId,Map<String, Object> map){
         if (housesId==null){
@@ -162,12 +150,7 @@ public class OrderListController {
         model_html.setViewName("admin/housesOrder");
         return model_html;
     }
-//    @ApiOperation(value = "订单管理以及查看我的订单", notes = "我的订单查询",httpMethod = "GET")
-//    @RequestMapping("/getHouserOrder")
-//    public List<OrderListDTO> getHouserOrder(Integer housesId,Map<String, Object> map){
-//        return orderListService.getHouserOrder(housesId);
-//    }
-    @ApiOperation(value = "订单管理以及查看我的订单", notes = "我的订单查询",httpMethod = "GET")
+    @ApiOperation(value = "后台管理订单分页", notes = "订单查询",httpMethod = "GET")
     @RequestMapping("/getHouserOrderPage")
     public OrderListPageVO getHouserOrderPage(Integer housesId,Integer page){
         if (page==null)
@@ -196,21 +179,30 @@ public class OrderListController {
         orderListPageVO.setTotalPage(infoEntityIPage.getPages());
         return orderListPageVO;
     }
+    /*根据时间判断是否有订单*/
+    @ApiOperation(value = "根据时间判断是否有订单", notes = "查询是否包含",httpMethod = "GET")
+    @RequestMapping("/getOrderIfIn")
+    public Boolean getOrderIfIn(String starTime,String endTime,Integer housesId){
+        return orderListService.getOrderIfIn(starTime,endTime,housesId);
+    }
+    @ApiOperation(value = "根据时间判断是否有订单", notes = "查询是否被包含",httpMethod = "GET")
+    @RequestMapping("/getOrderIfInByTime")
+    public Boolean getOrderIfInByTime(String time,Integer housesId){
+        return orderListService.getOrderIfInByOneTime(time,housesId);
+    }
+    /*商家查询自己的全部订单*/
+    @ApiOperation(value = "商家查询自己的全部订单", notes = "订单查询",httpMethod = "GET")
+    @RequestMapping("/getSinAllOrder")
+    public MyOrderVO getSinAllOrder(Integer housesId,HttpServletRequest httpServletRequest){
+        UserInfoEntity userInfoEntity = (UserInfoEntity)httpServletRequest.getSession().getAttribute("user");
+        return orderListService.getSinAllOrderById(userInfoEntity.getUserId(),housesId);
+    }
 
-
-//    @ApiOperation("删除")
-//    @DeleteMapping("{orderId}")
-//    public void delete(@ApiParam("") @PathVariable(name = "orderId") Integer orderId) {
-//        orderListService.delete(orderId);
-//    }
-
-//    @ApiOperation("更新")
-//    @PutMapping("{orderId}")
-//    public OrderListEntity update(@ApiParam("") @PathVariable("orderId") Integer orderId,
-//                            @RequestBody @Valid OrderListDTO dto) {
-//        return orderListService.update(orderId, dto);
-//    }
-
+    @ApiOperation(value = "入宿、退宿", notes = "订单查询",httpMethod = "POST")
+    @RequestMapping("/updateOrderIn")
+    public OrderListEntity updateOrderIn(@RequestBody OrderListEntity orderListEntity){
+        return orderListService.updateById(orderListEntity);
+    }
 
 
 }

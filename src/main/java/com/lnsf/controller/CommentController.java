@@ -4,7 +4,9 @@ package com.lnsf.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.lnsf.dto.CommentDTO;
+import com.lnsf.dto.HousesDTO;
 import com.lnsf.entity.UserInfoEntity;
+import com.lnsf.service.HousesService;
 import com.lnsf.service.UserInfoService;
 import com.lnsf.util.UploadImgUtil;
 import com.lnsf.vo.CommentListVO;
@@ -26,6 +28,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpSession;
+
 
 /**
  *  前端控制器
@@ -43,6 +47,8 @@ public class CommentController {
     private CommentService commentService;
     @Autowired
     private UserInfoService userInfoService;
+    @Autowired
+    private HousesService housesService;
 
     private static Logger log = Logger.getLogger(LoginController.class);
 
@@ -50,7 +56,7 @@ public class CommentController {
     @GetMapping(path = "/select/commentList")
     public CommentListVO commentList(Integer housesId){
         log.info("房源编号："+housesId);
-        return commentService.list(housesId);
+        return commentService.list(housesId,null);
     }
     @ApiOperation("添加图片")
     @PostMapping(path = "/addPhoto")
@@ -83,7 +89,7 @@ public class CommentController {
         return model_html;
     }
 
-    @ApiOperation(value = "订单管理以及查看我的订单", notes = "我的订单查询",httpMethod = "GET")
+    @ApiOperation(value = "查看评论", notes = "我的订单查询",httpMethod = "GET")
     @RequestMapping("/getHousesCommentPage")
     public CommentListVO getHousesCommentPage(Integer housesId, Integer page){
         if (page==null)
@@ -130,7 +136,7 @@ public class CommentController {
         return commentListVO;
     }
 
-    @ApiOperation(value = "查看订单回复", notes = "查看评论回复",httpMethod = "GET")
+    @ApiOperation(value = "查看房源评论回复", notes = "查看评论回复",httpMethod = "GET")
     @RequestMapping("/getCommentReplay")
     public List<CommentVO> getCommentReplay(Long commentId){
         List<CommentEntity> commentEntityList = commentService.commentReplayList(commentId);
@@ -159,4 +165,28 @@ public class CommentController {
     public String delComent(Long commentId) {
         return commentService.deletUpdate(commentId);
     }
+
+    /*前端查看商家的所以评价*/
+    @ApiOperation("列表")
+    @GetMapping(path = "/getSinAllComment")
+    public CommentListVO getSinAllComment(Integer housesId, HttpSession session){
+        UserInfoEntity user = (UserInfoEntity) session.getAttribute("user");
+        log.info("房源编号："+housesId);
+        List<String> housesList = new ArrayList<>();
+            List<HousesDTO> housesDTO = housesService.getMyHousesByUserId(user.getUserId());
+            for (HousesDTO h:housesDTO) {
+                housesList.add(h.getHousesId()+"");
+            }
+        /*查询该上名下的所有房源*/
+        return commentService.list(housesId,housesList);
+    }
+    @ApiOperation("回复")
+    @PostMapping(path = "/replayComment")
+    public CommentEntity replayComment(@RequestBody CommentDTO dto,HttpSession session){
+        UserInfoEntity user = (UserInfoEntity) session.getAttribute("user");
+        dto.setUserId(user.getUserId());
+        /*查询该上名下的所有房源*/
+        return commentService.createReply(dto);
+    }
+
 }

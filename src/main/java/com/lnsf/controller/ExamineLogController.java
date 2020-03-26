@@ -74,13 +74,13 @@ public class ExamineLogController {
     /*邮箱设置以及发送*/
     private static Logger log = Logger.getLogger(ExamineLogController.class);
     /*发送者邮箱*/
-    @Value("${mail.fromMail.sender}")
-    private String sender;
+//    @Value("${mail.fromMail.sender}")
+//    private String sender;
     /*接受者邮箱*/
    /* @Value("${mail.fromMail.receiver}")
     private String receiver;*/
-    @Autowired
-    private JavaMailSender javaMailSender;
+//    @Autowired
+//    private JavaMailSender javaMailSender;
     /* *
      * @Description  /sendMail
      * @author 黄润志
@@ -90,12 +90,12 @@ public class ExamineLogController {
     public String sendMail(String subject, String text,String emain) {
         System.out.println(subject+text);
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(sender);
+//        message.setFrom(sender);
         message.setTo(emain);
         message.setSubject(subject);
         message.setText(text);
         try {
-            javaMailSender.send(message);
+//            javaMailSender.send(message);
             log.info("简单邮件已经发送。");
         } catch (Exception e) {
             log.error("发送简单邮件时发生异常！", e);

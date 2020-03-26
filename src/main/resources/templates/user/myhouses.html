@@ -3,19 +3,28 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" href="/css/pintuer.css">
+
+	<link rel="stylesheet" href="/css/myhousesTab.css" media="screen" type="text/css" />
+<link rel="stylesheet" href="/css/pintuer.css">
 <link rel="stylesheet" href="/css/bootstrap.min.css">
-<link rel="stylesheet" type="text/css" href="/css/style.css">
+
 <link href='https://fonts.googleapis.com/css?family=Merienda' rel='stylesheet'>
 <link href="/css/aos.css" rel="stylesheet">
 
-	<!--<script src="../js/jquery.js"></script>-->
+	<!--固定左边栏-->
+
+	<link rel="stylesheet" type="text/css" href="/css/style.css">
+<!--<link rel="stylesheet" type="text/css" href="/css/myhouses.css">-->
+<!--<script src="/js/jquery.js"></script>-->
 <title>小智民宿</title>
 <link rel="icon" href="/images/logo.png">
-	<script src="/js/jquery.min.js"></script>
-	<script src="/js/my/show.js"></script><!--自编弹出显示-->
-	<script src="/js/angular.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/css/myhouses.css">
+<script src="/js/jquery.min.js"></script>
+<script src="/js/my/show.js"></script><!--自编弹出显示-->
+<script src="/js/angular.min.js"></script>
+
 	<script>
+		var housesId = -1;
 		var app=angular.module('myApp',[]); //定义了一个叫myApp的模块
 		//定义控制器
 		app.controller('myController',function($scope,$http){
@@ -23,6 +32,7 @@
 				$http.get('/api/getMyHouses').success(
 						function(response){
 							$scope.housesList=response;
+							$scope.housesAllList=response;
 						}
 				)
                 /*查询菜单*/
@@ -46,6 +56,230 @@
 			$scope.updateHouse=function(id){
 				location.href="/api/updateHouseByUser?housesId="+id;
 			}
+			/*全部房源返回*/
+			$scope.allHousesShow=true;
+			$scope.allOrderShow=false;
+			$scope.allCommentShow=false;
+			$scope.allHouses=function () {
+				location.href="/api/myHouse";
+			};
+			/*查询全部房源评价给商家看的*/
+			$scope.allComment=function () {
+				$http.get('/api/getSinAllComment').success(
+						function(response){
+							$scope.commentList=response;
+							var f = parseFloat(response.count).toFixed(3);
+							$scope.commentListCount=f.substring(0, f.toString().length - 1);
+							$scope.commentVoList=response.commentVO;
+							$scope.commentVoNum=response.commentVO.length;
+							$scope.commentReplyList=response.commentReply;
+							$scope.commentReplyNum=response.commentReply.length;
+							$scope.commentNotReplyNum=response.commentNotReply.length;
+							$scope.commentNotReplyList=response.commentNotReply;
+							$scope.allHousesShow=false;
+							$scope.allOrderShow=false;
+							$scope.allCommentShow=true;
+						}
+				)
+			};
+			/*查看全部订单*/
+			$scope.allOrder=function () {
+				$http.get('/api/getSinAllOrder').success(
+						function(response){
+							/*列表*/
+							$scope.orderAll=response.orderAll;
+							$scope.orderNotPay=response.orderNotPay;
+							$scope.orderNotIn=response.orderNotIn;
+							$scope.orderComment=response.orderComment;
+							/*计数*/
+							$scope.orderAllNum=response.orderAllNum;
+							$scope.orderNotPayNum=response.orderNotPayNum;
+							$scope.orderNotInNum=response.orderNotInNum;
+							$scope.orderCommentNum=response.orderCommentNum;
+							$scope.allHousesShow=false;
+							$scope.allOrderShow=true;
+							$scope.allCommentShow=false;
+						}
+				)
+			};
+			$scope.select=function(id) {
+				location.href="/api/select/findHousesById?houserId="+id;
+			};
+			/*点击取消订单*/
+			$scope.removePay=function(id) {
+				$http.post("/alipay/refund?orderNo="+id).success(
+						//添加后直接跳转到支付页面
+						function(response) {
+							func("订单取消成功","#999999");
+							/*重新刷新一下页面数据*/
+							if (housesId==-1){
+								$scope.allOrder();
+							}else {
+								$scope.selectMyHouses();
+								/*搜索的*/
+							}
+						}
+				)
+			};
+			/*点击删除订单*/
+			$scope.goDel=function(id){
+				$http.get("/api/delOrder?orderId="+id).success(
+						//添加后直接跳转到支付页面
+						function(response) {
+							func(response,"#999999");
+							/*重新刷新一下页面数据*/
+							if (housesId==-1){
+								$scope.allOrder();
+							}else {
+								$scope.selectMyHouses();
+								/*搜索的*/
+							}
+						}
+				)
+			};
+			/*点击入宿*/
+			$scope.orderIn={};
+			$scope.updateUserIn=function (id,num) {
+				if (num==1){
+					$scope.orderIn.housesIn="已入住"
+				} else {
+					$scope.orderIn.housesIn="已退宿"
+				}
+				$scope.orderIn.orderId=id;
+				$http.post('/api/updateOrderIn',$scope.orderIn).success(
+						function (response){
+							if (num==1){
+								func("入宿成功","#999999");
+							}else {
+								func("退宿成功","#999999");
+							}
+							/*重新刷新一下页面数据*/
+							if (housesId==-1){
+								$scope.allOrder();
+							}else {
+								$scope.selectMyHouses();
+								/*搜索的*/
+							}
+						}
+				)
+			}
+			/*评论回复*/
+			$scope.commentR={}
+			$scope.goReply=function(id){
+				$scope.commentR.replyId=id;
+				$scope.commentR.commentType="评价回复";
+			}
+			/*回复*/
+			$scope.commentReply=function () {
+				$http.post('/api/replayComment',$scope.commentR).success(
+						function (response) {
+							if (housesId==-1){
+								$scope.allComment();
+							}else {
+								$scope.selectMyHouses();
+								/*搜索的*/
+							}
+
+						}
+				)
+			}
+			/*图片上传*/
+			var dragImgUpload = new DragImgUpload("#drop_area",{
+				callback:function (files) {
+					//回调函数，可以传递给后台等等
+					var file = files[0];
+					var form = new FormData();
+					form.append('file', file);
+					$http({
+						method:'POST',
+						url:"/api/addPhoto",
+						data: form,
+						headers: {'Content-Type':undefined},
+						transformRequest: angular.identity
+					}).success( function ( response ){
+						$scope.commentR.commentPhoto=response;
+					}).error(function (data) {
+						func("添加失败","#999999");
+					});
+				}
+			});
+			/*点击搜索*/
+			$scope.selectMyHouses=function () {
+				housesId=$scope.housesId;
+				if ($scope.allHousesShow==true){
+					$http.get('/api/getMyHouses').success(
+							function(response){
+								var inNum=[];
+								var j=0;
+								for (var i=0;i<response.length;i++) {
+									if (response[i].housesId==housesId) {
+										inNum[j]=response[i];
+										j++;
+									}
+								}
+								$scope.housesList = inNum;
+							}
+					)
+				}
+				/*订单搜索*/
+				if ($scope.allOrderShow==true) {
+					$http.get('/api/getSinAllOrder?housesId='+housesId).success(
+							function(response){
+								/*列表*/
+								$scope.orderAll=response.orderAll;
+								$scope.orderNotPay=response.orderNotPay;
+								$scope.orderNotIn=response.orderNotIn;
+								$scope.orderComment=response.orderComment;
+								/*计数*/
+								$scope.orderAllNum=response.orderAllNum;
+								$scope.orderNotPayNum=response.orderNotPayNum;
+								$scope.orderNotInNum=response.orderNotInNum;
+								$scope.orderCommentNum=response.orderCommentNum;
+								$scope.allHousesShow=false;
+								$scope.allOrderShow=true;
+								$scope.allCommentShow=false;
+							}
+					)
+				}
+				/*评价搜索*/
+				if ($scope.allCommentShow==true){
+					$http.get('/api/getSinAllComment?housesId='+housesId).success(
+							function(response){
+								$scope.commentList=response;
+								var f = parseFloat(response.count).toFixed(3);
+								$scope.commentListCount=f.substring(0, f.toString().length - 1);
+								$scope.commentVoList=response.commentVO;
+								$scope.commentVoNum=response.commentVO.length;
+								$scope.commentReplyList=response.commentReply;
+								$scope.commentReplyNum=response.commentReply.length;
+								$scope.commentNotReplyNum=response.commentNotReply.length;
+								$scope.commentNotReplyList=response.commentNotReply;
+								$scope.allHousesShow=false;
+								$scope.allOrderShow=false;
+								$scope.allCommentShow=true;
+							}
+					)
+				}
+			}
+			/*点击看订单*/
+			$scope.selectOrder=function (id){
+				$scope.housesId=id;
+				$scope.allHousesShow=false;
+				$scope.allOrderShow=true;
+				$scope.allCommentShow=false;
+				$scope.selectMyHouses();
+
+			}
+			/*点击看评论*/
+			$scope.selectComment=function (id){
+				$scope.housesId=id;
+				$scope.allHousesShow=false;
+				$scope.allOrderShow=false;
+				$scope.allCommentShow=true;
+				$scope.selectMyHouses();
+			}
+
+
 
 		});
 	</script>
@@ -124,6 +358,7 @@
 <div style="margin-top: 100px;"></div>
 	<!--End of Carousel-->
 <div class="container" style="width: 100%;">
+	<div ng-show="allHousesShow">
 	<div class="row bg-light" id="Menu">
 		<div class="col-md-4" data-aos="slide-up" ng-repeat="house in housesList">
 			<div class="card view zoom" style="margin-top: 10px;">
@@ -138,11 +373,14 @@
 							<img src="/images/prices.png">{{house.housesPrices}}元/天
 							</span><br>
 							<span>
-								<img src="/images/shouchang.png">
-								<img src="/images/shouchang.png">
-								<img src="/images/shouchang.png"><!--评分等级-->
+								<!--<img src="/images/shouchang.png">-->
+								<!--<img src="/images/shouchang.png">-->
+								<!--<img src="/images/shouchang.png">&lt;!&ndash;评分等级&ndash;&gt;-->
+								<button ng-show="house.housesFalgs==0" ng-click="select(house.housesId)" style="float: right;background-color: #9fcdff;border: none;margin-left: 10px;margin-top: 5px;" >详情</button>
+								<button ng-show="house.housesFalgs==0" ng-click="selectOrder(house.housesId)" style="float: right;background-color: #9fcdff;border: none;margin-left: 10px;margin-top: 5px;" >订单</button>
+								<button ng-show="house.housesFalgs==0" ng-click="selectComment(house.housesId)" style="float: right;background-color: #9fcdff;border: none;margin-left: 10px;margin-top: 5px;" >评价</button>
 								<button  ng-click="updateHouse(house.housesId)" style="float: right;border: none;background-color: #00aa00;margin-left: 10px;margin-top: 5px;"> 修改</button>
-								<button ng-show="house.housesFalgs==0" ng-click="update(1,house.housesId)" style="float: right;background-color: orange;border: none;margin-left: 10px;margin-top: 5px;" >下架修整</button>
+								<button ng-show="house.housesFalgs==0" ng-click="update(1,house.housesId)" style="float: right;background-color: orange;border: none;margin-left: 10px;margin-top: 5px;" >下架</button>
 								<button ng-show="house.housesFalgs==3" style="float: right;background-color: red;border: none;margin-left: 10px;margin-top: 5px;" >审核中</button>
 								<button ng-show="house.housesFalgs==1" ng-click="update(0,house.housesId)" style="float: right;background-color: orange;border: none;margin-left: 10px;margin-top: 5px;" >上架</button>
 								<button  ng-click="update(2,house.housesId)"  style="float: right;border: none;margin-left: 10px;margin-top: 5px;" >删除</button>
@@ -155,7 +393,314 @@
 		</div>
 		<!--分页显示-->
 	</div>
+	</div>
+	<!--订单-->
+	<div ng-show="allOrderShow">
+		<figure class="tabBlock">
+			<ul class="tabBlock-tabs">
+				<li class="tabBlock-tab is-active">全部({{orderAllNum}})</li>
+				<li class="tabBlock-tab">待付款({{orderNotPayNum}})</li>
+				<li class="tabBlock-tab">待入住({{orderNotInNum}})</li>
+				<li class="tabBlock-tab">已完成({{orderCommentNum}})</li>
+			</ul>
+			<div class="tabBlock-content">
+				<div class="tabBlock-pane">
+					<div ng-repeat="all in orderAll">
+						<div style="background: #e9ecef;padding: 1em;border-radius: 2%;margin-top: 5px;">
+							<div style="padding: 4px;">
+								<a ng-click="select(all.housesDTO.housesId)"><img src="/images/fanzi.png" alt="" style="width: 30px;height: 30px;"/><label>{{all.housesDTO.housesTitle}}</label></a>
+							</div>
+							<div style="width: 20%;float: left;">
+								<img src="{{all.housesDTO.housesPhoto}}" style="width: 100px;height:100px;float: left;border-radius: 2%;">
+							</div>
+							<div style="width: 80%;float: left;">
+								<h5>入住时间:{{all.startTime}}</h5>
+								<h5>退租时间:{{all.endTime}}</h5>
+								<h5>单价:{{all.onlyPrices}}元/天&nbsp&nbsp&nbsp需支付:{{all.orderPrices}}元</h5>
+								<h5>入住:{{all.pepoleNum}}人</h5>
+								<h5>支付状态:{{all.orderPay}}&nbsp&nbsp&nbsp入住状态:{{all.housesIn}}</h5>
+							</div>
+							<button ng-click="goDel(all.orderId)" style="border: none;border-radius: 4%;color: white;width: 60px;height: 20px;">删除订单</button>
+							<button style="border: none;border-radius: 4%;color: white;background-color: orange;width: 60px;height: 20px;" ng-if="all.housesIn=='已入住'">进行中</button>
+							<button ng-if="all.housesIn=='未入住'" ng-show="all.orderPay!='已退款'" ng-click="removePay(all.orderId)" style="border: none;border-radius: 4%;color: white;width: 60px;height: 20px;">取消订单</button>
+							<button ng-if="all.orderPay=='未支付'"  style="border: none;border-radius: 4%;color: white;background-color: red;width: 60px;height: 20px;">待支付</button>
+							<button style="border: none;border-radius: 4%;color: white;background-color: orange;width: 60px;height: 20px;" ng-if="all.housesIn=='已退宿'" ng-show="all.isComment" >已评价</button>
+							<button style="border: none;border-radius: 4%;color: white;background-color: orange;width: 60px;height: 20px;" ng-if="all.housesIn=='已退宿'" ng-show="!all.isComment" >待评价</button>
+						</div>
+					</div>
+				</div>
+				<div class="tabBlock-pane">
+					<div ng-repeat="notPay in orderNotPay">
+						<div style="background: #e9ecef;padding: 1em;border-radius: 2%;margin-top: 5px;">
+							<div style="padding: 4px;">
+								<a ng-click="select(notPay.housesDTO.housesId)"><img src="/images/fanzi.png" alt="" style="width: 30px;height: 30px;"/><label>{{notPay.housesDTO.housesTitle}}</label></a>
+							</div>
+							<div style="width: 20%;float: left;">
+								<img src="{{notPay.housesDTO.housesPhoto}}" style="width: 100px;height:100px;float: left;border-radius: 2%;">
+							</div>
+							<div style="width: 80%;float: left;">
+								<h5>入住时间:{{notPay.startTime}}</h5>
+								<h5>退租时间:{{notPay.endTime}}</h5>
+								<h5>单价:{{notPay.onlyPrices}}元/天&nbsp&nbsp&nbsp需支付:{{notPay.orderPrices}}元</h5>
+								<h5>入住:{{notPay.pepoleNum}}人</h5>
+								<h5>支付状态:{{notPay.orderPay}}&nbsp&nbsp&nbsp入住状态:{{notPay.housesIn}}</h5>
+							</div>
+							<button ng-click="goDel(notPay.orderId)" style="border: none;border-radius: 4%;color: white;width: 60px;height: 20px;">删除订单</button>
+							<button style="border: none;border-radius: 4%;color: white;width: 60px;height: 20px;" ng-click="removePay(notPay.orderId)">取消订单</button>
+							<button style="border: none;border-radius: 4%;color: white;background-color: red;width: 60px;height: 20px;">待支付</button>
+						</div>
+					</div>
+				</div>
+				<div class="tabBlock-pane">
+					<div ng-repeat="notIn in orderNotIn">
+						<div style="background: #e9ecef;padding: 1em;border-radius: 2%;margin-top: 5px;">
+							<div style="padding: 4px;">
+								<a ng-click="select(notIn.housesDTO.housesId)"><img src="/images/fanzi.png" alt="" style="width: 30px;height: 30px;"/><label>{{notIn.housesDTO.housesTitle}}</label></a>
+							</div>
+							<div style="width: 20%;float: left;">
+								<img src="{{notIn.housesDTO.housesPhoto}}" style="width: 100px;height:100px;float: left;border-radius: 2%;">
+							</div>
+							<div style="width: 80%;float: left;">
+								<h5>入住时间:{{notIn.startTime}}</h5>
+								<h5>退租时间:{{notIn.endTime}}</h5>
+								<h5>单价:{{notIn.onlyPrices}}元/天&nbsp&nbsp&nbsp需支付:{{notIn.orderPrices}}元</h5>
+								<h5>入住:{{notIn.pepoleNum}}人</h5>
+								<h5>支付状态:{{notIn.orderPay}}&nbsp&nbsp&nbsp入住状态:{{notIn.housesIn}}</h5>
+							</div>
+							<button ng-click="goDel(notIn.orderId)" style="border: none;border-radius: 4%;color: white;width: 60px;height: 20px;">删除订单</button>
+							<button style="border: none;border-radius: 4%;color: white;width: 60px;height: 20px;" ng-click="removePay(notIn.orderId)">取消订单</button>
+							<button style="border: none;border-radius: 4%;color: white;background-color: orange;width: 60px;height: 20px;" ng-if="notIn.housesIn=='未入住'" ng-click="updateUserIn(notIn.orderId,1)">入宿</button>
+							<button style="border: none;border-radius: 4%;color: white;background-color: red;width: 60px;height: 20px;" ng-if="notIn.housesIn=='已入住'" ng-click="updateUserIn(notIn.orderId,2)">退宿</button>
+							<!--<button style="border: none;border-radius: 4%;color: white;background-color: orange">入住民宿</button>-->
+						</div>
+					</div>
+				</div>
+				<div class="tabBlock-pane">
+					<div ng-repeat="comment in orderComment">
+						<div style="background: #e9ecef;padding: 1em;border-radius: 2%;margin-top: 5px;">
+							<div style="padding: 4px;">
+								<a ng-click="select(comment.housesDTO.housesId)"><img src="/images/fanzi.png" alt="" style="width: 30px;height: 30px;"/><label>{{comment.housesDTO.housesTitle}}</label></a>
+							</div>
+							<div style="width: 20%;float: left;">
+								<img src="{{comment.housesDTO.housesPhoto}}" style="width: 100px;height:100px;float: left;border-radius: 2%;">
+							</div>
+							<div style="width: 80%;float: left;">
+								<h5>入住时间:{{comment.startTime}}</h5>
+								<h5>退租时间:{{comment.endTime}}</h5>
+								<h5>单价:{{comment.onlyPrices}}元/天&nbsp&nbsp&nbsp需支付:{{comment.orderPrices}}元</h5>
+								<h5>入住:{{comment.pepoleNum}}人</h5>
+								<h5>支付状态:{{comment.orderPay}}&nbsp&nbsp&nbsp入住状态:{{comment.housesIn}}</h5>
+							</div>
+							<button ng-click="goDel(comment.orderId)" style="border: none;border-radius: 4%;color: white;width: 60px;height: 20px;">删除订单</button>
+							<button style="border: none;border-radius: 4%;color: white;background-color: orange;width: 60px;height: 20px;" ng-show="comment.is_comment">已评价</button>
+							<button style="border: none;border-radius: 4%;color: white;background-color: orange;width: 60px;height: 20px;" ng-show="!comment.is_comment">待评价</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</figure>
+	</div>
+	<!--订单结束-->
+	<!--评价-->
+	<div ng-show="allCommentShow">
+		<figure class="tabBlock">
+			<ul class="tabBlock-tabs">
+				<li class="tabBlock-tab is-active">全部评价({{commentVoNum}})平均（{{commentListCount}}分）</li>
+				<li class="tabBlock-tab">待回复({{commentNotReplyNum}})</li>
+				<li class="tabBlock-tab">已回复({{commentReplyNum}})</li>
+			</ul>
+			<div class="tabBlock-content">
+				<!--全部-->
+				<div class="tabBlock-pane">
+					<div>
+						<div class="comment" ng-repeat="comment in commentVoList" style="background-color: white">
+
+							<div class="photo" style="border-left: 1px solid #b3d7ff;">
+								<img src="{{comment.userPhoto}}">
+								{{comment.username}}
+								<span>{{comment.createTime}}</span>
+								<span style="margin-left: 10px;">评分:{{comment.commentPower}}</span>
+								<button ng-show="comment.commentVOList==null" ng-click="goReply(comment.commentId)" data-toggle="modal" data-target="#myModal" style="float: right; background-color: orange;border: none;width: 50px;height: 20px;margin-top: 1em;margin-right: 1em;text-align: center">
+									回复</button>
+								<button  ng-show="comment.commentVOList!=null" style="float: right; background-color: orange;border: none;width: 50px;height: 20px;margin-top: 1em;margin-right: 1em;text-align: center">
+									已回复</button>
+								<!--<button style="float: right;background-color: orange;padding: 1em;">已回复</button>-->
+							</div>
+							<div class="context">
+								{{comment.commentContent}}
+							</div>
+							<div ng-if="comment.isPhoto">
+								<img src="{{comment.commentPhoto}}" style="height: 150px;width: auto;"/>
+							</div>
+							<div style="margin-left: 2em;">
+								<div ng-repeat="commentRl in comment.commentVOList">
+									<div class="photo" style="border-left: 1px solid #b3d7ff;">
+										<img src="{{commentRl.userPhoto}}">
+										{{commentRl.username}}
+										<span>{{commentRl.createTime}}</span>
+										<span style="margin-left: 10px;">回复{{comment.username}}</span>
+										<!--<button style="float: right;background-color: orange;padding: 1em;">已回复</button>-->
+									</div>
+									<div class="context">
+										{{commentRl.commentContent}}
+									</div>
+									<div ng-if="commentRl.isPhoto">
+										<img src="{{commentRl.commentPhoto}}" style="height: 150px;width: auto;"/>
+									</div>
+
+								</div>
+							</div>
+							<hr>
+						</div>
+					</div>
+					<div ng-if="!commentList.isData">
+						房源暂无评论
+					</div>
+				</div>
+				<!--待回复-->
+				<div class="tabBlock-pane">
+					<div>
+						<div class="comment" ng-repeat="commentT in commentNotReplyList" style="background-color: white">
+
+							<div class="photo" style="border-left: 1px solid #b3d7ff;">
+								<img src="{{commentT.userPhoto}}" >
+								{{commentT.username}}
+								<span>{{commentT.createTime}}</span>
+								<span style="margin-left: 10px;">评分:{{commentT.commentPower}}</span>
+								<button ng-click="goReply(commentT.commentId)" data-toggle="modal" data-target="#myModal" style="float: right; background-color: orange;border: none;width: 50px;height: 20px;margin-top: 1em;margin-right: 1em;text-align: center">
+									回复</button>
+								<!--<button style="float: right;background-color: orange;padding: 1em;">已回复</button>-->
+							</div>
+							<div class="context">
+								{{commentT.commentContent}}
+							</div>
+							<div ng-if="commentT.isPhoto">
+								<img src="{{commentT.commentPhoto}}" style="height: 150px;width: auto;"/>
+							</div>
+							<hr>
+						</div>
+					</div>
+					<div ng-if="!commentList.isData">
+						房源暂无评论
+					</div>
+				</div>
+				<!--已回复-->
+				<div class="tabBlock-pane">
+					<div>
+						<div class="comment" ng-repeat="commentR in commentReplyList" style="background-color: white">
+							<div class="photo" style="border-left: 1px solid #b3d7ff;">
+								<img src="{{commentR.userPhoto}}">
+								{{commentR.username}}
+								<span>{{commentR.createTime}}</span>
+								<span style="margin-left: 10px;">评分:{{commentR.commentPower}}</span>
+								<button style="float: right; background-color: orange;border: none;width: 50px;height: 20px;margin-top: 1em;margin-right: 1em;text-align: center">
+									已回复</button>
+								<!--<button style="float: right;background-color: orange;padding: 1em;">已回复</button>-->
+							</div>
+							<div class="context">
+								{{commentR.commentContent}}
+							</div>
+							<div ng-if="commentR.isPhoto">
+								<img src="{{commentR.commentPhoto}}" style="height: 150px;width: auto;"/>
+							</div>
+							<br>
+							<div style="margin-left: 2em;">
+								<div ng-repeat="commentRl in commentR.commentVOList">
+									<div class="photo" style="border-left: 1px solid #b3d7ff;">
+										<img src="{{commentRl.userPhoto}}">
+										{{commentRl.username}}
+										<span>{{commentRl.createTime}}</span>
+										<span style="margin-left: 10px;">回复{{commentR.username}}</span>
+									<!--<button style="float: right;background-color: orange;padding: 1em;">已回复</button>-->
+									</div>
+									<div class="context">
+										{{commentRl.commentContent}}
+									</div>
+									<div ng-if="commentRl.isPhoto">
+										<img src="{{commentRl.commentPhoto}}" style="height: 150px;width: auto;"/>
+									</div>
+
+								</div>
+							</div>
+							<hr style="margin-top: 10px;">
+						</div>
+					</div>
+					<div ng-if="!commentList.isData">
+						房源暂无评论
+					</div>
+				</div>
+			</div>
+		</figure>
+	</div>
+	<!--评价结束-->
 </div>
+<div class="hu_lc" >
+	<!--订购金额计算-->
+	<div class="h_lc">
+		<table>
+
+			<tr>
+				<td><button ng-click="allOrder()">全部房源订单</button></td>
+			</tr>
+			<tr>
+				<td><button ng-click="allComment()">全部房源评价</button></td>
+			</tr>
+			<tr>
+				<td><button ng-click="allHouses()">全部房源信息</button></td>
+			</tr>
+			<tr>
+				<td>
+					<select ng-model="housesId">
+						<option value="{{hou.housesId}}" ng-repeat="hou in housesAllList">{{hou.housesTitle}}</option>
+					</select>
+					<button ng-click="selectMyHouses()" >搜索</button>
+				</td>
+			</tr>
+		</table>
+	</div>
+</div>
+
+<script>
+	$('#myModal').on('shown.bs.modal', function () {
+		$('#myInput').focus()
+	})
+</script>
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	   <div class="modal-dialog">
+	       <div class="modal-content">
+	           <div class="modal-header">
+							<h5 class="modal-title" id="myModalLabel">请填写回复信息</h5>
+	               	<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+	           </div>
+	<!--       <div class="modal-body">-->
+	<div>
+		<div style="margin-top: 20px;padding: 1em;">
+			<label>回复内容</label><br/>
+			<textarea cols="50" rows="5" ng-model="commentR.commentContent"></textarea>
+			<!--<input type="text" style="border: none;width: 100%;height: 50px;background-color: gainsboro;"/>-->
+		</div>
+		<div style="margin-top: 10px;padding: 1em;">
+			<form action="" >
+				<div style="padding: 1em;">回复图片</div>
+				<div class="field">
+					<div id="drop_area"></div>
+				</div>
+			</form>
+		</div>
+		<div style="margin-top: 10px;padding: 1em;">
+			<!-- data-toggle="modal" data-target="#myModal"  -->
+			<input type="submit" data-dismiss="modal" ng-click="commentReply()" value="保存回复" style="border: orange;width: 100%;text-align: center;height: 30px;background-color: orange">
+		</div>
+	</div>
+
+	    </div>
+	  </div>
+</div>
+<!--tab切换-->
+<script src="/js/upload.js"></script><!--图片上传-->
+<script src="/js/jquery.js"></script>
+<script src="/js/index.js"></script>
 <script src="/js/jquery-3.3.1.min.js"></script>
 <script src="/js/popper.min.js"></script>
 <script src="/js/bootstrap.min.js"></script>
@@ -164,6 +709,7 @@
 <script type="text/javascript" src="/js/smooth-scroll.js"></script>
 <script src="/js/aos.js"></script>
 <script type="text/javascript" src="/js/image-effect.js"></script>
+
 </body>
 </html>
 

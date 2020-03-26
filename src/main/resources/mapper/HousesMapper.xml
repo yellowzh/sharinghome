@@ -84,6 +84,7 @@
         FROM order_list
         WHERE order_list.houses_id=h.houses_id
         AND order_list.houses_id!='已退租'
+        AND order_list.order_pay!='已退款'
         <if test="startTime !=null">
         AND order_list.start_time &lt;= #{startTime}
         </if>

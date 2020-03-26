@@ -215,7 +215,10 @@
 						<button ng-click="goDel(all.orderId)" style="border: none;border-radius: 4%;color: white;width: 60px;height: 20px;">删除订单</button>
 						<button ng-if="all.housesIn=='未入住'" ng-show="all.orderPay!='已退款'" ng-click="removePay(all.orderId)" style="border: none;border-radius: 4%;color: white;width: 60px;height: 20px;">取消订单</button>
 						<button ng-if="all.orderPay=='未支付'" ng-click="goPay(all.orderId)" style="border: none;border-radius: 4%;color: white;background-color: red;width: 60px;height: 20px;">去支付</button>
+						<button style="border: none;border-radius: 4%;color: white;background-color: orange;width: 60px;height: 20px;" ng-show="all.orderPay=='已支付'" ng-if="all.housesIn=='未入住'">待入住</button>
+						<button style="border: none;border-radius: 4%;color: white;background-color: orange;width: 60px;height: 20px;" ng-if="all.housesIn=='已入住'">进行中</button>
 						<button ng-if="all.housesIn!='未入住'" ng-click="goSelect(all.orderId)" ng-show="!all.isComment" data-toggle="modal" data-target="#myModal"  style="border: none;border-radius: 4%;color: white;background-color: orange;width: 60px;height: 20px;">去评价</button>
+						<button style="border: none;border-radius: 4%;color: white;background-color: orange;width: 60px;height: 20px;" ng-if="all.housesIn=='已退宿'" ng-show="all.isComment" >已评价</button>
 					</div>
 				</div>
 			</div>
@@ -259,6 +262,8 @@
 						</div>
 						<button ng-click="goDel(notIn.orderId)" style="border: none;border-radius: 4%;color: white;width: 60px;height: 20px;">删除订单</button>
 						<button style="border: none;border-radius: 4%;color: white;width: 60px;height: 20px;" ng-click="removePay(notIn.orderId)">取消订单</button>
+						<button style="border: none;border-radius: 4%;color: white;background-color: orange;width: 60px;height: 20px;" ng-if="notIn.housesIn=='已入住'">进行中</button>
+						<button style="border: none;border-radius: 4%;color: white;background-color: orange;width: 60px;height: 20px;" ng-if="notIn.housesIn!='已入住'">待入住</button>
 						<!--<button style="border: none;border-radius: 4%;color: white;background-color: orange">入住民宿</button>-->
 					</div>
 				</div>
@@ -280,7 +285,8 @@
 							<h5>支付状态:{{comment.orderPay}}&nbsp&nbsp&nbsp入住状态:{{comment.housesIn}}</h5>
 						</div>
 						<button ng-click="goDel(comment.orderId)" style="border: none;border-radius: 4%;color: white;width: 60px;height: 20px;">删除订单</button>
-						<button style="border: none;border-radius: 4%;color: white;background-color: orange;width: 60px;height: 20px;" ng-click="goSelect(comment.orderId)" data-toggle="modal" data-target="#myModal">去评价</button>
+						<button style="border: none;border-radius: 4%;color: white;background-color: orange;width: 60px;height: 20px;" ng-show="!comment.is_comment" ng-click="goSelect(comment.orderId)" data-toggle="modal" data-target="#myModal">去评价</button>
+						<button style="border: none;border-radius: 4%;color: white;background-color: orange;width: 60px;height: 20px;" ng-show="comment.is_comment">已评价</button>
 					</div>
 				</div>
 			</div>

@@ -26,3 +26,11 @@ body{
     box-shadow: white;
     border: none;
 }
+.pay input{
+    width: 100%;
+    height: 60px;
+    alignment: center;
+    background: orange;
+    box-shadow: white;
+    border: none;
+}

@@ -9,7 +9,7 @@
 	<link rel="stylesheet" href="/css/bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" href="/css/rentalHousing.css">
 	<!--<link rel="stylesheet" type="text/css" href="/css/style.css">-->
-	<link href='https://fonts.googleapis.com/css?family=Merienda' rel='stylesheet'>
+	<!--<link href='https://fonts.googleapis.com/css?family=Merienda' rel='stylesheet'>-->
 	<link href="/css/aos.css" rel="stylesheet">
 	<title>小智民宿</title>
 	<link rel="icon" href="/images/logo.png">
@@ -274,7 +274,7 @@
 								<span th:text="${session.user.getRealName()}" style="width: 150px"></span>
 							</a>
 							<ul class="dropdown-menu" style="display:none; min-width: 80px; left: 10px;">
-								<li><a style="text-decoration: none;" th:href="'../myself?users=user&userId='+${session.user.getUserId()}">个人中心</a></li>
+								<li><a style="text-decoration: none;" th:href="'/api/myself?users=user&userId='+${session.user.getUserId()}">个人中心</a></li>
 								<li><a href="/api/loginOut" style="color: #ff5500;text-decoration: none;">退出</a></li>
 							</ul>
 						</li>
@@ -413,8 +413,8 @@
 				<div class="panel-head"><strong><span class="icon-pencil-square-o"></span> 房源照片</strong></div>
 				<div class="body-content" style="padding: 1em;">
 					<div class="form-group">
-						<div style="width: 100%;" ng-repeat="img in photoList">
-							<img src="{{img.photoPath}}" style="height: 100px;width: auto;padding: 1em;float: left;" >
+						<div style="float: left;" ng-repeat="img in photoList">
+							<img src="{{img.photoPath}}" style="height: 100px;width: auto;padding: 1em;" >
 							<button style="border: none" ng-click="delPhoto(img.photoId)">删除</button>
 						</div>
 					</div>

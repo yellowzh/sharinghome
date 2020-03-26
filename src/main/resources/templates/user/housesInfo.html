@@ -18,6 +18,9 @@
 
 	<script th:inline="javascript">
 		var housesId = [[${houses.getHousesId()}]];
+		var startTime=false;
+		var endTime=false;
+		var allTime=false;
 		var housesOnlyprice = [[${houses.getHousesPrices()}]];
 		var app=angular.module('myApp',[]); //定义了一个叫myApp的模块
 		//定义控制器
@@ -33,6 +36,13 @@
 				$http.get('/api/select/housesDetailsById?housesId='+housesId).success(
 						function(response){
 							$scope.housesDetails=response;
+							var inNum=[];
+							for (var i=0;i<response.inNum;i++) {
+								inNum[i] = {
+									id: i+1
+								};
+							}
+							$scope.inNumS = inNum;
 							/*查看房源类型*/
 							$http.get('/api/select/sysDictById?dictId='+response.dictId).success(
 									function(response){
@@ -62,6 +72,8 @@
 				$http.get('/api/select/commentList?housesId='+housesId).success(
 						function(response){
 							$scope.commentList=response;
+							var f = parseFloat(response.count).toFixed(3);
+							$scope.commentListCount=f.substring(0, f.toString().length - 1);
 							$scope.commentVoList=response.commentVO;
 						}
 				);
@@ -87,55 +99,149 @@
 					alert("请填写完整的预订信息！");
 				}
 				};
+			$scope.priceAll=0;
 			$scope.priceShow=false;
-			/*校验预定*/
+			/*预定表单验证================================================================================================================*/
 			$(function() {
 				/*验证限制提交订单前算出总价显示*/
 				/*失去焦点的时候执行*/
-				$("input[name=startday]").blur(function () {startday();	});
+				$("input[name=startday]").blur(function () {
+					startday();
+				});
 				$("input[name=endday]").blur(function () {
-					endday();
-					var dt = doTable();
-					if(dt==true){
-						var dateSpan,tempDate1,tempDate2,iDays;
+					var et = endday();
+					var dt = startday();
+					if (dt&&et){
+						var dateSpan,tempDate1,tempDate2,iDays=0;
 						tempDate1 = Date.parse($scope.orderList.endTime);
 						tempDate2 = Date.parse($scope.orderList.startTime);
 						dateSpan = tempDate1 - tempDate2;
 						dateSpan = Math.abs(dateSpan);
 						iDays = Math.floor(dateSpan / (24 * 3600 * 1000));
-						$scope.iDays=iDays+1
-						$scope.priceAll=(iDays+1)*housesOnlyprice;
+						$scope.iDays=iDays+1;
+						$scope.priceAll=(iDays+1)*(housesOnlyprice);
 						// alert("时间："+$scope.priceAll);
 						$scope.priceShow=true;
+						doAllTime();
 					}
 				});
 			});
-			function startday(){
-					if($scope.orderList.startTime==null){
-						alert("开始时间不能为空");
-						return false;
+			// 时间验证不冲突==========================
+			function doOnlyStartTime(){
+				var t = $("input[name=startday]");
+				$.ajax({
+					type:"post",
+					//发送请求的地址1
+					url : "../getOrderIfInByTime",
+					data : {"time" :t.val(),"housesId":housesId},
+					//服务器返回的数据类型
+					dataType : "json",
+					success : function(data) {
+						if(data==false){
+							startTime=true;
+						}else{
+							startTime=false;
+						}
+						if (startTime) {
+							return true;
+						} else {
+							alert("该段时间已经被预定，请重新选择");
+							return false;
+						}
 					}
-					// alert($scope.orderList.startTime);
-				return true
+				})
 			}
-			function endday(){
-				if($scope.orderList.endTime!=null){
-					// alert($scope.orderList.endTime);
-					// alert("退租时间不能为空");
-					if($scope.orderList.startTime>$scope.orderList.endTime){
-						alert("退租时间不能在入住时间前面");
-						return false;
+			function doOnlyEndTime(){
+				var t = $("input[name=endday]");
+				$.ajax({
+					type:"post",
+					//发送请求的地址1
+					url : "../getOrderIfInByTime",
+					data : {"time" :t.val(),"housesId":housesId},
+					//服务器返回的数据类型
+					dataType : "json",
+					success : function(data) {
+						if(data==false){
+							// span.html("填写正确").css({color:"green",fontSize:"12px"});
+							endTime=true;
+							// span.html("该时间段已经不能进行下单了").css({color:"#ec4e4e",fontSize:"12px",display: "block"});
+							// alert("该时间段已出租");
+						}else{
+							endTime=false;
+						}
+						if (endTime) {
+							return true;
+						} else {
+							alert("该段时间已经被预定，请重新选择");
+							return false;
+						}
 					}
-				}else {
+				})
+			}
+			function doAllTime(){
+				var t1 = $("input[name=endday]");
+				var t2 = $("input[name=startday]");
+				$.ajax({
+					type:"post",
+					//发送请求的地址1
+					url : "../getOrderIfIn",
+					data : {"starTime" :t2.val(),"endTime":t1.val(),"housesId":housesId},
+					//服务器返回的数据类型
+					dataType : "json",
+					success : function(data) {
+						if(data==false){
+							allTime=true;
+						}else{
+							allTime=false;
+						}
+						if (allTime) {
+							return true;
+						} else {
+							alert("您选择的时间内有部分时间已经被预定！！");
+							return false;
+						}
+					}
+				})
+			}
+			//==================================================================================================
+			/*function startChang(){
+				if (startTime) {
+					return true;
+				} else {
+					alert("该段时间已经被预定，请重新选择");
 					return false;
 				}
-				return true
+			}*/
+			function startday() {
+				var t = $("input[name=startday]");
+				if (t.val() == '') {
+					alert("开始时间不能为空");
+					return false;
+				} else {
+					doOnlyStartTime();
+					return true;
+				}
+			}
+			function endday(){
+				var t = $("input[name=endday]");
+				var t2 = $("input[name=startday]");
+				if(t.val()==''){
+					alert("结束时间不能为空");
+					return false;
+				}else {
+					if(t2.val()>t.val()){
+						alert("时间顺序选择有误，请重新选择");
+						return false;
+					}else {
+						doOnlyEndTime();
+						return true;
+					}
+				}
 			}
 			function doTable(){
 				var sd = startday();
-				// var lo = doOnlyname();
 				var ed = endday();
-				if(sd&&ed){
+				if(sd&&ed&&allTime&&endTime&&startTime){
 					return true;
 				}else{
 					return false;
@@ -248,7 +354,7 @@
 			<ul class="tabBlock-tabs">
 				<li class="tabBlock-tab is-active">房屋概况</li>
 				<li class="tabBlock-tab">配备设施</li>
-				<li class="tabBlock-tab">用户评价（{{commentList.count}}分）</li>
+				<li class="tabBlock-tab">用户评价（{{commentListCount}}分）</li>
 			</ul>
 			<div class="tabBlock-content">
 				<div class="tabBlock-pane" style="height: 100px;">
@@ -271,7 +377,7 @@
 				<div class="tabBlock-pane">
 					<div>
 						<div class="comment" ng-repeat="comment in commentVoList">
-							<div class="photo">
+							<div class="photo" style="border-left: 1px solid #b3d7ff;margin-left: 10px;">
 								<img src="{{comment.userPhoto}}">
 								{{comment.username}}
 								<span>{{comment.createTime}}</span>
@@ -282,7 +388,24 @@
 								{{comment.commentContent}}
 							</div>
 							<div ng-if="comment.isPhoto">
-								<img src="{{comment.commentPhoto}}"/>
+								<img src="{{comment.commentPhoto}}" style="height: 150px;width: auto;"/>
+							</div>
+							<div style="margin-left: 2em;">
+								<div ng-repeat="commentRl in comment.commentVOList">
+									<div class="photo" style="border-left: 1px solid #b3d7ff;">
+										<img src="{{commentRl.userPhoto}}">
+										{{commentRl.username}}
+										<span>{{commentRl.createTime}}</span>
+										<span style="margin-left: 10px;">回复{{comment.username}}</span>
+										<!--<button style="float: right;background-color: orange;padding: 1em;">已回复</button>-->
+									</div>
+									<div class="context">
+										{{commentRl.commentContent}}
+									</div>
+									<div ng-if="commentRl.isPhoto">
+										<img src="{{commentRl.commentPhoto}}" style="height: 150px;width: auto;"/>
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -310,10 +433,10 @@
         </div>
         <div class="inp">
             <label>人数</label>
-            <select ng-model="orderList.pepoleNum">
-                <option value="1">1人</option>
-                <option value="2">2人</option>
-            </select>
+			<select ng-model="orderList.pepoleNum">
+				<option value="{{inNum.id}}" ng-repeat="inNum in inNumS">{{inNum.id}}人</option>
+				<!--<option value="2">2人</option>-->
+			</select>
         </div>
 		<div ng-show="priceShow" style="margin-left: 30px;font-size: 20px;">
 			<label>总价计算:单价*预订天数</label>

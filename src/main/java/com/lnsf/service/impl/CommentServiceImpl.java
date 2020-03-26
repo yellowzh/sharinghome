@@ -43,18 +43,30 @@ public class CommentServiceImpl implements CommentService {
     private HousesService housesService;
     /*查看评论列表*/
     @Override
-    public CommentListVO list(Integer houserId){
+    public CommentListVO list(Integer houserId,List<String> housesIds){
         QueryWrapper wrapper = new QueryWrapper();
-        wrapper.eq("house_id",houserId);
+        if (null!=houserId){
+            wrapper.eq("house_id",houserId);
+        }else {
+            if (housesIds!=null){
+                wrapper.in("house_id",housesIds);
+            }
+        }
+        wrapper.isNull("reply_id");
+        wrapper.orderByDesc("create_time");
         wrapper.eq("is_del",false);
         List<CommentEntity> commentEntityList = commentMapper.selectList(wrapper);
         CommentListVO commentListVO = new CommentListVO();
         List<CommentVO> commentVOs = new ArrayList<>();
+        List<CommentVO> commentNotReply = new ArrayList<>();
+        List<CommentVO> commentReply = new ArrayList<>();
         float num=0;
         double fenshu=0;
         double nums=0;
         for (CommentEntity c:commentEntityList) {
+            /*全部的*/
             CommentVO commentVO = new CommentVO();
+            commentVO.setCommentId(c.getCommentId()+"");
             commentVO.setCommentContent(c.getCommentContent());
             if (null==c.getCommentPhoto()){
                 commentVO.setIsPhoto(false);
@@ -70,11 +82,44 @@ public class CommentServiceImpl implements CommentService {
             commentVO.setUserPhoto(entity.getUserBackup2());
             fenshu+=c.getCommentPower();
             num++;
-            commentVOs.add(commentVO);
+            QueryWrapper queryWrapper = new QueryWrapper();
+            /*判断是否有评论*/
+            queryWrapper.eq("reply_id",c.getCommentId());
+            List<CommentEntity> commentEntities = commentMapper.selectList(queryWrapper);
+            if (commentEntities.size()>0){
+                List<CommentVO> CommentVOs = new ArrayList<>();
+                for (CommentEntity commentEntity:commentEntities) {
+                    CommentVO commentVO2 = new CommentVO();
+                    commentVO2.setCommentContent(commentEntity.getCommentContent());
+                    if (null == commentEntity.getCommentPhoto()) {
+                        System.out.println(commentEntity.getCommentPhoto());
+                        commentVO2.setIsPhoto(false);
+                    } else {
+                        commentVO2.setIsPhoto(true);
+                        commentVO2.setCommentPhoto(commentEntity.getCommentPhoto());
+                    }
+                    commentVO2.setCommentPower(commentEntity.getCommentPower());
+                    commentVO2.setCreateTime(commentEntity.getCreateTime());
+                    /*查询用户头像名字放进去*/
+                    UserInfoEntity entity2 = userInfoService.getUserById(commentEntity.getUserId());
+                    System.out.println(entity2);
+                    commentVO2.setUsername(entity2.getUsername());
+                    commentVO2.setUserPhoto(entity2.getUserBackup2());
+                    CommentVOs.add(commentVO2);
+                }
+                commentVO.setCommentVOList(CommentVOs);
+                commentReply.add(commentVO);
+                commentVOs.add(commentVO);
+            }else {
+                commentNotReply.add(commentVO);
+                commentVOs.add(commentVO);
+            }
         }
         if (num!=0) {
            nums = fenshu / num;
         }
+        commentListVO.setCommentReply(commentReply);
+        commentListVO.setCommentNotReply(commentNotReply);
         commentListVO.setCommentVO(commentVOs);
         commentListVO.setCount(nums);
         /*判断是否有数据*/
@@ -115,6 +160,8 @@ public class CommentServiceImpl implements CommentService {
         if (num!=0) {
             nums = fenshu / num;
         }
+//        double a = Math.round(nums*100)/100.0;
+
         HousesEntity housesEntity = new HousesEntity();
         housesEntity.setHousesId(dto.getHouseId());
         housesEntity.setHousesFarction(nums);
@@ -123,6 +170,16 @@ public class CommentServiceImpl implements CommentService {
         OrderListEntity orderListEntity=orderListService.getOrderList(dto.getOrderId());
         orderListEntity.setIsComment(true);
         orderListService.updateById(orderListEntity);
+        return entity;
+    }
+    @Override
+    public CommentEntity createReply(CommentDTO dto) {
+        if (null == dto) {
+            throw new ServiceException("参数为空!");
+        }
+        CommentEntity entity = new CommentEntity();
+        BeanUtil.copyProperties(dto, entity);
+        commentMapper.insert(entity);
         return entity;
     }
 

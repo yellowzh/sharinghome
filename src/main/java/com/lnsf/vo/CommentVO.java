@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 public class CommentVO {
@@ -35,7 +36,7 @@ public class CommentVO {
     @ApiModelProperty(value = "评价等级5分制")
     private Integer commentPower;
 
-//    @ApiModelProperty(value = "是否有回复")
-//    private Boolean isReply;
+    @ApiModelProperty(value = "回复")
+    private List<CommentVO> commentVOList;
 
 }

@@ -72,7 +72,6 @@ public class AlipayPagePayController {
     @RequestMapping("/returnUrl")
     public String returnUrl(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException, AlipayApiException {
         response.setContentType("text/html;charset=" + alipayProperties.getCharset());
-
         boolean verifyResult = alipayController.rsaCheckV1(request);
         if(verifyResult){
             //验证成功
@@ -81,7 +80,6 @@ public class AlipayPagePayController {
             String out_trade_no = new String(request.getParameter("out_trade_no").getBytes("ISO-8859-1"),"UTF-8");
             //支付宝交易号
             String trade_no = new String(request.getParameter("trade_no").getBytes("ISO-8859-1"),"UTF-8");
-
             /*支付成功后修改订单支付状态*/
             OrderListEntity orderListEntity = (OrderListEntity) request.getSession().getAttribute("oneOrder");
             orderListService.update(orderListEntity);

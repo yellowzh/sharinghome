@@ -1,0 +1,41 @@
+/*整体固定框框*/
+body{
+    font-family: 'Merienda';font-size: 12px;
+    background-color: #e9ecef;
+}
+.hu_lc{
+    width: 15%;
+    background: #e9ecef;
+    position: fixed;
+    float: left;
+    margin-top:90px;
+    top: 0;
+    height: 40%;
+}
+.h_right{
+    width: 65%;
+    margin-top:90px;
+    margin-left: 28%;
+    position: absolute;
+}
+
+/*流程样式*/
+/*流程固定*/
+.h_lc{
+    width: 80%;
+    float: right;
+    border: #9fcdff;
+}
+.h_lc table{
+    margin-top: 20px;
+}
+.h_lc tr{
+    width: 100%;
+    height: 40px;
+    color: darkgray;
+    font-size: 15px;
+    margin-top: 1em;
+}
+
+
+/*房屋详情页面的固定*/

@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -107,33 +108,95 @@ public class OrderListServiceImpl implements OrderListService {
             orderListDTO.setOrderId(o.getOrderId()+"");
            HousesDTO housesDTO = housesService.getHomeShowById(o.getHousesId());
            orderListDTO.setHousesDTO(housesDTO);
-           if ("未支付".equals(o.getOrderPay())){
-               orderNotPay.add(orderListDTO);
-               orderAll.add(orderListDTO);
-               orderNotPayNum++;
-               orderAllNum++;
-           }else if ("未入住".equals(o.getHousesIn())){
-               if ("已退款".equals(o.getOrderPay())){
-                   orderAll.add(orderListDTO);
-                   orderAllNum++;
-               }else {
-                   orderNotIn.add(orderListDTO);
-                   orderAll.add(orderListDTO);
-                   orderNotInNum++;
-                   orderAllNum++;
-               }
-           }else {
-               if (o.getIsComment()==false){
-                   orderComment.add(orderListDTO);
-                   orderAll.add(orderListDTO);
-                   orderCommentNum++;
-                   orderAllNum++;
-               }else {
-                   orderAll.add(orderListDTO);
-                   orderAllNum++;
-               }
-
-           }
+            if ("未支付".equals(o.getOrderPay())){
+                orderNotPay.add(orderListDTO);
+                orderAll.add(orderListDTO);
+                orderNotPayNum++;
+                orderAllNum++;
+            }else if ("已退宿".equals(o.getHousesIn())){
+                if (o.getIsComment()==false){
+                    orderComment.add(orderListDTO);
+                    orderAll.add(orderListDTO);
+                    orderCommentNum++;
+                    orderAllNum++;
+                }else {
+                    orderAll.add(orderListDTO);
+                    orderAllNum++;
+                }
+            }else {
+                if ("已退款".equals(o.getOrderPay())){
+                    orderAll.add(orderListDTO);
+                    orderAllNum++;
+                }else {
+                    orderNotIn.add(orderListDTO);
+                    orderAll.add(orderListDTO);
+                    orderNotInNum++;
+                    orderAllNum++;
+                }
+            }
+        }
+        myOrderVO.setOrderAll(orderAll);
+        myOrderVO.setOrderNotPay(orderNotPay);
+        myOrderVO.setOrderNotIn(orderNotIn);
+        myOrderVO.setOrderComment(orderComment);
+        myOrderVO.setOrderNotPayNum(orderNotPayNum);
+        myOrderVO.setOrderNotInNum(orderNotInNum);
+        myOrderVO.setOrderCommentNum(orderCommentNum);
+        myOrderVO.setOrderAllNum(orderAllNum);
+        return myOrderVO;
+    }
+   public MyOrderVO getSinAllOrderById(Integer userId,Integer housesId){
+        QueryWrapper wrapper = new QueryWrapper();
+        wrapper.eq("business_id",userId);
+        wrapper.eq("is_del",false);
+        if (housesId!=null){
+            wrapper.eq("houses_id",housesId);
+        }
+        wrapper.orderByDesc("create_time");
+        MyOrderVO myOrderVO = new MyOrderVO();
+        /*列表*/
+        List<OrderListDTO> orderAll=new ArrayList<>();
+        List<OrderListDTO> orderNotPay=new ArrayList<>();
+        List<OrderListDTO> orderNotIn=new ArrayList<>();
+        List<OrderListDTO> orderComment=new ArrayList<>();
+        /*计数*/
+        int orderNotPayNum=0;
+        int orderNotInNum=0;
+        int orderCommentNum=0;
+        int orderAllNum=0;
+        List<OrderListEntity> orderListEntities=orderListMapper.selectList(wrapper);
+        for (OrderListEntity o:orderListEntities) {
+            OrderListDTO orderListDTO = new OrderListDTO();
+            BeanUtil.copyProperties(o, orderListDTO);
+            orderListDTO.setOrderId(o.getOrderId()+"");
+            HousesDTO housesDTO = housesService.getHomeShowById(o.getHousesId());
+            orderListDTO.setHousesDTO(housesDTO);
+            if ("未支付".equals(o.getOrderPay())){
+                orderNotPay.add(orderListDTO);
+                orderAll.add(orderListDTO);
+                orderNotPayNum++;
+                orderAllNum++;
+            }else if ("已退宿".equals(o.getHousesIn())){
+                if (o.getIsComment()==false){
+                    orderComment.add(orderListDTO);
+                    orderAll.add(orderListDTO);
+                    orderCommentNum++;
+                    orderAllNum++;
+                }else {
+                    orderAll.add(orderListDTO);
+                    orderAllNum++;
+                }
+            }else {
+                if ("已退款".equals(o.getOrderPay())){
+                    orderAll.add(orderListDTO);
+                    orderAllNum++;
+                }else {
+                    orderNotIn.add(orderListDTO);
+                    orderAll.add(orderListDTO);
+                    orderNotInNum++;
+                    orderAllNum++;
+                }
+            }
         }
         myOrderVO.setOrderAll(orderAll);
         myOrderVO.setOrderNotPay(orderNotPay);
@@ -163,35 +226,7 @@ public class OrderListServiceImpl implements OrderListService {
         return orderListMapper.selectById(orderId);
     }
 
-//    /*订单管理*/
-//   public List<OrderListDTO> getHouserOrder(Integer housesId){
-//       List<OrderListEntity> orderListEntities = null;
-//       List<OrderListDTO> orderListDTOList = new ArrayList<>();
-//       QueryWrapper wrapper = new QueryWrapper();
-//       if (housesId==-1){
-//           wrapper.eq("is_del",false);
-//           wrapper.orderByDesc("create_time");
-//           orderListEntities=orderListMapper.selectList(wrapper);
-//       }else {
-//
-//           wrapper.eq("houses_id",housesId);
-//           wrapper.eq("is_del",false);
-//           orderListEntities=orderListMapper.selectList(wrapper);
-//       }
-//       for (OrderListEntity o:orderListEntities) {
-//           OrderListDTO orderListDTO = new OrderListDTO();
-//           BeanUtil.copyProperties(o, orderListDTO);
-//           orderListDTO.setOrderId(o.getOrderId() + "");
-//           /*查询对应用户*/
-//           UserInfoEntity userInfoEntity = userInfoService.getUserById(o.getPassengerId());
-//           orderListDTO.setUserInfo(userInfoEntity);
-//           /*添加房源信息*/
-//           HousesDTO housesDTO = housesService.getHomeShowById(o.getHousesId());
-//           orderListDTO.setHousesDTO(housesDTO);
-//           orderListDTOList.add(orderListDTO);
-//       }
-//        return orderListDTOList;
-//    }
+
     public IPage<OrderListEntity> getHouserOrderPage(Integer housesId,Integer page){
         IPage<OrderListEntity> ipage = new Page<>(page, 8);
         OrderListEntity orderListEntity = new OrderListEntity();
@@ -210,32 +245,56 @@ public class OrderListServiceImpl implements OrderListService {
         }
         return pages;
     }
-
-//    @Override
-//    public void delete(Integer orderId) {
-//        if (null == orderId) {
-//            return;
-//        }
-//        orderListMapper.deleteById(orderId);
-//    }
-//
-//    @Override
-//    public OrderListEntity update(Integer orderId, OrderListDTO dto) {
-//        if (null == orderId) {
-//            return null;
-//        }
-//        OrderListEntity existEntity = orderListMapper.selectById(orderId);
-//        if (null == existEntity) {
-//            return null;
-//        }
-//        BeanUtil.copyProperties(dto, existEntity);
-//        orderListMapper.updateById(existEntity);
-//        return existEntity;
-//    }
-//
-//    @Override
-//    public List<OrderListEntity> page(OrderListDTO dto, IPage<OrderListEntity> page) {
-//        return orderListMapper.page(dto, page);
-//    }
+    @Override
+    /*根据时间判断该时间是否已经被预定*/
+    public Boolean getOrderIfIn(String starTime,String endTime,Integer housesId){
+        QueryWrapper wrapper = new QueryWrapper();
+        wrapper.eq("is_del",false);
+        wrapper.eq("houses_id",housesId);
+        wrapper.ne("order_pay","已退款");
+        wrapper.ne("houses_in","已退宿");
+        wrapper.ge("start_time",starTime);
+        wrapper.le("end_time",endTime);
+        List<OrderListEntity> orderListEntities= orderListMapper.selectList(wrapper);
+        if (orderListEntities.size()>0){
+            return true;
+        }else {
+            System.out.println("进入");
+            return false;
+        }
+    }
+    @Override
+    public Boolean getOrderIfInByOneTime(String time,Integer housesId){
+        QueryWrapper wrapper = new QueryWrapper();
+        wrapper.eq("is_del",false);
+        wrapper.eq("houses_id",housesId);
+        wrapper.ne("order_pay","已退款");
+        wrapper.ne("houses_in","已退宿");
+        List<OrderListEntity> orderListEntities=new ArrayList<>();
+        wrapper.le("start_time",time);
+        wrapper.ge("end_time",time);
+        orderListEntities = orderListMapper.selectList(wrapper);
+        if (orderListEntities.size()>0){
+            return true;
+        }else {
+            System.out.println("进入");
+            return false;
+        }
+    }
+    /*查询未支付的订单*/
+    public List<OrderListEntity> scheduleGetNotPayList(){
+        QueryWrapper wrapper = new QueryWrapper();
+        wrapper.eq("order_pay","未支付");
+        wrapper.eq("is_del",false);
+        return orderListMapper.selectList(wrapper);
+    }
+    /*查询已退宿但未评价的订单*/
+    public List<OrderListEntity> scheduleGetNotCommentList(){
+        QueryWrapper wrapper = new QueryWrapper();
+        wrapper.eq("houses_in","已退宿");
+        wrapper.eq("is_comment",false);
+        wrapper.eq("is_del",false);
+        return orderListMapper.selectList(wrapper);
+    }
 
 }

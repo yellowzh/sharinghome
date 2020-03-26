@@ -19,8 +19,8 @@
 	<script src="/js/angular.min.js"></script>
 
 	<script th:inline="javascript">
-		// var housesId = [[${housesId}]];
-		var housesId=12;
+		var housesId = [[${housesId}]];
+		// var housesId=12;
 		var app=angular.module('myApp',[]); //定义了一个叫myApp的模块
 		//定义控制器
 		app.controller('myController',function($scope,$http){
@@ -116,6 +116,7 @@
 					if($scope.addressT!=undefined){
 						$scope.houses.housesAddress+="-"+$scope.addressT;
 					}
+					$scope.houses.housesId=housesId;
 					$http.post('/api/updateHousesByUser?housesId='+housesId,$scope.houses).success(
 							function(response){
 								document.getElementById("d1").checked=response.isDeposit;
@@ -150,10 +151,10 @@
 					if ($scope.houserDe.isDeposit==1) {
 						$scope.houserDe.isDeposit=true;
 					}
-					// $scope.houserDe.housesId=9;
-						$http.post('/api/updateHousesDeByUser?housesId='+$scope.houserDe.housesId,$scope.houserDe).success(
+					$scope.houserDe.housesId=housesId;
+						$http.post('/api/updateHousesDeByUser?housesId='+housesId,$scope.houserDe).success(
 								function(response){
-									$scope.housesId=response.housesId;
+									housesId=response.housesId;
 								}
 						)
 				}
@@ -447,7 +448,7 @@
 				<div class="panel-head"><strong><span class="icon-pencil-square-o"></span> 房源照片</strong></div>
 				<div class="body-content" style="padding: 1em;">
 					<div class="form-group">
-						<div style="width: 100%;float: left;" ng-repeat="img in photoList">
+						<div style="float: left;" ng-repeat="img in photoList">
 							<img src="{{img.photoPath}}" style="height: 100px;width: auto;padding: 1em;" >
 							<button style="border: none" ng-click="delPhoto(img.photoId)">删除</button>
 						</div>

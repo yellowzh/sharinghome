@@ -15,12 +15,16 @@ import java.util.List;
  * @since 2020-03-10 19:32
  */
 public interface CommentService {
-    /*查询评论列表*/
-    CommentListVO list(Integer houserId);
+    /*查询评论列表、商家查看评价*/
+    CommentListVO list(Integer houserId,List<String> housesIds);
+    /*商家查看评价*/
+//    CommentListVO getSinAllComment(Integer houserId,List<String> housesIds);
 
     CommentEntity getComment(Long commentId);
 
     CommentEntity create(CommentDTO dto);
+
+    CommentEntity createReply(CommentDTO dto);
 
     String deletUpdate(Long commentId);
 
