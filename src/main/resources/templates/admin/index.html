@@ -27,14 +27,14 @@
 <body style="background-color:#f2f9fd;" ng-app="myApp" ng-controller="myController" ng-init="findAll()">
 <div class="header bg-main">
   <div class="logo margin-big-left fadein-top">
-    <h3><img th:if="${user.getUserBackup2()}!=null" th:src="${user.getUserBackup2()}" class="radius-circle rotate-hover" height="50" alt="">
-        <img th:if="${user.getUserBackup2()}==null" src="/images/y.jpg" class="radius-circle rotate-hover" height="50" alt="">
+    <h3><a target="right" th:href="'myself?users=admin&userId='+${user.getUserId()}"><img th:if="${user.getUserBackup2()}!=null" th:src="${user.getUserBackup2()}" class="radius-circle rotate-hover" height="50" alt="">
+        <img th:if="${user.getUserBackup2()}==null" src="/images/y.jpg" class="radius-circle rotate-hover" height="50" alt=""></a>
     <!--<span th:text="${user.getRealName()}"></span>-->
         <span>系统管理中心</span>
     </h3>
   </div>
   <div class="head-l">
-      <a class="button button-little bg-green" href="/api/count" target="_blank"><span class="icon-home"></span> 首页</a>
+      <a class="button button-little bg-green" href="count" target="right"><span class="icon-home"></span> 首页</a>
       &nbsp;&nbsp;<a class="button button-little bg-red" href="/api/loginOut"><span class="icon-power-off"></span> 退出登录</a> </div>
 </div>
 <div class="leftnav">

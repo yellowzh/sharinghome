@@ -32,5 +32,7 @@ public interface UserInfoService {
     void insertSysLog(UserInfoEntity userInfoEntity,String method,String req);
     /*分页查询*/
     List<UserInfoEntity> page(UserInfoDTO dto, IPage<UserInfoEntity> page);
+    /*更新用户个人信息*/
+    UserInfoEntity updateUserByUser(UserInfoEntity userInfoEntity);
 
 }

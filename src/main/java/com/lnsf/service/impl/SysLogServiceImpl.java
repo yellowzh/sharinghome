@@ -1,6 +1,6 @@
 package com.lnsf.service.impl;
 
-import cn.hutool.core.date.DateUtil;
+
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.lnsf.entity.SysLogEntity;
 import com.lnsf.dto.SysLogDTO;
@@ -8,6 +8,7 @@ import com.lnsf.dao.SysLogMapper;
 import com.lnsf.service.SysLogService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import cn.hutool.core.bean.BeanUtil;
+import com.lnsf.util.DateUtil;
 import org.hibernate.service.spi.ServiceException;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +41,7 @@ public class SysLogServiceImpl implements SysLogService {
         }
         SysLogEntity entity = new SysLogEntity();
         BeanUtil.copyProperties(dto, entity);
-        String path="log"+ DateUtil.today().replace("-","");
+        String path="log"+ cn.hutool.core.date.DateUtil.today().replace("-","");
         /*生成一个5位数的随机数*/
         int radom = new Random().nextInt(999);
         if (radom < 100) {
@@ -54,7 +55,7 @@ public class SysLogServiceImpl implements SysLogService {
     /*查询近五天登录人数*/
     public Integer loginNum(){
         QueryWrapper wrapper = new QueryWrapper();
-        String day = DateUtil.today();
+        String day = DateUtil.dayago();
         wrapper.ge("start_time",day);
         wrapper.eq("method","login");
         return sysLogMapper.selectCount(wrapper);

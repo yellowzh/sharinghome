@@ -21,7 +21,9 @@
 		var startTime=false;
 		var endTime=false;
 		var allTime=false;
+		var star=[];
 		var housesOnlyprice = [[${houses.getHousesPrices()}]];
+		var housesFarction=[[${houses.getHousesFarction()}]];
 		var app=angular.module('myApp',[]); //定义了一个叫myApp的模块
 		//定义控制器
 		app.controller('myController',function($scope,$http){
@@ -30,6 +32,13 @@
 				$http.get('/api/getMenuList').success(
 						function(response){
 							$scope.menuList=response;
+							for (var i=0;i<5;i++) {
+								star[i] = {
+									id: i+1
+								};
+							}
+							$scope.stars = star;
+							$scope.housesFarction=housesFarction;
 						}
 				)
 				/*查看房源其他信息*/
@@ -342,9 +351,7 @@
 <div style="width: 100%;margin-left: 20%">
 	<h3 th:text="${houses.getHousesTitle()}"></h3>
 	<h5 th:text="${houses.getHousesDescribe()}"></h5>
-	<img src="/images/shouchang.png">
-	<img src="/images/shouchang.png">
-	<img src="/images/shouchang.png">
+	<img src="/images/shouchang.png" ng-repeat="i in stars" ng-show="i.id<=housesFarction"><!--评分等级-->
 </div>
 <hr style="width: 100%;margin-left: 20%"/>
 <!--End of Carousel-->

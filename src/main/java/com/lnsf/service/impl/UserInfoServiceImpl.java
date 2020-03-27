@@ -134,6 +134,9 @@ public class UserInfoServiceImpl implements UserInfoService {
     public List<UserInfoEntity> page(UserInfoDTO dto, IPage<UserInfoEntity> page) {
         return userInfoMapper.page(dto, page);
     }
-
+   public UserInfoEntity updateUserByUser(UserInfoEntity userInfoEntity){
+        userInfoMapper.updateById(userInfoEntity);
+      return userInfoMapper.selectById(userInfoEntity.getUserId());
+    }
 
 }

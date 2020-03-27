@@ -19,6 +19,7 @@
 		var startTime=false;
 		var endTime=false;
 		var allTime=false;
+		var star=[];
 		var app=angular.module('myApp',[]); //定义了一个叫myApp的模块
 		//定义控制器
 		app.controller('myController',function($scope,$http){
@@ -26,6 +27,12 @@
 				$http.get('/api/select/findAllHouses').success(
 						function(response){
 							$scope.housesList=response;
+							for (var i=0;i<5;i++) {
+								star[i] = {
+									id: i+1
+								};
+							}
+							$scope.stars = star;
 						}
 				)
                 /*轮播图查看*/
@@ -397,9 +404,7 @@
 							<img src="/images/prices.png">{{house.housesPrices}}元/天
 							</span><br>
 							<span>
-								<img src="/images/shouchang.png">
-								<img src="/images/shouchang.png">
-								<img src="/images/shouchang.png"><!--评分等级-->
+								<img src="/images/shouchang.png" ng-repeat="i in stars" ng-show="i.id<=house.housesFarction">
 								<button th:if="${user}==null" ng-click="reserve(house.housesId)" style="float: right;background-color: orange;border: none;margin-left: 10px;margin-top: 5px;" >立即预定</button>
 								<button th:if="${user}!=null" ng-click="re(house.housesId)" data-toggle="modal" data-target="#myModal" style="float: right;background-color: orange;border: none;margin-left: 10px;margin-top: 5px;" >立即预定</button>
 								<button ng-click="select(house.housesId)" style="float: right;border: none;background-color: #00aa00;margin-top: 5px;"> 查看详情</button>

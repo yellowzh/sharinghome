@@ -264,6 +264,7 @@ public class UserController {
         }
         return model_html;
     }
+
     @ApiOperation(value = "修改头像", notes = "修改头像",httpMethod = "POST")
     @RequestMapping("upload")
     public ModelAndView upload( @RequestParam("upload-file") MultipartFile file,String users, int userId, Map<String,Object> map){
@@ -278,8 +279,8 @@ public class UserController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-            ModelAndView model_html = getMyself(users,userId,map);
-            return model_html;
+        ModelAndView model_html = getMyself(users,userId,map);
+        return model_html;
     }
     @ApiOperation(value = "修改个人信息", notes = "修改个人信息",httpMethod = "POST")
     @RequestMapping("updateUserInfo")
@@ -303,6 +304,22 @@ public class UserController {
     public UserInfoEntity updateUserInfo(HttpSession session){
         UserInfoEntity user = (UserInfoEntity) session.getAttribute("user");
         return user;
+    }
+    @ApiOperation(value = "修改个人信息", notes = "修改个人信息",httpMethod = "GET")
+    @RequestMapping("/updateUserI")
+    public UserInfoEntity updateUser(@RequestBody UserInfoEntity userInfoEntity){
+        return userInfoService.updateUserByUser(userInfoEntity);
+    }
+    @ApiOperation(value = "修改个人信息", notes = "修改个人信息",httpMethod = "GET")
+    @RequestMapping("/updatereturn")
+    public ModelAndView updatereturn(HttpSession session,Map<String,Object> map){
+        UserInfoEntity user = (UserInfoEntity) session.getAttribute("user");
+        System.out.println(user.getUserId());
+        String users= "user";
+        if ("1".equals(user.getUserPower())){
+           users= "admin";
+        }
+        return getMyself(users,user.getUserId(),map);
     }
 
 

@@ -18,12 +18,7 @@
 		//定义控制器
 		app.controller('myController',function($scope,$http){
 			$scope.findAll=function() {
-				/*获取菜单*/
-				$http.get('/api/getMenuList').success(
-						function (response) {
-							$scope.menuList = response;
-						}
-				);
+
 			};
 			$scope.show=false;
 			$scope.showUplod=function(){
@@ -131,50 +126,6 @@
 </head>
 <body data-spy="scroll" data-target=".navbar" data-offset="50" ng-app="myApp" ng-controller="myController" ng-init="findAll()">
 <div id="Welcome">
-	<!---Start navigation Bar -->
-	<nav class="navbar navbar-expand-lg navbar fixed-top  navbar-light bg-light">
-		<a class="navbar-brand" href="#Welcome">
-			<img src="../images/logo.jpeg" width="50" height="50" class="d-inline-block" alt=""> 小智民宿
-		</a>
-		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
-			<span class="navbar-toggler-icon"></span>
-		</button>
-		<div class="collapse navbar-collapse" id="navbarText">
-			<ul class="navbar-nav ml-auto">
-				<li class="nav-item" th:if="${session.user}==null">
-					<a class="nav-link" href="/index">首页</a>
-				</li>
-				<li class="nav-item" th:if="${session.user}!=null">
-					<a class="nav-link" th:href="'/api/success?users=user&username='+${session.user.username}">首页</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link" href="/api/select/houserlease">民宿</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link" href="/api/select/userDynamic">动态</a>
-				</li>
-				<li class="nav-item" ng-repeat="menu in menuList">
-					<a class="nav-link" href="{{menu.menuRequest}}">{{menu.menuProcince}}</a>
-				</li>
-				<li class="nav-item" style="width: 150px">
-					<ul class="nav nav-pills">
-						<li role="presentation" class="dropdown">
-							<a class="dropdown-toggle" data-toggle="dropdown" href="#myself" aria-haspopup="true"  aria-expanded="false" style="text-decoration: none; width: 160px" >
-								<img th:if="${user.getUserBackup2()}!=null" th:src="${user.getUserBackup2()}" class="radius-circle rotate-hover" height="15" alt="">
-								<img th:if="${user.getUserBackup2()}==null" src="/images/y.jpg" class="radius-circle rotate-hover" height="15" alt="">
-								<span th:text="${user.getRealName()}" style="width: 150px"></span>
-							</a>
-							<ul class="dropdown-menu" style="display:none; min-width: 80px; left: 10px;">
-								<li><a style="text-decoration: none;" th:href="'myself?users=user&userId='+${user.getUserId()}">个人中心</a></li>
-								<li><a href="/api/loginOut" style="color: #ff5500;text-decoration: none;">退出</a></li>
-							</ul>
-						</li>
-					</ul>
-				</li>
-			</ul>
-		</div>
-	</nav>
-	<!--- End Navigation Bar -->
 <div class="container" style="width: 40%;margin-top: 45px;margin-left: 30%">
 	<!--- Restaurant-->
 	<div class="row">
@@ -204,7 +155,7 @@
 		</div>
 		<hr>
 		<div style="margin-left: 30%;padding: 1em;">
-			<form action="/api/updateUserInfo?users=user" method="post" style="height: 100%;" onsubmit="return doTable()">
+			<form action="/api/updateUserInfo?users=admin" method="post" style="height: 100%;" onsubmit="return doTable()">
 				<input type="hidden" name="userId" th:value="${user.getUserId()}"/>
 			<h5 style="font-size: 15px;margin-top: 10px;">用户账号：<input type="username" name="username" th:value="${user.getUsername()}" readonly="readonly" style="border: none"/> </h5>
 			<h5 style="font-size: 15px;margin-top: 10px;">用户密码：<input type="password" name="password" th:value="${user.getPassword()}" style="border: none" /> </h5>
