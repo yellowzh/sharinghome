@@ -137,11 +137,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>com.alipay</groupId>-->
-            <!--<artifactId>alipay-trade-sdk</artifactId>-->
-            <!--<version>20161215</version>-->
-        <!--</dependency>-->
+        <!--<dependency>
+            <groupId>com.alipay</groupId>
+            <artifactId>alipay-trade-sdk</artifactId>
+            <version>20161215</version>
+        </dependency>-->
 
         <!--logger-->
         <!-- log4j -->
@@ -166,7 +166,6 @@
             <artifactId>hutool-all</artifactId>
             <version>4.6.10</version>
         </dependency>
-
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>

@@ -10,11 +10,10 @@ import org.apache.log4j.Logger;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.subject.Subject;
+import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -166,6 +165,14 @@ public class LoginController {
         model_html.setViewName("register");/*redirect:重定向*/
         return model_html;
     }
+    @RequestMapping("/indexToFogetPas")
+    public ModelAndView indexToFogetPas(){
+        /*返回跳转页面*/
+        ModelAndView model_html = new ModelAndView();
+        model_html.setViewName("foegetpassword");/*redirect:重定向*/
+        return model_html;
+    }
+
     @RequestMapping("/indexToAbout")
     public ModelAndView indexToAbout(){
         /*返回跳转页面*/
@@ -189,6 +196,23 @@ public class LoginController {
         ModelAndView model_html = new ModelAndView();
         model_html.setViewName("test");/*redirect:重定向*/
         return model_html;
+    }
+    /*重置密码*/
+
+    @ApiOperation("获取重置密码需要的验证码")
+    @PostMapping("/updatepass")
+    public String updatepass(@RequestBody UserInfoEntity userInfoEntity){
+        /*根据用户名查询用户*/
+       UserInfoEntity user =  userInfoService.findUser(userInfoEntity);
+       user.setPassword(userInfoEntity.getPassword());
+       /*更新用户*/
+       int a = userInfoService.updateUser(user);
+       if (a>0){
+           return "重置密码成功";
+       }else {
+           throw new ServiceException("重置密码失败，请重试");
+       }
+
     }
 
 

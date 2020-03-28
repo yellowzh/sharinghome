@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.lnsf.entity.ExamineLogEntity;
 import com.lnsf.service.ExamineLogService;
 import java.util.List;
+import java.util.Random;
+
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -74,13 +76,13 @@ public class ExamineLogController {
     /*邮箱设置以及发送*/
     private static Logger log = Logger.getLogger(ExamineLogController.class);
     /*发送者邮箱*/
-//    @Value("${mail.fromMail.sender}")
-//    private String sender;
+    @Value("${mail.fromMail.sender}")
+    private String sender;
     /*接受者邮箱*/
    /* @Value("${mail.fromMail.receiver}")
     private String receiver;*/
-//    @Autowired
-//    private JavaMailSender javaMailSender;
+    @Autowired
+    private JavaMailSender javaMailSender;
     /* *
      * @Description  /sendMail
      * @author 黄润志
@@ -90,17 +92,44 @@ public class ExamineLogController {
     public String sendMail(String subject, String text,String emain) {
         System.out.println(subject+text);
         SimpleMailMessage message = new SimpleMailMessage();
-//        message.setFrom(sender);
+        message.setFrom(sender);
         message.setTo(emain);
         message.setSubject(subject);
         message.setText(text);
         try {
-//            javaMailSender.send(message);
+            javaMailSender.send(message);
             log.info("简单邮件已经发送。");
         } catch (Exception e) {
             log.error("发送简单邮件时发生异常！", e);
         }
-        return "简单邮件已经发送。";
+        return "简单邮件已经发送";
     }
 
+    /**
+     * 获取重置密码需要的验证码
+     * @return
+     */
+    @ApiOperation("获取重置密码需要的验证码")
+    @GetMapping("/getVeCodeNum")
+    public String getCode(String email) {
+        String verifyCode = String.valueOf(new Random().nextInt(899999) + 100000);//生成短信验证码
+        //将验证码 和 过期时间更新到数据库
+        String text="您好！您的验证码是："+verifyCode+"您可以复制此验证码并返回至民宿系统，以验证您的邮箱。此验证码只能使用一次，在5分钟内有效。验证成功则自动失效。如果您没有进行上述操作，请忽略此邮件。";
+//        StringBuilder stringBuilder = new StringBuilder();
+//        stringBuilder.append("您好!");
+//        stringBuilder.append("您的验证码是：").append(verifyCode);
+//        stringBuilder.append("您可以复制此验证码并返回至民宿系统，以验证您的邮箱。");
+//        stringBuilder.append("此验证码只能使用一次，在5分钟内有效。验证成功则自动失效。");
+//        stringBuilder.append("如果您没有进行上述操作，请忽略此邮件。");
+        String dd =  sendMail("小智民宿--邮箱验证",text,email);
+
+//        String dd = "简单邮件已经发送";
+        System.out.println(dd);
+        if ("简单邮件已经发送".equals(dd)){
+            return  verifyCode;
+        }else {
+            return "-1";
+        }
+
+    }
 }

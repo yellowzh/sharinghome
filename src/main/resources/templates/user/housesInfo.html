@@ -10,6 +10,7 @@
 	<link rel="stylesheet" type="text/css" href="/css/style.css">
 	<link href='https://fonts.googleapis.com/css?family=Merienda' rel='stylesheet'>
 	<link href="/css/aos.css" rel="stylesheet">
+	<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=B00xd1NAViDmnCfL3WoiwY61WuPK5SLA"></script>
 	<title>小智民宿</title>
 	<link rel="icon" href="/images/logo.png">
 	<script src="/js/jquery.min.js"></script>
@@ -24,6 +25,7 @@
 		var star=[];
 		var housesOnlyprice = [[${houses.getHousesPrices()}]];
 		var housesFarction=[[${houses.getHousesFarction()}]];
+		var addredss=[[${houses.getHousesAddress()}]];
 		var app=angular.module('myApp',[]); //定义了一个叫myApp的模块
 		//定义控制器
 		app.controller('myController',function($scope,$http){
@@ -256,6 +258,16 @@
 					return false;
 				}
 			}
+			// 百度地图API功能
+			var str = addredss;
+			var str1 = str.split("-");
+			var str3 =str1[0];
+			var map = new BMap.Map("allmap");
+			// var point = new BMap.Point(116.331398,39.897445);
+			/*设置城市*/
+			map.centerAndZoom(str3,11);
+			/*设置鼠标滚动*/
+			map.enableScrollWheelZoom(true);
 		});
 	</script>
 	<!--自动消失的弹出提示信息-->
@@ -466,8 +478,15 @@
             <input type="submit" value="联系房东">
         </div>
     </div>
-</div>
 
+	<div class="m_top" style="text-align: center">
+		<h5 th:text="${houses.getHousesAddress()}"></h5>
+		<!--<div id="allmap" style="height: 300px;width: auto;"></div>-->
+		<div id="allmap" style="height: 100%;width: 100%;"></div>
+	</div>
+
+</div>
+<!--<div id="allmap" style="height: 200px;width: auto;"></div>-->
 <script src="/js/bootstrap.min.js"></script>
 <!--轮播图js-->
 <link href="/css/base.css" rel="stylesheet">

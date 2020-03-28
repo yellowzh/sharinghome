@@ -285,6 +285,15 @@ a.upload-img:hover{
     border: #bee5eb;
     border-top-width: 10px;
 }
+.m_top{
+	width: 100%;
+	background: #e9ecef;
+	height: 350px;
+	float: right;
+	margin-top:20px;
+	border: #bee5eb;
+	border-top-width: 10px;
+}
 .u_top input[type=submit]{
     border-style: solid;
     border-width: 1px;
