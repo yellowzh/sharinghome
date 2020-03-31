@@ -5,6 +5,7 @@ import com.lnsf.entity.UserInfoEntity;
 import com.lnsf.service.UserInfoService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,6 +44,7 @@ public class ExamineLogController {
     /*商家审核*/
     @ApiOperation("审核房源")
     @PostMapping("/Examine")
+    @CacheEvict(value = "findAllHouses",allEntries = true)
     public String Examine(@RequestBody ExamineLogDTO examineLogDTO,int num){
         System.out.println("页面传值："+num);
         String text="尊敬的"+examineLogDTO.getHousesUser()+"您好！";

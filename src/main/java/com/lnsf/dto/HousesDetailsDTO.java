@@ -6,13 +6,15 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * @author 黄润志
  * @since 2020-03-10 15:10
  */
 @Data
 @ApiModel
-public class HousesDetailsDTO{
+public class HousesDetailsDTO implements Serializable {
     @TableId(value = "houses_id")
     private Integer housesId;
     @ApiModelProperty(value = "类型编号")

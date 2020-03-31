@@ -10,6 +10,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import java.io.Serializable;
+
 /**
  * <p>
  * 字典表
@@ -22,7 +24,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @TableName("sys_dict")
 @ApiModel(value="SysDictEntity对象", description="字典表")
-public class SysDictEntity{
+public class SysDictEntity implements Serializable {
 
     @ApiModelProperty(value = "主键id")
     @TableId(value = "dict_id", type = IdType.AUTO)

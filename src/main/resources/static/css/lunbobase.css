@@ -1,0 +1,96 @@
+body,ol,ul,h1,h2,h3,h4,h5,h6,p,th,td,dl,dd,form,fieldset,legend,input,textarea,select{margin:0;padding:0}
+body{font:12px "微软雅黑","Arial Narrow",HELVETICA;background:#fff;}
+a{color:#172c45;text-decoration:none} 
+a:hover{color:#cd0200;text-decoration:underline} 
+em,i{font-style:normal}   li{list-style:none}
+img{border:0;vertical-align:middle} 
+table{border-collapse:collapse;border-spacing:0}
+p{word-wrap:break-word}
+.t{ width: 100%; }
+.c{width: 1100px;margin: 0 auto;}
+.l{float: left;}
+.r{float: right;}
+
+#box{
+    width: 800px;
+    height: 460px;
+    /*background: red;*/
+    margin: 70px auto;
+    /*border: 1px solid black;*/
+    position: relative;
+    overflow: hidden;
+}
+#picBox{
+    width: 4000px;
+    height: 460px;
+    position: absolute;
+    top: 0;
+    left: 0;
+
+}
+.sPic img{
+    width: 800px;
+    height: 460px;
+    float: left;
+}
+/*轮播上面的文字*/
+.sPic span{
+    width:100%;
+    position:absolute;
+    color:#fff;
+    font-size: 100px;
+    text-align:center;
+}
+.sPic label{
+    width:100%;
+    position:absolute;
+    color:#fff;
+    font-size: 50px;
+    text-align:center;
+}
+/*轮播上面的文字end*/
+.bn{
+    width: 41px;
+    height: 69px;
+    /*background-color: red;*/
+    z-index: 9;
+    position: absolute;
+    background-image: url(../images/icon-slides.png);
+}
+#before {
+    top: 45%;
+    left: 0;
+    background-position: -83px 0;
+}
+#next {
+    top: 45%;
+    right: 0;
+    background-position: -124px 0;
+}
+#before:hover{
+    background-position: 0 0;
+}
+#next:hover{
+    background-position: -41px 0;
+}
+#btnBox{
+    width: 150px;
+    height: 10px;
+    z-index: 9;
+    position: absolute;
+    bottom: 30px;
+    right: 0;
+}
+
+.picBtn{
+    width: 6px;
+    height: 6px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 50%;
+    margin: 5px;
+    background-color: rgba(0,0,0,0.4);
+    float: left;
+}
+.picBtn:hover{
+    background-color: rgba(255,255,255,0.4);
+}

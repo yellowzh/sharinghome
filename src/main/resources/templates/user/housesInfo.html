@@ -89,8 +89,24 @@
 						}
 				);
 			};
+			/*点击联系商家*/
+			$scope.sin=false;
+			$scope.sinnum=0;
+			$scope.showSin=function(){
+				if ($scope.sinnum==0){
+					$scope.sin=true;
+					$scope.sinnum=1;
+				} else {
+					$scope.sin=false;
+					$scope.sinnum=0;
+				}
 
+			}
+			$scope.res=function(){
+				location.href="/api/reserveHouses";
+				// location.href="/api/gopay";
 
+			};
 			/*预定*/
 			$scope.reserve=function(){
 				var dt = doTable();
@@ -107,7 +123,7 @@
 							})
 				}
 				else {
-					alert("请填写完整的预订信息！");
+					func("请填写完整的预订信息！","#999999");
 				}
 				};
 			$scope.priceAll=0;
@@ -183,7 +199,7 @@
 						if (endTime) {
 							return true;
 						} else {
-							alert("该段时间已经被预定，请重新选择");
+							func("该段时间已经被预定，请重新选择！","#999999");
 							return false;
 						}
 					}
@@ -208,7 +224,7 @@
 						if (allTime) {
 							return true;
 						} else {
-							alert("您选择的时间内有部分时间已经被预定！！");
+							func("您选择的时间内有部分时间已经被预定！！","#999999");
 							return false;
 						}
 					}
@@ -226,7 +242,7 @@
 			function startday() {
 				var t = $("input[name=startday]");
 				if (t.val() == '') {
-					alert("开始时间不能为空");
+					func("开始时间不能为空","#999999");
 					return false;
 				} else {
 					doOnlyStartTime();
@@ -237,11 +253,11 @@
 				var t = $("input[name=endday]");
 				var t2 = $("input[name=startday]");
 				if(t.val()==''){
-					alert("结束时间不能为空");
+					func("结束时间不能为空","#999999");
 					return false;
 				}else {
 					if(t2.val()>t.val()){
-						alert("时间顺序选择有误，请重新选择");
+						func("时间顺序选择有误，请重新选择","#999999");
 						return false;
 					}else {
 						doOnlyEndTime();
@@ -252,6 +268,7 @@
 			function doTable(){
 				var sd = startday();
 				var ed = endday();
+				// alert(sd+"--"+ed+"--"+allTime+"--"+endTime+"--"+startTime);
 				if(sd&&ed&&allTime&&endTime&&startTime){
 					return true;
 				}else{
@@ -458,13 +475,14 @@
 			</select>
         </div>
 		<div ng-show="priceShow" style="margin-left: 30px;font-size: 20px;">
-			<label>总价计算:单价*预订天数</label>
+			<label style="width: 100%">&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</label>
 			<br>
 			<label>需支付:{{priceAll}}</label>
 		</div>
         <div class="price">
 			<!-- data-toggle="modal" data-target="#myModal"  -->
-            <input type="submit" ng-click="reserve()" value="立即预定">
+			<input type="submit" ng-click="res()" th:if="${session.user}==null" value="立即预定">
+            <input type="submit" ng-click="reserve()" th:if="${session.user}!=null" value="立即预定">
         </div>
     </div>
     <!--房主信息-->
@@ -474,8 +492,12 @@
             <label th:text="${houses.getUserInfo().getUsername()}"></label>
         </div>
         <div class="cuser">
-			<!--<label><img src="/images/callhoues.png">联系房东</label>-->
-            <input type="submit" value="联系房东">
+			<div class="uinfo" ng-show="sin" style="padding: 1em;font-size: 20px;">
+				<img src="/images/HouseCallVet.png">
+				<label th:text="${houses.getUserInfo().getUserTel()}"></label>
+			</div>
+			<!--<label>联系房东</label>-->
+            <input type="submit" ng-click="showSin()" value="联系房东">
         </div>
     </div>
 
@@ -489,8 +511,8 @@
 <!--<div id="allmap" style="height: 200px;width: auto;"></div>-->
 <script src="/js/bootstrap.min.js"></script>
 <!--轮播图js-->
-<link href="/css/base.css" rel="stylesheet">
-<script src="/js/lunbo.js"></script>
+<link href="/css/lunbobase.css" rel="stylesheet">
+<script src="/js/housesInfolunbo.js"></script>
 <!--tab切换-->
 <script src="/js/jquery.js"></script>
 <script src="/js/index.js"></script>

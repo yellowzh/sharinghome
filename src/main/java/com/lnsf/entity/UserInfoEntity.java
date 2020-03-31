@@ -9,6 +9,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -18,7 +19,7 @@ import java.util.Date;
 @Data
 @Accessors(chain = true)
 @TableName("user_info")
-public class UserInfoEntity{
+public class UserInfoEntity implements Serializable {
 
     @ApiModelProperty(value = "用户编号")
     @TableId(value = "user_id", type = IdType.AUTO)

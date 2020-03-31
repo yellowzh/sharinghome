@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -14,7 +15,7 @@ import java.util.Date;
  */
 @Data
 @ApiModel
-public class HousesDTO{
+public class HousesDTO implements Serializable {
     @ApiModelProperty(value = "房源编号")
     private Integer housesId;
     @ApiModelProperty(value = "商家编号")

@@ -640,20 +640,24 @@
 		<table>
 
 			<tr>
-				<td><button ng-click="allOrder()">全部房源订单</button></td>
+				<td><button ng-click="allOrder()"  style="width: 100%;border:none;">全部房源订单</button></td>
 			</tr>
 			<tr>
-				<td><button ng-click="allComment()">全部房源评价</button></td>
+				<td><button ng-click="allComment()"  style="width: 100%;border:none;">全部房源评价</button></td>
 			</tr>
 			<tr>
-				<td><button ng-click="allHouses()">全部房源信息</button></td>
+				<td><button ng-click="allHouses()"  style="width: 100%;border:none;">全部房源信息</button></td>
 			</tr>
 			<tr>
 				<td>
 					<select ng-model="housesId">
 						<option value="{{hou.housesId}}" ng-repeat="hou in housesAllList">{{hou.housesTitle}}</option>
 					</select>
-					<button ng-click="selectMyHouses()" >搜索</button>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<button ng-click="selectMyHouses()" style="background-color: orange;width: 100%;border:none;">搜索</button>
 				</td>
 			</tr>
 		</table>

@@ -15,6 +15,7 @@ import com.lnsf.service.UserInfoService;
 import com.lnsf.vo.HousesVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -123,6 +124,7 @@ public class HousesServiceImpl implements HousesService {
         }
         return housesDTO;
     }
+
     @Override
     public HousesDTO getIndexHomeShowById(Integer id){
         HousesEntity housesEntity = housesMapper.selectById(id);
@@ -137,7 +139,6 @@ public class HousesServiceImpl implements HousesService {
         int num = housesEntity.getHousesView()+1;
         housesEntity.setHousesView(num);
         housesMapper.updateById(housesEntity);
-
         return housesDTO;
     }
 

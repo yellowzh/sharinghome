@@ -3,6 +3,8 @@ package com.lnsf.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lnsf.entity.UserInfoEntity;
 import com.lnsf.util.UploadImgUtil;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.lnsf.entity.IndexSlideEntity;
@@ -38,8 +40,6 @@ public class IndexSlideController {
     @Autowired
     private IndexSlideService indexSlideService;
 
-
-
 //    @ApiOperation("列表")
 //    @GetMapping
 //    public List<IndexSlideEntity> list(){
@@ -57,6 +57,7 @@ public class IndexSlideController {
 
     @ApiOperation("原先推荐过的轮播图")
     @GetMapping(path = "/select/oldSlide")
+    @Cacheable(value = "selectOldSlide")
     public List<IndexSlideDTO> selectOldSlide() {
         return indexSlideService.selectOldSlideList();
     }
@@ -75,11 +76,13 @@ public class IndexSlideController {
         model_html.setViewName("admin/recommend");
         return model_html;
     }
+    @CacheEvict(value = "selectOldSlide",allEntries = true)
     @ApiOperation("删除轮播图")
     @GetMapping("/delSlideUpdate")
     public String delSlideUpdate(Integer slideId) {
         return indexSlideService.delSlideUpdate(slideId);
     }
+    @CacheEvict(value = "selectOldSlide",allEntries = true)
     @ApiOperation("新增")
     @PostMapping(path = "/createSlide")
     public IndexSlideEntity create(@RequestParam("file") MultipartFile file, @RequestParam("dto") String dto, Map<String,Object> map){
@@ -109,6 +112,7 @@ public class IndexSlideController {
     }
     @ApiOperation("更新")
     @PostMapping("/updateSlide")
+    @CacheEvict(value = "selectOldSlide",allEntries = true)
     public IndexSlideEntity updateSlide(@RequestParam("file") MultipartFile file, @RequestParam("dto") String dto, Map<String,Object> map) {
         ObjectMapper objectMapper = new ObjectMapper();
         IndexSlideDTO indexSlideDTO = null;
@@ -133,6 +137,7 @@ public class IndexSlideController {
     }
     @ApiOperation("更新")
     @PostMapping("/updateSlide2")
+    @CacheEvict(value = "selectOldSlide",allEntries = true)
     public IndexSlideEntity updateSlide2(@RequestParam("dto") String dto) {
         ObjectMapper objectMapper = new ObjectMapper();
         IndexSlideDTO indexSlideDTO = null;

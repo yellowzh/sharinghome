@@ -44,8 +44,11 @@ public class ShiroConfig {
         filterMap.put("/api/stu-exist","anon");//注册用户时判断用户名是否以及存在
         filterMap.put("/api/addUser","anon");//提交注册用户
         filterMap.put("/api/select/*","anon");
+        filterMap.put("/api/indexToFogetPas","anon");/*忘记密码*/
+        filterMap.put("/api/getVeCodeNum","anon");/*验证码*/
+        filterMap.put("/api/updatepass","anon");
         filterMap.put("/api/loginOutS","logout");
-//        filterMap.put("/api/*","authc");//测试期间不拦截
+        filterMap.put("/api/*","authc");//测试期间不拦截
         /*让某些资源无需拦截*/
         /*filterMap.put("/login","anon");*/
         //修改页面跳转登录页面

@@ -21,6 +21,8 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.log4j.Logger;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
@@ -111,6 +113,7 @@ public class HousesController {
     */
     @ApiOperation(value = "删除房源", notes = "删除用户",httpMethod = "DELETE")
     @RequestMapping("/deleteHouse")
+    @CacheEvict(value = "findAllHouses",allEntries = true)
     public ModelAndView deleteHouse(int houseId,Map<String,Object> map){
 
         log.info("单个删除houseId{}:"+houseId);
@@ -135,6 +138,7 @@ public class HousesController {
     */
     @ApiOperation(value = "批量删除房源", notes = "批量删除房源",httpMethod = "DELETE")
     @RequestMapping("deleteHouses")
+    @CacheEvict(value = "findAllHouses",allEntries = true)
     public ModelAndView deleteHouses(String checkedID,Map<String,Object> map){
         String[] strs=checkedID.split(",");
         boolean house=false;
@@ -176,6 +180,7 @@ public class HousesController {
     */
     @ApiOperation(value = "更新房源", notes = "更新房源",httpMethod = "POST")
     @RequestMapping("updateHouses")
+    @CacheEvict(value = "findAllHouses",allEntries = true)
     public ModelAndView updateHouses(HousesEntity houses,Map<String,Object> map){
         int falg = housesService.updateHouses(houses);
         /*返回跳转页面*/
@@ -197,6 +202,7 @@ public class HousesController {
     */
     @ApiOperation(value = "添加房源", notes = "添加房源",httpMethod = "POST")
     @RequestMapping("addHouses")
+    @CacheEvict(value = "findAllHouses",allEntries = true)
     public ModelAndView addHouses( @RequestParam("file") MultipartFile file,HousesEntity houses,Map<String,Object> map){
         try {
             map= UploadImgUtil.uplond(file,map);
@@ -228,6 +234,7 @@ public class HousesController {
 
     @ApiOperation("查看所有房源")
     @GetMapping(path = "/select/findAllHouses")
+    @Cacheable(value = "findAllHouses")
     public List<HousesDTO> findAllHouses(){
         log.info("查看所有房源：");
         List<HousesDTO> houses = housesService.getIndexHomeShow();
@@ -365,6 +372,7 @@ public class HousesController {
     }
     @ApiOperation("更新")
     @PostMapping("/updateHousesByUser")
+    @CacheEvict(value = "findAllHouses",allEntries = true)
     public HousesEntity updateHousesByUser(Integer housesId,@RequestBody HousesDTO dto) {
         return housesService.updateHousesByUser(housesId, dto);
     }
@@ -420,6 +428,7 @@ public class HousesController {
     /*前台用户修改页面跳转*/
 
     @RequestMapping("/updateHouseByUser")
+    @CacheEvict(value = "findAllHouses",allEntries = true)
     public ModelAndView updateHouseByUser(Integer housesId,Map<String,Object> map){
         map.put("housesId",housesId);
         ModelAndView model_html = new ModelAndView();

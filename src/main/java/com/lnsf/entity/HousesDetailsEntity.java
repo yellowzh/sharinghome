@@ -10,6 +10,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import java.io.Serializable;
+
 /**
  * <p>
  * 
@@ -22,7 +24,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @TableName("houses_details")
 @ApiModel(value="HousesDetailsEntity对象", description="")
-public class HousesDetailsEntity{
+public class HousesDetailsEntity implements Serializable {
 
 
     @TableId(value = "houses_id")

@@ -10,6 +10,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import java.io.Serializable;
+
 /**
  * <p>
  * 
@@ -22,7 +24,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @TableName("index_slide")
 @ApiModel(value="IndexSlideEntity对象", description="")
-public class IndexSlideEntity{
+public class IndexSlideEntity implements Serializable {
 
 
     @TableId(value = "slide_id", type = IdType.AUTO)

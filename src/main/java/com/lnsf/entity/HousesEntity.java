@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -19,7 +20,7 @@ import java.util.Date;
 @Data
 @Accessors(chain = true)
 @TableName("houses")
-public class HousesEntity{
+public class HousesEntity implements Serializable {
 
     @ApiModelProperty(value = "房源编号")
     @TableId(value = "houses_id", type = IdType.AUTO)

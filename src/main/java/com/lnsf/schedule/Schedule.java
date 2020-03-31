@@ -27,7 +27,7 @@ public class Schedule {
     @Autowired
     private SeeNoteService seeNoteService;
 
-//    @Scheduled(cron = "0 0/15 * * * ?")
+    @Scheduled(cron = "0 0/15 * * * ?")
     public void ScheduleJob() {
         long begin = System.currentTimeMillis();
         double n = 0;

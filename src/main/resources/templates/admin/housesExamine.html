@@ -68,7 +68,6 @@
             $scope.examineLogDTO.housesUser=user.username
             $scope.examineLogDTO.uemail=user.userEmil;
             $scope.dto.housesId=housesId;
-            alert(housesId);
             $http.post('/api/Examine?num='+id,$scope.examineLogDTO).success(
                 function(response){
                     /*刷新列表*/
@@ -142,7 +141,7 @@
     </tr>
     <!--<tr ng-if="">暂无订单!!!</tr>-->
   </table>
-  <div style="width:100%;height: 50px;"  ng-if="num==0"><h1 style="text-align: center">暂无订单!!</h1></div>
+  <div style="width:100%;height: 50px;"  ng-if="num==0"><h1 style="text-align: center">暂无待审核房源!!</h1></div>
 </div>
 <div class="panel admin-panel margin-top" ng-show="infoShow">
   <div class="panel-head"><strong><span class="icon-pencil-square-o"></span> 申请详细信息</strong><button ng-click="removeadd()" style="margin-left: 10px;border: red">隐藏</button></div>

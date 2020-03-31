@@ -1,5 +1,7 @@
 package com.lnsf.controller;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.lnsf.entity.SysDictEntity;
@@ -31,7 +33,8 @@ public class SysDictController {
 
     @Autowired
     private SysDictService sysDictService;
-
+    /*添加缓存*/
+    @Cacheable(value="getHousesType",key = "#name")
     @ApiOperation("房源类型查询列表")
     @GetMapping(path = "/select/getHousesType")
     public List<SysDictEntity> getHousesType(String name){
@@ -57,13 +60,15 @@ public class SysDictController {
     public List<SysDictEntity> getAllDict(){
         return sysDictService.getAllDictList();
     }
+    /*清楚缓存*/
+    @CacheEvict(value="getHousesType",allEntries = true)
     @ApiOperation("新增字典表")
     @PostMapping(path = "createAllDict")
     public SysDictEntity createAllDict(@RequestBody SysDictDTO dto){
         return sysDictService.createAllDict(dto);
     }
     /*删除*/
-
+    @CacheEvict(value="getHousesType",allEntries = true)
     @ApiOperation("删除字典")
     @GetMapping("/deleteDict")
     public String deleteDict(Long dictId) {
@@ -87,7 +92,7 @@ public class SysDictController {
         System.out.println(dictIsExist);
         return dictIsExist;
     }
-
+    @CacheEvict(value="getHousesType",allEntries = true)
     @ApiOperation("更新字典表")
     @PostMapping("/updateDict")
     public SysDictEntity updateDict(Long dictId,@RequestBody SysDictDTO dto) {
