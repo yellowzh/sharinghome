@@ -36,7 +36,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 //    }
     /*分页修改*/
    public IPage<UserInfoEntity> findAllUserPage(UserInfoEntity userInfo,Integer page){
-       IPage<UserInfoEntity> ipage = new Page<>(page, 8);
+       IPage<UserInfoEntity> ipage = new Page<>(page, 7);
        UserInfoEntity userInfoEntity = new UserInfoEntity();
        QueryWrapper<UserInfoEntity> wrapper = new QueryWrapper<>(userInfoEntity);
        wrapper.eq("user_power",userInfo.getUserPower());
@@ -50,7 +50,7 @@ public class UserInfoServiceImpl implements UserInfoService {
     */
     @Override
     public IPage<UserInfoEntity> getBusinessLikeNamePage(UserInfoEntity userInfo,Integer page) {
-        IPage<UserInfoEntity> ipage = new Page<>(page, 8);
+        IPage<UserInfoEntity> ipage = new Page<>(page, 7);
         UserInfoEntity userInfoEntity = new UserInfoEntity();
         QueryWrapper<UserInfoEntity> wrapper = new QueryWrapper<>(userInfoEntity);
         wrapper.eq("user_power",userInfo.getUserPower());

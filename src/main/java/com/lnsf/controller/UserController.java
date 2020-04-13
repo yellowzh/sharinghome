@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Map;
@@ -250,10 +251,13 @@ public class UserController {
     /*个人中心页面跳转*/
     @ApiOperation(value = "个人中心", notes = "个人中心",httpMethod = "GET")
     @RequestMapping("myself")
-    public ModelAndView getMyself(String users, int userId, Map<String,Object> map){
+    public ModelAndView getMyself(String users, int userId, Map<String,Object> map,HttpServletRequest httpServletRequest){
         System.out.println("个人中心"+userId);
         UserInfoEntity user1 = userInfoService.getUserById(userId);
         map.put("user",user1);
+        /*更新session*/
+        httpServletRequest.getSession().removeAttribute("user");
+        httpServletRequest.getSession().setAttribute("user",user1);
         /*页面跳转*/
         ModelAndView model_html = new ModelAndView();
         if ("admin".equals(users)) {
@@ -267,7 +271,7 @@ public class UserController {
 
     @ApiOperation(value = "修改头像", notes = "修改头像",httpMethod = "POST")
     @RequestMapping("upload")
-    public ModelAndView upload( @RequestParam("upload-file") MultipartFile file,String users, int userId, Map<String,Object> map){
+    public ModelAndView upload( @RequestParam("upload-file") MultipartFile file,String users, int userId, Map<String,Object> map,HttpServletRequest httpServletRequest){
         try {
             map=UploadImgUtil.uplond(file,map);
             log.info("上传图片后需要获取的路径："+map.get("filename"));
@@ -279,21 +283,21 @@ public class UserController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        ModelAndView model_html = getMyself(users,userId,map);
+        ModelAndView model_html = getMyself(users,userId,map,httpServletRequest);
         return model_html;
     }
     @ApiOperation(value = "修改个人信息", notes = "修改个人信息",httpMethod = "POST")
     @RequestMapping("updateUserInfo")
-    public ModelAndView updateUserInfo(UserInfoEntity userInfo, String users, Map<String,Object> map){
+    public ModelAndView updateUserInfo(UserInfoEntity userInfo, String users, Map<String,Object> map,HttpServletRequest httpServletRequest){
         log.info("userInfo:"+userInfo.getUserId());
        int user = userInfoService.updateUser(userInfo);
        if (user>0) {
            map.put("msg","更新成功");
-           ModelAndView model_html = getMyself(users, userInfo.getUserId(), map);
+           ModelAndView model_html = getMyself(users, userInfo.getUserId(), map,httpServletRequest);
            return model_html;
        }else {
            log.info("更新失败");
-           ModelAndView model_html = getMyself(users, userInfo.getUserId(), map);
+           ModelAndView model_html = getMyself(users, userInfo.getUserId(), map,httpServletRequest);
            model_html.setViewName("myself");
            return model_html;
        }
@@ -312,14 +316,14 @@ public class UserController {
     }
     @ApiOperation(value = "修改个人信息", notes = "修改个人信息",httpMethod = "GET")
     @RequestMapping("/updatereturn")
-    public ModelAndView updatereturn(HttpSession session,Map<String,Object> map){
+    public ModelAndView updatereturn(HttpSession session,Map<String,Object> map,HttpServletRequest httpServletRequest){
         UserInfoEntity user = (UserInfoEntity) session.getAttribute("user");
         System.out.println(user.getUserId());
         String users= "user";
         if ("1".equals(user.getUserPower())){
            users= "admin";
         }
-        return getMyself(users,user.getUserId(),map);
+        return getMyself(users,user.getUserId(),map,httpServletRequest);
     }
 
 

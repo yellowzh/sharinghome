@@ -114,8 +114,10 @@ public class LoginController {
         //获取当前用户
         UserInfoEntity user = (UserInfoEntity) session.getAttribute("user");
         /*记录退出时间*/
-        user.setUserLoginouttime(new Date());
-        userInfoService.updateUser(user);
+        UserInfoEntity user2 = new UserInfoEntity();
+        user2.setUserId(user.getUserId());
+        user2.setUserLoginouttime(new Date());
+        userInfoService.updateUser(user2);
         /*写进日志表*/
         userInfoService.insertSysLog(user,"loginOut","退出");
         /*跳转到shiro的退出功能*/
@@ -132,13 +134,13 @@ public class LoginController {
         userInfo1.setUsername(username);
         userInfo1 = userInfoService.findUser(userInfo1);
         map.put("user",userInfo1);
-        httpServletRequest.getSession().setAttribute("user",userInfo1);
         /*记录登录时间*/
         userInfo1.setUserLogintime(new Date());
         userInfoService.updateUser(userInfo1);
         /*记录进入日志表*/
         userInfoService.insertSysLog(userInfo1,"login","登录");
         /*返回跳转页面*/
+        httpServletRequest.getSession().setAttribute("user",userInfo1);
         ModelAndView model_html = new ModelAndView();
         /*商家与旅客登录成功跳转*/
         if("user".equals(users)){
