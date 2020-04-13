@@ -58,6 +58,7 @@ public class CommentController {
         log.info("房源编号："+housesId);
         return commentService.list(housesId,null);
     }
+
     @ApiOperation("添加图片")
     @PostMapping(path = "/addPhoto")
     public String addPhoto(@RequestParam("file") MultipartFile file,Map<String,Object> map){
