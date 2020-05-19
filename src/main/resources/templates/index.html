@@ -69,7 +69,7 @@
 			/*查看详情*/
 			$scope.select=function(id) {
 				if (id==null){
-					func("该轮播仅为一个普通图片广告并无对应房源详情","#999999");
+					func("该轮播仅为广告","#999999");
 				} else {
 					location.href="/api/select/findHousesById?houserId="+id;
 				}

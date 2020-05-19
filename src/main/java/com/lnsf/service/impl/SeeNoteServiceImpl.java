@@ -36,7 +36,7 @@ public class SeeNoteServiceImpl implements SeeNoteService {
         String day = DateUtil.dayago();
         QueryWrapper wrapper1 = new QueryWrapper();
         wrapper1.ge("create_time",day);
-        wrapper1.orderByDesc("create_time");
+        wrapper1.orderByAsc("create_time");
         List<SeeNoteEntity> seeNoteEntitie1 = seeNoteMapper.selectList(wrapper1);
         QueryWrapper wrapper2 = new QueryWrapper();
         wrapper2.ge("create_time",day);

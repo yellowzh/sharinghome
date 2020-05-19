@@ -309,6 +309,7 @@ public class HousesController {
     }
     @ApiOperation("推荐房源")
     @GetMapping(path = "/recomHouses")
+    @CacheEvict(value = "findAllHouses",allEntries = true)
     public String recomHouses(Integer houserId){
         log.info("查看所有推荐房源：");
         String falg = housesService.recomHouses(houserId);
@@ -316,6 +317,7 @@ public class HousesController {
     }
     @ApiOperation("推荐房源")
     @GetMapping(path = "/delrecomHouses")
+    @CacheEvict(value = "findAllHouses",allEntries = true)
     public String delrecomHouses(Integer houserId){
         log.info("查看所有推荐房源：");
         String falg = housesService.delrecomHouses(houserId);

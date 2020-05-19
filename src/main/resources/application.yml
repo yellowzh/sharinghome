@@ -1,8 +1,8 @@
 server:
-  port: 18080
+  port: 8080
 spring:
   redis:
-    database: 6         # redis 实例，根据实际填写
+    database: 6        # redis 实例，根据实际填写
     password: 123123    # redis 密码，根据实际填写
     host: 49.235.17.30   # redis IP地址，根据实际填写
     port: 6379         # redis 端口，根据实际填写
@@ -66,6 +66,14 @@ spring:
     password: qdxpjwimbjxidjic # gprkxwdstbledida
     ##编码格式
     default-encoding: UTF-8
+    # Use port 465 instead of the default port 25
+    port: 465
+    properties:
+      mail:
+        smtp:
+          socketFactory:
+            class: javax.net.ssl.SSLSocketFactory
+
 #发送邮件地址
 mail:
   fromMail:
@@ -81,14 +89,22 @@ logging:
   level:
     com.baomidou.mybatisplus.samples: info
 # 沙箱账号
+#pay:
+#  alipay:
+#    gatewayUrl: https://openapi.alipaydev.com/gateway.do
+#    appid: 2016101800717146
+#    appPrivateKey: MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCHO7AJWPAiMLf2UgxVvkie9ChO50NUxgslYidJ+/K2N8NA+6uAcax74DWTwxndthTgntqdTVeuAhzbDHejpKvDmT8NA4Bh+xd6kSWR3YeFJ2d6AJPGRWIqc062mXKvpaf6klc+4H5iCoYVWaCSikBu7/guOG1AXyZFPr5Vatp5nvdjfq3AFlZbK4JtYSZn7eFntuTVlIltMo5jwHzRXVLbhxKFiLTlikCutZ0mWEUkBYPlP6iE1MMqtq6HFAGch570LXC5eUJ1nydY2ik14N6S0IcGfaLUP769f6htibQbeSaHAQ9nY/V+XyKG0ztoF26pf0H/6rT+vALIygmsib6TAgMBAAECggEABENbb1AAcfN7OSapAOL4wxoLU0FzG+8KVulbN7fblOb5HslQRMJQn68XwUq7PAQLcHFRjvfrNa8XXchs1RnR2F6yYCSmHXCe8tw0hP6o0QfG+U+fWPbC+3ebGaKIvQTJ4NpQKclF8q1GQNIMf9If6d9iwYJB32+gczphIaw2qvLNzB63Kpwwl82uI95npclQV0p+KbcdPL1Mml0+RAT0MOEYttW8Y8ih2gDuYVXPTyhg4kcTrb3crWJcyT65a8GmLDfoUbSAMF8SOlgL/xIZU3x1UkbKIrBlCSCGBhpwjoHXMdlU02b5Z/Fks8DAmQcMrBIRaVvibDoVP+1Y8Ccj0QKBgQDz0KCidp4mBUVYJYqegIboGTTrxrVJXOegdWgx2yvyCE1zbRfp5WhgkhN/zlncdQb1EvlCdRgpmmGyUsgvbByOeiQVI84wywgQaDPMQnlrIEX5MMVdiOI0d6FAFjgsPQ8vRxvocJNTAtxQVIlmqFHD83rO7r06BaFI2n4r9VFxvwKBgQCN/dzktdjwJof/9X5dwCCTn/ASzke2imcDx/OZXWIsTrqKCgLbKyBvBrpahdE5ubB9JQ1nsd5/4jtwO8qfkusycdk2tQo+6OKZ3MpBTdjner7+AdF/WWzwb09FkX/KqdOTKwNNiI8cDKK1zX4T+JEqcsQUeFvZoJG+4tKS73dALQKBgCNdZY9rKTFWnmJUv7CR7/+GeHiij/UeNrK9lOl2Yv9uWN2fO1K/5c3sIkvtgHdLukCeCe2r0l9mdzlIbKUER3gbG1S9ptDJAlhu5OSB197EBaJJgrc4facimw8Sqf8wtB0lcVTbz2LBDXfRa0SqsYF8tZmCY4wg+O36U0bJBJE9AoGBAIOBX8ju5qmcdg7INi3r2AABe95e8CoOytPEp0ceJuN0Uu2v0e9cZOCPMZ7PGvTElsGAxIaKRNDaHUSYC9R4xJ3mtU8mowOauuvXgfaze7T/iM5FrtqsXunbnWaIF/wCB3LgvmFbnXdT+Io6dI9YglH3EsUGp8LKJNHOz0nIwQBNAoGAQ1TMnWiVZcxu5sG+zMLTNStmCPeq5PpJt5BrxQpbpIjJgFEtXXIt/7sFYyfHmJWqJxvmcWWfcr1xoIUSjU2wPrscN7Z/gHC/ia/n2GJy6lNLINar4XixaUgBdKuNIsGYqZwKPIL8mtlN8lIQItnfwvqaQk9W1iFAeJOrFVyMjus=
+#    alipayPublicKey: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyzDjB9t5249oXv2SEFNtRZjXc+ialBKc7N8zt5GjOgT7yBTwC4ZOe+5ikvbvbzswssndS+dq6aqyQ6gxupWgPykg+nZDxxgykBT5v3ZOmWJti+WL3RkHOL5NIYHWSkq6hmvFOaIqR1KdjxU4A5O2fvv1fgHcpH6i1fhUjq7eHd/Hpm9WKzDM/XPwiOpmOHGYSl71JgEjFt2IBjGWoIpmX6p5JEsOIsvSFUaC95rX9e8gyFOMP7LFtLLgDjpPiCfHhRAJTgsnrluRNg7rRJLabACMOJ+VzBhBnw2Po9YqAg6lc8QivVYf552wPy6enNWbPNToYzx/Y1ilnbmXETdkCQIDAQAB
+#    returnUrl: http://47.103.15.125:8080/alipay/return
+#    notifyUrl: http://47.103.15.125:8080/alipay/notify
 pay:
   alipay:
     gatewayUrl: https://openapi.alipaydev.com/gateway.do
     appid: 2016101800717146
     appPrivateKey: MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCHO7AJWPAiMLf2UgxVvkie9ChO50NUxgslYidJ+/K2N8NA+6uAcax74DWTwxndthTgntqdTVeuAhzbDHejpKvDmT8NA4Bh+xd6kSWR3YeFJ2d6AJPGRWIqc062mXKvpaf6klc+4H5iCoYVWaCSikBu7/guOG1AXyZFPr5Vatp5nvdjfq3AFlZbK4JtYSZn7eFntuTVlIltMo5jwHzRXVLbhxKFiLTlikCutZ0mWEUkBYPlP6iE1MMqtq6HFAGch570LXC5eUJ1nydY2ik14N6S0IcGfaLUP769f6htibQbeSaHAQ9nY/V+XyKG0ztoF26pf0H/6rT+vALIygmsib6TAgMBAAECggEABENbb1AAcfN7OSapAOL4wxoLU0FzG+8KVulbN7fblOb5HslQRMJQn68XwUq7PAQLcHFRjvfrNa8XXchs1RnR2F6yYCSmHXCe8tw0hP6o0QfG+U+fWPbC+3ebGaKIvQTJ4NpQKclF8q1GQNIMf9If6d9iwYJB32+gczphIaw2qvLNzB63Kpwwl82uI95npclQV0p+KbcdPL1Mml0+RAT0MOEYttW8Y8ih2gDuYVXPTyhg4kcTrb3crWJcyT65a8GmLDfoUbSAMF8SOlgL/xIZU3x1UkbKIrBlCSCGBhpwjoHXMdlU02b5Z/Fks8DAmQcMrBIRaVvibDoVP+1Y8Ccj0QKBgQDz0KCidp4mBUVYJYqegIboGTTrxrVJXOegdWgx2yvyCE1zbRfp5WhgkhN/zlncdQb1EvlCdRgpmmGyUsgvbByOeiQVI84wywgQaDPMQnlrIEX5MMVdiOI0d6FAFjgsPQ8vRxvocJNTAtxQVIlmqFHD83rO7r06BaFI2n4r9VFxvwKBgQCN/dzktdjwJof/9X5dwCCTn/ASzke2imcDx/OZXWIsTrqKCgLbKyBvBrpahdE5ubB9JQ1nsd5/4jtwO8qfkusycdk2tQo+6OKZ3MpBTdjner7+AdF/WWzwb09FkX/KqdOTKwNNiI8cDKK1zX4T+JEqcsQUeFvZoJG+4tKS73dALQKBgCNdZY9rKTFWnmJUv7CR7/+GeHiij/UeNrK9lOl2Yv9uWN2fO1K/5c3sIkvtgHdLukCeCe2r0l9mdzlIbKUER3gbG1S9ptDJAlhu5OSB197EBaJJgrc4facimw8Sqf8wtB0lcVTbz2LBDXfRa0SqsYF8tZmCY4wg+O36U0bJBJE9AoGBAIOBX8ju5qmcdg7INi3r2AABe95e8CoOytPEp0ceJuN0Uu2v0e9cZOCPMZ7PGvTElsGAxIaKRNDaHUSYC9R4xJ3mtU8mowOauuvXgfaze7T/iM5FrtqsXunbnWaIF/wCB3LgvmFbnXdT+Io6dI9YglH3EsUGp8LKJNHOz0nIwQBNAoGAQ1TMnWiVZcxu5sG+zMLTNStmCPeq5PpJt5BrxQpbpIjJgFEtXXIt/7sFYyfHmJWqJxvmcWWfcr1xoIUSjU2wPrscN7Z/gHC/ia/n2GJy6lNLINar4XixaUgBdKuNIsGYqZwKPIL8mtlN8lIQItnfwvqaQk9W1iFAeJOrFVyMjus=
     alipayPublicKey: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyzDjB9t5249oXv2SEFNtRZjXc+ialBKc7N8zt5GjOgT7yBTwC4ZOe+5ikvbvbzswssndS+dq6aqyQ6gxupWgPykg+nZDxxgykBT5v3ZOmWJti+WL3RkHOL5NIYHWSkq6hmvFOaIqR1KdjxU4A5O2fvv1fgHcpH6i1fhUjq7eHd/Hpm9WKzDM/XPwiOpmOHGYSl71JgEjFt2IBjGWoIpmX6p5JEsOIsvSFUaC95rX9e8gyFOMP7LFtLLgDjpPiCfHhRAJTgsnrluRNg7rRJLabACMOJ+VzBhBnw2Po9YqAg6lc8QivVYf552wPy6enNWbPNToYzx/Y1ilnbmXETdkCQIDAQAB
-    returnUrl: http://127.0.0.1:18080/alipay/return
-    notifyUrl: http://127.0.0.1:18080/alipay/notify
+    returnUrl: http://127.0.0.1:8080/alipay/return
+    notifyUrl: http://127.0.0.1:8080/alipay/notify
 
 
 
